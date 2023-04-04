@@ -5,6 +5,7 @@
       <v-col cols="12">
         <h1 class="grey">Home!!!!</h1>
         <p>{{ user.name }}, {{ user.email }}</p>
+        <p>{{ selectedProj }}</p>
       </v-col>
     </v-row>
   </v-container>
@@ -15,7 +16,8 @@
 export default {
   name: "Home",
   inject: {
-    user: { default: null }
+    user: { default: null },
+    selectedProj: { default: null }
   }
 }
 </script>
