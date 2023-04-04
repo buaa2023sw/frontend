@@ -1,0 +1,72 @@
+<template>
+<v-app>
+  <v-container>
+    <v-row>
+      <v-col cols="3" class=""></v-col>
+      <v-col cols="6">
+        <v-text-field label="Email" v-model="inputUserEmail"></v-text-field>
+        <v-text-field label="Password" type="password" v-model="inputUserPwd"></v-text-field>
+      </v-col>
+      <v-col cols="3" class=""></v-col>
+    </v-row>
+    <v-row class="">
+      <v-col cols="3"></v-col>
+      <v-col cols="2">
+        <v-btn block @click="login()">login</v-btn>
+      </v-col>
+      <v-col cols="2"></v-col>
+      <v-col cols="2">
+        <v-btn block link to="/register">register</v-btn>
+      </v-col>
+      <v-col cols="3"></v-col>
+    </v-row>
+  </v-container>
+
+</v-app>
+</template>
+
+<script>
+import Cookies from 'js-cookie'
+
+if (Cookies.get('user') !== undefined) {
+  alert('already logged in!');
+  window.location.href = '/home';
+}
+
+export default {
+  name: "login",
+  data() {
+    return {
+      inputUserEmail: null,
+      inputUserPwd: null
+    }
+  },
+  methods: {
+    login() {
+      //todo
+      if (this.inputUserEmail === 'trickeye@buaa.edu.cn') {
+        Cookies.set('user', JSON.stringify({
+          id: 1,
+          name: 'TrickEye',
+          email: 'trickeye@buaa.edu.cn'
+        }))
+        window.location.href = '/home'
+      } else if (this.inputUserEmail === '20373866@buaa.edu.cn') {
+        Cookies.set('user', JSON.stringify({
+          id: 1,
+          name: '20373866',
+          email: '20373866@buaa.edu.cn'
+        }))
+        window.location.href = '/home'
+      } else {
+        alert('wrong!')
+      }
+
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>

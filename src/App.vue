@@ -12,21 +12,30 @@
         <template v-slot:activator="{ on, attrs }">
           <v-icon v-bind="attrs" v-on="on">mdi-account</v-icon>
         </template>
-        <v-card min-width="200px">
+        <v-card v-if="user" min-width="200px">
           <v-card-title>Hello, {{ user.name }}</v-card-title>
           <v-card-subtitle>{{ user.email }}</v-card-subtitle>
           <v-list>
             <v-list-item link to="">
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item>
-            <v-list-item link to="">
+            <v-list-item link @click="logoff()">
               <v-list-item-title>Log off</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+
+        <v-card v-else min-width="200px" link to="/login">
+          <v-card-title>Please Login</v-card-title>
+          <v-list>
+            <v-list-item link to="/register">
+              <v-list-item-title>Register</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
       </v-menu>
 
-      <template v-slot:extension>
+      <template v-if="user" v-slot:extension>
         <v-tabs v-model="selectedProj">
           <v-tab>Home</v-tab>
           <v-tab><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>
@@ -41,6 +50,7 @@
         clipped
         :mini-variant="mini"
         :expand-on-hover="mini"
+        v-if="user"
     >
       <v-list>
         <v-list-item @click.stop="mini = !mini">
@@ -83,18 +93,25 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import { computed } from 'vue'
+
+let user = Cookies.get('user')
+if (user === undefined) {
+  console.log('not logged in')
+  if (window.location.pathname !== '/login') {
+    window.location.pathname = '/login'
+  }
+} else {
+  user = JSON.parse(user)
+}
+
 export default {
   name: 'App',
   data: () => ({
     drawer: true,
     mini: true,
-    loggedIn: false,
-    user: {
-      id: 1,
-      name: 'TrickEye',
-      email: 'trickeye@buaa.edu.cn'
-    },
+    user: user,
     selectedProj: null
   }),
   provide() {
@@ -104,6 +121,10 @@ export default {
     }
   },
   methods: {
+    logoff() {
+      Cookies.remove('user');
+      window.location.href = '/login'
+    }
   }
 };
 </script>
