@@ -39,8 +39,9 @@
 
       <template v-if="user" v-slot:extension>
         <v-tabs v-model="selectedProj">
-          <v-tab>Home</v-tab>
-          <v-tab><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>
+          <v-tab link to="/home">Home</v-tab>
+          <v-tab v-for="project in user.projects" :key="project.id" link :to="'/proj/' + project.id">{{ project.name }}</v-tab>
+          <v-tab link to="/newproj"><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>
         </v-tabs>
       </template>
 

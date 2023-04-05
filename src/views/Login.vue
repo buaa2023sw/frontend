@@ -12,11 +12,11 @@
     <v-row class="">
       <v-col cols="3"></v-col>
       <v-col cols="2">
-        <v-btn block @click="login()">login</v-btn>
+        <v-btn :disabled="busy" block @click="login()">login</v-btn>
       </v-col>
       <v-col cols="2"></v-col>
       <v-col cols="2">
-        <v-btn block link to="/register">register</v-btn>
+        <v-btn :disabled="busy" block link to="/register">register</v-btn>
       </v-col>
       <v-col cols="3"></v-col>
     </v-row>
@@ -37,31 +37,51 @@ export default {
   name: "login",
   data() {
     return {
+      busy : false,
       inputUserEmail: null,
       inputUserPwd: null
     }
   },
   methods: {
-    login() {
-      //todo
-      if (this.inputUserEmail === 'trickeye@buaa.edu.cn') {
-        Cookies.set('user', JSON.stringify({
-          id: 1,
-          name: 'TrickEye',
-          email: 'trickeye@buaa.edu.cn'
-        }))
-        window.location.href = '/home'
-      } else if (this.inputUserEmail === '20373866@buaa.edu.cn') {
-        Cookies.set('user', JSON.stringify({
-          id: 1,
-          name: '20373866',
-          email: '20373866@buaa.edu.cn'
-        }))
-        window.location.href = '/home'
-      } else {
-        alert('wrong!')
-      }
-
+    async login() {
+      this.busy = true
+      let inputUserEmail = this.inputUserEmail
+      let inputUserPwd = this.inputUserPwd
+      this.inputUserPwd = null
+      setTimeout(() => {
+        this.busy = false
+        if (inputUserEmail === 'trickeye@buaa.edu.cn') {
+          Cookies.set('user', JSON.stringify({
+            id: 1,
+            name: 'TrickEye',
+            email: 'trickeye@buaa.edu.cn',
+            projects: [{
+              id: 1,
+              name: 'Project1'
+            }, {
+              id: 2,
+              name: 'Project2'
+            }]
+          }))
+          window.location.href = '/home'
+        } else if (inputUserEmail === '20373866@buaa.edu.cn') {
+          Cookies.set('user', JSON.stringify({
+            id: 1,
+            name: '20373866',
+            email: '20373866@buaa.edu.cn',
+            projects: [{
+              id: 1,
+              name: 'Project1'
+            }, {
+              id: 3,
+              name: 'Project3'
+            }]
+          }))
+          window.location.href = '/home'
+        } else {
+          alert('wrong!')
+        }
+      }, 1500)
     }
   }
 }
