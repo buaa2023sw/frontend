@@ -1,7 +1,7 @@
 <template>
 <v-app>
   <v-container>
-    <v-row @click="say(user)">
+    <v-row>
       <v-col cols="12">
         <h1 class="grey">Home!!!!</h1>
         <p>{{ user }}</p>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 export default {
   name: "Home",
   inject: {
@@ -21,10 +21,6 @@ export default {
     selectedProj: { default: null }
   },
   methods: {
-    say(what) {
-      console.log(what)
-      console.log(Cookies.get('user'))
-    }
   }
 }
 </script>

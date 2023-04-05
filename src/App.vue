@@ -3,14 +3,16 @@
 
 
     <v-app-bar app clipped-left color="blue" dark extension-height="36">
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-if="user" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>BUAA 2023 SW</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
-          <v-icon v-bind="attrs" v-on="on">mdi-account</v-icon>
+          <v-chip v-if="user" outlined v-bind="attrs" v-on="on">{{ user.name }}</v-chip>
+          <v-icon v-if="user" v-bind="attrs" v-on="on">mdi-account</v-icon>
+          <v-icon v-else v-bind="attrs" v-on="on">mdi-account-remove</v-icon>
         </template>
         <v-card v-if="user" min-width="200px">
           <v-card-title>Hello, {{ user.name }}</v-card-title>
@@ -99,7 +101,8 @@ import { computed } from 'vue'
 let user = Cookies.get('user')
 if (user === undefined) {
   console.log('not logged in')
-  if (window.location.pathname !== '/login') {
+  if (window.location.pathname === '/register') {
+  } else if (window.location.pathname !== '/login') {
     window.location.pathname = '/login'
   }
 } else {
