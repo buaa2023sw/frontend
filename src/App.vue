@@ -38,10 +38,19 @@
       </v-menu>
 
       <template v-if="user" v-slot:extension>
-        <v-tabs v-model="selectedProj">
-          <v-tab link to="/home">Home</v-tab>
-          <v-tab v-for="project in user.projects" :key="project.id" link :to="'/proj/' + project.id">{{ project.name }}</v-tab>
-          <v-tab link to="/newproj"><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>
+        <v-tabs v-model="routeSelect">
+          <v-tab link to="/home/">Home</v-tab>
+          <v-tab link to="/plan/">Plan</v-tab>
+          <v-tab link to="/dev/">Dev</v-tab>
+<!--          <v-tab-->
+<!--                  v-for="project in user.projects"-->
+<!--                  :key="project.id"-->
+<!--                  link :to="'/' + ['proj', 'plan', 'dev'][drawerSelect] + '/' + project.id"-->
+<!--                  @click="selectedProj=project.id"-->
+<!--          >{{ project.name }}</v-tab>-->
+<!--          <v-tab v-for="project in user.projects" :key="project.id" link :to="'/proj/' + project.id">{{ project.name }}</v-tab>-->
+
+<!--          <v-tab link to="/newproj"><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>-->
         </v-tabs>
       </template>
 
@@ -66,31 +75,46 @@
 
       <v-divider></v-divider>
 
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-home-outline</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">主页</v-list-item-title>
-        </v-list-item>
+        <v-list-item-group mandatory>
+          <v-list-item link :to="routeSelect + 'home'" @click="selectedProj = null">
+              <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
+              <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/newproj" @click="selectedProj = null">
+              <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
+              <v-list-item-title>New Project</v-list-item-title>
+          </v-list-item>
+          <v-list-item link v-for="project in user.projects" :key="project.id" :to="routeSelect + project.id" @click="selectedProj = project">
+              <v-list-item-icon><v-icon>mdi-developer-board</v-icon></v-list-item-icon>
+              <v-list-item-title>{{project.name}}</v-list-item-title>
+          </v-list-item>
 
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-book-edit-outline</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">规划</v-list-item-title>
-        </v-list-item>
+<!--          <v-list-item link :to="'/proj/' + selectedProj">-->
+<!--            <v-list-item-icon>-->
+<!--              <v-icon>mdi-home-outline</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title class="text-h6">主页</v-list-item-title>-->
+<!--          </v-list-item>-->
 
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-laptop</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">开发</v-list-item-title>
-        </v-list-item>
+<!--          <v-list-item link :to="'/plan/' + selectedProj">-->
+<!--            <v-list-item-icon>-->
+<!--              <v-icon>mdi-book-edit-outline</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title class="text-h6">规划</v-list-item-title>-->
+<!--          </v-list-item>-->
+
+<!--          <v-list-item link :to="'/dev/' + selectedProj">-->
+<!--            <v-list-item-icon>-->
+<!--              <v-icon>mdi-laptop</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title class="text-h6">开发</v-list-item-title>-->
+<!--          </v-list-item>-->
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
 
     <v-main>
-      <router-view></router-view>
+      <router-view v-if="showRouterView" />
     </v-main>
   </v-app>
 </template>
@@ -112,12 +136,31 @@ if (user === undefined) {
 
 export default {
   name: 'App',
-  data: () => ({
-    drawer: true,
-    mini: true,
-    user: user,
-    selectedProj: null
-  }),
+  // created() {
+  //     this.$watch(() => this.drawerIndex, (to, from) => {
+  //         console.log('drawerIndex change!')
+  //         this.showRouterView = false;
+  //         this.$nextTick(() => (this.showRouterView = true));
+  //     })
+  // },
+  watch: {
+      selectedProj(n, o) {
+          console.log('selectedProj change! from ' + o + ' to ' + n)
+          this.showRouterView = false;
+          this.$nextTick(() => (this.showRouterView = true));
+      }
+  },
+  data: () => {
+      return {
+          drawer: true,
+          mini: true,
+          showRouterView: true,
+          user: user,
+          drawerIndex: null,
+          routeSelect: null,
+          selectedProj: null
+      }
+  },
   provide() {
     return {
       user: computed(() => this.user),
@@ -125,6 +168,14 @@ export default {
     }
   },
   methods: {
+    // getSelectedProj() {
+    //     let pid = this.$route.params.projid;
+    //     if (pid === undefined) return null;
+    //     else return pid;
+    // },
+    // getDrawerSelection() {
+    //   let drawerSelection = this.$route.
+    // },
     logoff() {
       Cookies.remove('user');
       window.location.href = '/login'
