@@ -1,92 +1,184 @@
 <template>
   <v-app id="main_page">
 
+
+    <v-app-bar app clipped-left color="blue" dark extension-height="36">
+      <v-app-bar-nav-icon v-if="user" @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>BUAA 2023 SW</v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-menu offset-y :close-on-content-click="false">
+        <template v-slot:activator="{ on, attrs }">
+          <v-chip v-if="user" outlined v-bind="attrs" v-on="on">{{ user.name }}</v-chip>
+          <v-icon v-if="user" v-bind="attrs" v-on="on">mdi-account</v-icon>
+          <v-icon v-else v-bind="attrs" v-on="on">mdi-account-remove</v-icon>
+        </template>
+        <v-card v-if="user" min-width="200px">
+          <v-card-title>Hello, {{ user.name }}</v-card-title>
+          <v-card-subtitle>{{ user.email }}</v-card-subtitle>
+          <v-list>
+            <v-list-item link to="">
+              <v-list-item-title>Profile</v-list-item-title>
+            </v-list-item>
+            <v-list-item link @click="logoff()">
+              <v-list-item-title>Log off</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+
+        <v-card v-else min-width="200px" link to="/login">
+          <v-card-title>Please Login</v-card-title>
+          <v-list>
+            <v-list-item link to="/register">
+              <v-list-item-title>Register</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
+
+      <template v-if="user" v-slot:extension>
+        <v-tabs v-model="routeSelect">
+          <v-tab link to="/home/">Home</v-tab>
+          <v-tab link to="/plan/">Plan</v-tab>
+          <v-tab link to="/dev/">Dev</v-tab>
+<!--          <v-tab-->
+<!--                  v-for="project in user.projects"-->
+<!--                  :key="project.id"-->
+<!--                  link :to="'/' + ['proj', 'plan', 'dev'][drawerSelect] + '/' + project.id"-->
+<!--                  @click="selectedProj=project.id"-->
+<!--          >{{ project.name }}</v-tab>-->
+<!--          <v-tab v-for="project in user.projects" :key="project.id" link :to="'/proj/' + project.id">{{ project.name }}</v-tab>-->
+
+<!--          <v-tab link to="/newproj"><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>-->
+        </v-tabs>
+      </template>
+
+    </v-app-bar>
+
     <v-navigation-drawer
         v-model="drawer"
         app
+        clipped
         :mini-variant="mini"
         :expand-on-hover="mini"
+        v-if="user"
     >
       <v-list>
-        <v-list-item class="px-2" link>
-          <v-list-item-avatar>
-            <v-icon x-large>mdi-account-circle</v-icon>
-          </v-list-item-avatar>
-
-          <v-list-item-content>
-          <v-list-item-title id="username">
-            {{ user.name }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ user.email }}
-          </v-list-item-subtitle>
-          </v-list-item-content>
-
-        </v-list-item>
-
-        <v-divider></v-divider>
-
         <v-list-item @click.stop="mini = !mini">
           <v-list-item-icon>
-              <v-icon v-if="mini">mdi-chevron-right</v-icon>
-              <v-icon v-else>mdi-chevron-left</v-icon>
+            <v-icon v-if="mini">mdi-chevron-right</v-icon>
+            <v-icon v-else>mdi-chevron-left</v-icon>
           </v-list-item-icon>
           <v-list-item-title class="text-h6">{{ mini ? '展开' : '收回' }}</v-list-item-title>
         </v-list-item>
 
-        <v-divider></v-divider>
+      <v-divider></v-divider>
 
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-home-outline</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">主页</v-list-item-title>
-        </v-list-item>
+        <v-list-item-group mandatory>
+          <v-list-item link :to="routeSelect + 'home'" @click="selectedProj = null">
+              <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
+              <v-list-item-title>Home</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/newproj" @click="selectedProj = null">
+              <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
+              <v-list-item-title>New Project</v-list-item-title>
+          </v-list-item>
+          <v-list-item link v-for="project in user.projects" :key="project.id" :to="routeSelect + project.id" @click="selectedProj = project">
+              <v-list-item-icon><v-icon>mdi-developer-board</v-icon></v-list-item-icon>
+              <v-list-item-title>{{project.name}}</v-list-item-title>
+          </v-list-item>
 
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-book-edit-outline</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">规划</v-list-item-title>
-        </v-list-item>
+<!--          <v-list-item link :to="'/proj/' + selectedProj">-->
+<!--            <v-list-item-icon>-->
+<!--              <v-icon>mdi-home-outline</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title class="text-h6">主页</v-list-item-title>-->
+<!--          </v-list-item>-->
 
-        <v-list-item link>
-          <v-list-item-icon>
-            <v-icon>mdi-laptop</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">开发</v-list-item-title>
-        </v-list-item>
+<!--          <v-list-item link :to="'/plan/' + selectedProj">-->
+<!--            <v-list-item-icon>-->
+<!--              <v-icon>mdi-book-edit-outline</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title class="text-h6">规划</v-list-item-title>-->
+<!--          </v-list-item>-->
+
+<!--          <v-list-item link :to="'/dev/' + selectedProj">-->
+<!--            <v-list-item-icon>-->
+<!--              <v-icon>mdi-laptop</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title class="text-h6">开发</v-list-item-title>-->
+<!--          </v-list-item>-->
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
 
     <v-main>
-      <v-app-bar width="100%" color="blue" dark>
-        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>BUAA 2023 SW</v-toolbar-title>
-      </v-app-bar>
-
-      <router-view></router-view>
+      <router-view v-if="showRouterView" />
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Cookies from 'js-cookie'
 import { computed } from 'vue'
+
+let user = Cookies.get('user')
+if (user === undefined) {
+  console.log('not logged in')
+  if (window.location.pathname === '/register') {
+  } else if (window.location.pathname !== '/login') {
+    window.location.pathname = '/login'
+  }
+} else {
+  user = JSON.parse(user)
+}
+
 export default {
   name: 'App',
-
-  data: () => ({
-    drawer: true,
-    mini: true,
-    user: {
-      id: 1,
-      name: 'TrickEye',
-      email: 'trickeye@buaa.edu.cn'
-    }
-  }),
+  // created() {
+  //     this.$watch(() => this.drawerIndex, (to, from) => {
+  //         console.log('drawerIndex change!')
+  //         this.showRouterView = false;
+  //         this.$nextTick(() => (this.showRouterView = true));
+  //     })
+  // },
+  watch: {
+      selectedProj(n, o) {
+          console.log('selectedProj change! from ' + o + ' to ' + n)
+          this.showRouterView = false;
+          this.$nextTick(() => (this.showRouterView = true));
+      }
+  },
+  data: () => {
+      return {
+          drawer: true,
+          mini: true,
+          showRouterView: true,
+          user: user,
+          drawerIndex: null,
+          routeSelect: null,
+          selectedProj: null
+      }
+  },
   provide() {
     return {
-      user: computed(() => this.user)
+      user: computed(() => this.user),
+      selectedProj: computed(() => this.selectedProj)
+    }
+  },
+  methods: {
+    // getSelectedProj() {
+    //     let pid = this.$route.params.projid;
+    //     if (pid === undefined) return null;
+    //     else return pid;
+    // },
+    // getDrawerSelection() {
+    //   let drawerSelection = this.$route.
+    // },
+    logoff() {
+      Cookies.remove('user');
+      window.location.href = '/login'
     }
   }
 };
