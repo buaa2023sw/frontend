@@ -9,6 +9,18 @@ const router = new VueRouter({
   base: import.meta.env.BASE_URL,
   routes: [
     {
+      path:'/allTask',
+      component: () => import('../views/user/projectPlanning/allTask.vue')
+  },
+  {
+      path:'/allProject',
+      component: () => import('../views/user/projectPlanning/allProject.vue')
+  },
+  {
+      path:'/allPerson',
+      component: () => import('../views/user/projectPlanning/allPerson.vue')
+  },
+    {
       path: '/home',
       name: 'home',
       component: () => import('../views/Home.vue'),
