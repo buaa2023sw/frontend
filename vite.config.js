@@ -15,7 +15,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      echarts: 'echarts/dist/echarts.js', // 支持echarts绘图
     }
   }
 })
