@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Cookies from 'js-cookie'
 
 Vue.use(VueRouter)
 
@@ -11,15 +10,15 @@ const router = new VueRouter({
     {
       path:'/allTask',
       component: () => import('../views/user/projectPlanning/allTask.vue')
-  },
-  {
+    },
+    {
       path:'/allProject',
       component: () => import('../views/user/projectPlanning/allProject.vue')
-  },
-  {
+    },
+    {
       path:'/allPerson',
       component: () => import('../views/user/projectPlanning/allPerson.vue')
-  },
+    },
     {
       path: '/home',
       name: 'home',
