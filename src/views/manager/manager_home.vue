@@ -1,15 +1,15 @@
 <template>
-  <div class="height-100pc mx-3 goods-home">
+  <div class="height-100pc mx-2 goods-home">
     <v-row justify="center" class="my-3">
       <template v-for="(item, itemIndex) in indicators">
-        <v-col :key="itemIndex" cols="12" md="3">
+        <v-col :key="itemIndex" cols="12" md="3" class="mb-4">
           <v-hover v-slot="{ hover }">
             <v-card
                 class="item-card"
                 :elevation="hover ? 12 : 2"
                 :class="{ 'on-hover': hover }"
             >
-              <v-row class="mx-3 ">
+              <v-row>
                 <v-col md="6" class="align-center">
                   <v-icon :color="item.color" size="100">{{ item.icon }}</v-icon>
                 </v-col>
