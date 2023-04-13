@@ -52,7 +52,6 @@ const router = new VueRouter({
       name: 'loginMessages',
       component: () => import('../views/manager/user_login_messages.vue')
     },
-
   ]
 })
 
