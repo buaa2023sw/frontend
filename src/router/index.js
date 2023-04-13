@@ -26,8 +26,32 @@ const router = new VueRouter({
       path: '/dev/:projid',
       name: 'dev',
       component: () => import('../views/Dev.vue')
-
-    }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/user/profile.vue')
+    },
+    {
+      path: '/manager',
+      name: 'managerHome',
+      component: () => import('../views/manager/manager_home.vue')
+    },
+    {
+      path: '/manager/userMessages',
+      name: 'userMessages',
+      component: () => import('../views/manager/user_messages.vue')
+    },
+    {
+      path: '/manager/projectMessages',
+      name: 'projectMessages',
+      component: () => import('../views/manager/project_messages.vue')
+    },
+    {
+      path: '/manager/loginMessages',
+      name: 'loginMessages',
+      component: () => import('../views/manager/user_login_messages.vue')
+    },
 
   ]
 })
