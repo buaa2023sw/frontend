@@ -53,11 +53,6 @@ export default {
                 <h1>开发 - {{ selectedProj.name }}</h1>
             </v-row>
 
-<!--            <v-row>-->
-<!--                <v-banner>current GitHub user: {{ my_ghusername }} ( {{ my_ghuseremail }} )</v-banner>-->
-<!--                <v-btn @click="modifyUser()">Modify</v-btn>-->
-<!--            </v-row>-->
-
             <v-row>
                 <v-col cols="6">
                     <h2>已绑定的代码存储库</h2>

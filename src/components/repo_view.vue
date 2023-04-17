@@ -43,8 +43,8 @@ export default {
 
 <template>
 <v-col cols="12">
-  <h1>Repositories - {{ bondedRepos[selectedRepo].user }} / {{ bondedRepos[selectedRepo].repo}}</h1>
-  <p>selectedRepo = {{ selectedRepo }}</p>
+  <h1>代码存储库 - {{ bondedRepos[selectedRepo].user }} / {{ bondedRepos[selectedRepo].repo}}</h1>
+  <p>选择一个代码存储库： = {{ selectedRepo }}</p>
   <v-tabs v-model="selectedRepo">
     <v-tab v-for="repository in bondedRepos" :key="repository.id">{{ repository.repo }}</v-tab>
   </v-tabs>
