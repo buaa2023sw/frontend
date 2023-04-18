@@ -1,745 +1,309 @@
 
 <template>
+  <div style="width: 100%; height: 100%;">
+      <div class="one">
+          <h1 style="position:absolute;left:5%;top:10%">项目</h1>
+      </div>
+      <div class="three">
+<v-data-table
+  :headers="headers"
+  :items="projectData"
+  :items-per-page="5"
+  show-expand
+  class="elevation-1"
+  item-key="name"
+  :search = search
+  :custom-filter="filterOnlyCapsText"
+>
+<template v-slot:top>
   <div style="width: 100%; height: 100%;position: relative;">
-    <div class="one">
-        <h1 style="position:absolute;left:5%;top:10%">任务列表</h1>
-    </div>
-  <div class="three">
-    <v-text-field
+      <v-text-field
         v-model="search"
-          label="搜索任务"
-          style="width:400px"
+        label="输入名称"
+        class="mx-4"
+        style="width:30%;display: inline-block"
       ></v-text-field>
       <v-btn
+      style="top:20%;right:2%;height:60%;width:10%;position: absolute"
     depressed
     color="primary"
-    style="position:absolute;top:1%;right:30%;height:4%;width:10%;"
     @click="setupDialog = true"
-    >  <v-icon
-    left
-  >     mdi-align-vertical-bottom
-  </v-icon>
-  图表展示</v-btn>
-      <v-btn
-    depressed
-    color="primary"
-    style="position:absolute;top:1%;right:17%;height:4%;width:10%;"
-    @click="checkMyTask"
-    v-if="checkMyFlag == false"
-    >查看我的任务</v-btn>
-    <v-btn
-    depressed
-    color="primary"
-    style="position:absolute;top:1%;right:17%;height:4%;width:10%;"
-    @click="checkAllTask"
-    v-else
-    >查看全部任务</v-btn>
-      <v-btn
-    depressed
-    color="primary"
-    style="position:absolute;top:1%;right:1%;height:4%;width:10%;"
-    @click="setupFather = true"
-    >创建任务</v-btn>
-  <v-container fluid style="position:relative" class="grey lighten-5">
-    <v-data-iterator
-      style="width:100%;position: absolute;"
-      :items="tasks"
-      item-key="name"
-      :items-per-page="4"
-      hide-default-footer
-    >
-      <template v-slot:default="{items, isExpanded, expand}">
-          <v-row
-            v-for="item in items"
-            :key="item.name"
-            cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-          >
-            <v-card style="width:100%;position: relative;">
-              <v-card-title>
-                <h4>{{ item.name }}</h4>
-              <v-switch
-              style="position: absolute;right: 1%;"
-              :input-value="isExpanded(item)"
-              class="pl-4 mt-0"
-              @change="(v) => expand(item, v)"></v-switch>
-              </v-card-title>
-              <!-- <v-switch
-                :input-value="isExpanded(item)"
-                :label="isExpanded(item) ? 'Expanded' : 'Closed'"
-                class="pl-4 mt-0"
-                @change="(v) => expand(item, v)"
-              ></v-switch> -->
-              <v-divider></v-divider>
-              <v-data-table
-              v-if="isExpanded(item)"
-              :search="search"
-              :headers="headers"
-              :items="item.sons"
-              :items-per-page="5"
-              class="elevation-1"
-               item-key='name'
-              >
-<!--    
-<template v-slot:[`item.remove`] ="{item}">
-   <v-btn depressed @click="handleDelete(item)">
-    移除用户
-  </v-btn>
+    >创建项目</v-btn>
+  </div>
 </template>
-<template v-slot:[`item.change`] ="{item}">
-   <v-btn depressed @click="handleChange(item)">
-    更改角色
-  </v-btn>
-</template> -->
-<template v-slot:[`item.alarm`]="{item}">
+    <template v-slot:expanded-item="{ headers, item }">
+    <td :colspan="headers.length">
+      {{ item.intro }}
+    </td>
+  </template>
+    <template v-slot:[`item.actions`] ="{ item }">
     <v-icon
       small
       class="mr-2"
-      @click="openAlarm(item)"
+      @click="handleEdit(item)"
     >
-    mdi-alarm
+      mdi-pencil
     </v-icon>
-</template>
-<template v-slot:[`item.action`]="{item, index}">
-  <v-menu offset-y>
-    <template v-slot:activator="{ on, attrs }">
-      <v-icon
+    <v-icon
       small
-      class="mr-2"
-      v-bind="attrs"
-      v-on= on
+      @click="handleDelete(item)"
     >
-    mdi-dots-horizontal
+      mdi-delete
     </v-icon>
-    </template>
-    <v-list>
-      <v-list-item>
-        <v-btn text @click="switchAction('编辑任务', index, item)">编辑任务</v-btn>
-      </v-list-item>
-      <v-list-item>
-        <v-btn text @click="switchAction('删除任务', index, item)">删除任务</v-btn>
-      </v-list-item>
-      <v-list-item>
-        <v-btn text @click="switchAction('完成任务', index, item)">完成任务</v-btn>
-      </v-list-item>
-      <v-list-item>
-        <v-dialog
-          v-model="dialog"
-          width="500"
-         >
-       <template v-slot:activator="{on}">
-        <v-btn text v-on="on" @click="switchAction('详细信息', index, item)">详细信息</v-btn>
-      </template>
-      <v-card>
-  <template slot="progress">
-    <v-progress-linear
-      color="deep-purple"
-      height="10"
-      indeterminate
-    ></v-progress-linear>
   </template>
-
-  <v-img
-    height="250"
-    src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
-  ></v-img>
-
-  <v-card-title>{{ temp.name }}</v-card-title>
-
-  <v-card-text>
-    <v-row
-      align="center"
-      class="mx-0"
-    >
-     <div>{{ temp.state }}</div>
-
-      <div class="grey--text ms-4">
-        贡献程度：{{ temp.contribute }}%
-      </div>
-    </v-row>
-
-    <div class="my-4 text-subtitle-1">
-      负责人:{{ temp.man }}
-    </div>
-
-    <div>{{ temp.intro }}</div>
-  </v-card-text>
-
-  <v-divider class="mx-4"></v-divider>
-
-  <!-- <v-card-title>Tonight's availability</v-card-title> -->
-<!-- 
-  <v-card-text>
-    <v-chip-group
-      v-model="selection"
-      active-class="deep-purple accent-4 white--text"
-      column
-    >
-      <v-chip>5:30PM</v-chip>
-
-      <v-chip>7:30PM</v-chip>
-
-      <v-chip>8:00PM</v-chip>
-
-      <v-chip>9:00PM</v-chip>
-    </v-chip-group>
-  </v-card-text> -->
-
-  <v-card-actions>
-    <v-btn
-      color="deep-purple lighten-2"
-      text
-      @click="dialog = false"
-    >
-      关闭
-    </v-btn>
-  </v-card-actions>
-</v-card>
-  </v-dialog>
-      </v-list-item>
-    </v-list>
-  </v-menu>
-</template>
-<template v-slot:foot>
-          <!-- <v-text-field
-            v-model="calories"
-            type="number"
-            label="Less than"
-          ></v-text-field> -->
-          <v-icon
-      large
-      class="mr-2"
-      @click="setupSon = true"
-      style="position:absolute;left: 1.5%;top:82%"
-    >
-    mdi-plus-box
-    </v-icon>
-    </template>
 </v-data-table>
-            </v-card>
-            <div class="divider"></div>
-        </v-row>
-      </template>
-    </v-data-iterator>
-  </v-container>
-  </div>
+      </div>
 
-  <el-dialog
-      title="创建任务"
-      :visible.sync="setupFather"
+    <el-dialog
+      title="创建项目"
+      :visible.sync="setupDialog"
        width="50%"
       :before-close="handleClose">
-      <el-form :label-position=left label-width="80px" :model="newFatherForm" ref="newFatherForm">
-  <el-form-item label="任务名称">
-    <el-input v-model="newFatherForm.name"></el-input>
-  </el-form-item>
+      <el-form :label-position=left label-width="80px" :model="form" ref="form">
+<el-form-item label="项目名称">
+  <el-input v-model="form.name"></el-input>
+</el-form-item>
+<el-form-item label="活动概述">
+  <el-input type="textarea" v-model="form.intro"  :autosize="{ minRows: 5, maxRows: 10}"></el-input>
+</el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
-  <el-button @click="setupFather = false">取 消</el-button>
-  <el-button type="primary" @click="newFather">确 定</el-button>
+  <el-button @click="setupDialog = false">取 消</el-button>
+  <el-button type="primary" @click="setupProject">确 定</el-button>
 </span>
 </el-dialog> 
 
+
+
 <el-dialog
-      title="创建子任务"
-      :visible.sync="setupSon"
+      title="编辑项目"
+      :visible.sync="editDialog"
        width="50%"
       :before-close="handleClose">
-      <el-form :label-position=left label-iwdth="80px" :model="newSonForm" ref="newSonForm">
-  <el-form-item label="子任务名称">
-    <el-input v-model="newSonForm.name"></el-input>
-  </el-form-item>
-  <el-form-item>
-    <p1>完成时间</p1>
-    <v-menu
-      v-model="menu"
-      :close-on-content-click="false"
-      :return-value.sync="sad"
-      transition="scale-transition"
-      offset-y
-      min-width="auto"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-combobox
-          v-model="newSonForm.time"
-          chips
-          small-chips
-          label="请选择日期"
-          prepend-icon="mdi-calendar"
-          readonly
-          v-bind="attrs"
-          v-on="on"
-        ></v-combobox>
-      </template>
-      <v-date-picker
-        v-model="newSonForm.time"
-        no-title
-        scrollable 
-      >
-        <v-spacer></v-spacer>
-        <v-btn
-          text
-          color="primary"
-          @click="menu = false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          text
-          color="primary"
-          @click="menu = false"
-        >
-          OK
-        </v-btn>
-      </v-date-picker>
-    </v-menu>
-  </el-form-item>
-  <el-form-item label="贡献程度">
-    <v-slider
-    int="Im a hint"
-    max="100"
-    min="0"
-    step="1"
-    thumb-label
-    v-model="newSonForm.contribute"
-    style="position:relative;bottom:-5px"
-  ></v-slider>
-  </el-form-item>
-  <p1 style="top:5%">负责人</p1>
-    <v-select
-        v-model = newSonForm.man
-        :items="allPerson"
-      ></v-select>
+      <el-form :label-position=left label-width="80px" :model="form" ref="form">
+<el-form-item label="项目名称">
+  <el-input v-model="form.name"></el-input>
+</el-form-item>
+<el-form-item label="活动概述">
+  <el-input type="textarea" v-model="form.intro"  :autosize="{ minRows: 5, maxRows: 10}"></el-input>
+</el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
-  <el-button @click="setupSon = false">取 消</el-button>
-  <el-button type="primary" @click="newSon">确 定</el-button>
+  <el-button @click="editDialog = false">取 消</el-button>
+  <el-button type="primary" @click="editProject">确 定</el-button>
 </span>
-</el-dialog> 
-
-<el-dialog
-      title="设置提醒时间"
-      :visible.sync="setupAlarm"
-       width="25%"
-      :before-close="handleClose">
-      <el-form :label-position=left label-width="80px" :model="newFatherForm" ref="newFatherForm" style="poition:relative">
-        <v-menu
-      v-model="menu1"
-      :close-on-content-click="false"
-      transition="scale-transition"
-      offset-y
-      min-width="auto"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-combobox
-        style="width:100%;"
-          v-model="newAlarmForm.date"
-          chips
-          small-chips
-          label="请选择日期"
-          prepend-icon="mdi-calendar"
-          readonly
-          v-bind="attrs"
-          v-on="on"
-        ></v-combobox>
-      </template>
-      <v-date-picker
-        v-model="newAlarmForm.date"
-        no-title
-        scrollable 
-      >
-        <v-spacer></v-spacer>
-        <v-btn
-          text
-          color="primary"
-          @click="menu1 = false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          text
-          color="primary"
-          @click="setAlarm()"
-        >
-          OK
-        </v-btn>
-      </v-date-picker>
-    </v-menu>
-
-    <v-menu
-      v-model="menu2"
-      :close-on-content-click="false"
-      transition="scale-transition"
-      offset-y
-      min-width="auto"
-      style="width:100%;"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-combobox    
-        style="width:100%;"
-          v-model="newAlarmForm.time"
-          chips
-          small-chips
-          label="请选择时间"
-          prepend-icon="mdi-calendar"
-          readonly
-          v-bind="attrs"
-          v-on="on"
-        ></v-combobox>
-      </template>
-      <v-time-picker
-          v-model="newAlarmForm.time"
-          :allowed-hours="allowedHours"
-          :allowed-minutes="allowedMinutes"
-          class="mt-4"
-          format="24hr"
-          scrollable
-  >
-        <v-spacer></v-spacer>
-        <v-btn
-          text
-          color="primary"
-          @click="menu2 = false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          text
-          color="primary"
-          @click="menu2 = false"
-        >
-          OK
-        </v-btn>
-      </v-time-picker>
-    </v-menu>
-</el-form>
-<span slot="footer" class="dialog-footer">
-  <el-button @click="setupAlarm = false">取 消</el-button>
-  <el-button type="primary" @click="newAlarm">确 定</el-button>
-</span>
-</el-dialog> 
-
-<el-dialog
-      title="编辑子任务"
-      :visible.sync="editTask"
-       width="50%"
-      :before-close="handleClose">
-      <el-form :label-position=left label-iwdth="80px" :model="newSonForm" ref="newSonForm">
-  <el-form-item label="子任务名称">
-    <el-input v-model="newSonForm.name"></el-input>
-  </el-form-item>
-  <el-form-item>
-    <p1>完成时间</p1>
-    <v-menu
-      v-model="menu"
-      :close-on-content-click="false"
-      :return-value.sync="sad"
-      transition="scale-transition"
-      offset-y
-      min-width="auto"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-combobox
-          v-model="newSonForm.time"
-          chips
-          small-chips
-          label="请选择日期"
-          prepend-icon="mdi-calendar"
-          readonly
-          v-bind="attrs"
-          v-on="on"
-        ></v-combobox>
-      </template>
-      <v-date-picker
-        v-model="newSonForm.time"
-        no-title
-        scrollable 
-      >
-        <v-spacer></v-spacer>
-        <v-btn
-          text
-          color="primary"
-          @click="menu = false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          text
-          color="primary"
-          @click="menu = false"
-        >
-          OK
-        </v-btn>
-      </v-date-picker>
-    </v-menu>
-  </el-form-item>
-  <el-form-item label="贡献程度">
-    <v-slider
-    int="Im a hint"
-    max="100"
-    min="0"
-    step="1"
-    thumb-label
-    v-model="newSonForm.contribute"
-    style="position:relative;bottom:-5px"
-  ></v-slider>
-  </el-form-item>
-  <p1 style="top:5%">负责人</p1>
-    <v-select
-        v-model = newSonForm.man
-        :items="allPerson"
-      ></v-select>
-</el-form>
-<span slot="footer" class="dialog-footer">
-  <el-button @click="editTask = false">取 消</el-button>
-  <el-button type="primary" @click="editSon">确 定</el-button>
-</span>
-</el-dialog> 
-
-  </div>
+</el-dialog>    
+</div>
 </template>
+
+<!-- <script>
+import { getGameList } from '../../api'
+export default {
+created () {
+ this.get_game()
+},
+methods: {
+ jump: function (index) {
+   this.$router.push({path: '/main/boxscore', query: {id: index['id']}})
+ },
+ get_game () {
+   getGameList().then(res => {
+     res['game_details'].forEach(element => {
+       // console.log(element)
+       let temp = []
+       temp['time'] = element['time'].slice(0, 10) + '-' + element['time'].slice(11, 16)
+       temp['score'] = element['host_score'] + ' : ' + element['guest_score']
+       temp['host'] = element['host_name_cn']
+       temp['guest'] = element['guest_name_cn']
+       temp['location'] = element['host_gym']
+       temp['id'] = element['id']
+       this.gamedata.push(temp)
+
+       this.factGameData = this.gamedata
+       if (!this.teamNames.includes(temp['host'])) {
+         this.teamNames.push(temp['host'])
+         this.options.push({value: temp['host'], label: temp['host']})
+       }
+       if (!this.teamNames.includes(temp['guset'])) {
+         this.teamNames.push(temp['guest'])
+         this.options.push({value: temp['guest'], label: temp['guest']})
+       }
+       if (!this.hostTeamNames.includes(temp['host'])) {
+         this.hostTeamNames.push(temp['host'])
+         this.hostTeams.push({text: temp['host'], value: temp['host']})
+       }
+       if (!this.guestTeamNames.includes(temp['guest'])) {
+         this.guestTeamNames.push(temp['guest'])
+         this.guestTeams.push({text: temp['guest'], value: temp['guest']})
+       }
+       if (!this.dates.includes(temp['time'])) {
+         this.dates.push({text: temp['time'], value: temp['time']})
+       }
+     })
+   })
+   this.options.push({value: 'null', label: '默认'})
+   console.log(this.options)
+ },
+ filterHandler (value, row, column) {
+   this.clearFilter()
+   const property = column['property']
+   return row[property] === value
+ },
+ clearFilter () {
+   this.$refs.filterTable.clearFilter()
+ },
+ demo (value) {
+   if (value === 'null') {
+     this.factGameData = this.gamedata
+   } else {
+     this.factGameData = []
+     for (var i = 0; i < this.gamedata.length; i++) {
+       if (this.gamedata[i]['host'] === value || this.gamedata[i]['guest'] === value) {
+         this.factGameData.push(this.gamedata[i])
+       }
+     }
+   }
+ }
+}, -->
+
 
 <script>
-// import { addTask,showTaskList, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask } from '@/api/user';
+import { watchAllProject,  newProject, modifyProject, deleteProject} from '@/api/user'
+
 
 export default {
-inject: ['user', 'selectedProj'],
-created: () => {
-  getAll();
-},
-data: () => ({
-  dialog: false,
-  temp: {},
-  checkMyFlag: false,
-  search: '',
-  setupFather: false,
-  setupSon: false,
-  setupAlarm: false,
-  detailFlag: false,
-  editTask: false,
-  menu1: false,
-  menu2: false,
-  sonContribute: 0,
-  myName: "罗本",
-  options: ['删除任务', "编辑任务", "详细信息", "完成任务"],
-  picker: 
-  (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-  newFatherForm: {
-    name: ''
+  inject: ['user', 'selectedProj'],
+  name: 'AllProject',
+  created () {
+    this.get_project()
   },
-  allPerson: [
-    '罗本',
-    '里贝里',
-    '石子瑄',
-    'zhaohuiya',
-    'ghy'
-  ],
-  newSonForm: {
-    name: '',
-    time: '',
-    contribute: '',
-    state: '',
-    man: ''
-  },
-  newAlarmForm: {
-      taskID: '',
-      date: '',
-      time: ''
-    },
-  headers: [
-      {
-        text: "名称",
-        align: 'start',
-        sortable: false,
-        value: 'name',
+  data() {
+    return {
+      headers: [
+        {
+          text: '名称',
+          align: 'start',
+          sortable: false,
+          value: 'name',
+        },
+        { text: '状态', value: 'state' },
+        { text: '创建时间', value: 'time', sortable: true},
+        { text: '负责人', value: 'owner' },
+        { text: '', value: 'actions', sortable: false},
+        { text: '', value: 'data-table-expand' },
+      ],
+    projectData: [{
+        "name": 'ppppp1',
+        "state": '进行中',
+        "time": "2002-12-18",
+        "owner": 'szx',
+        "intro": 'very good'
       },
-      { text: '截止时间', value: 'time' },
-      { text: "贡献程度(%)", value: "contribute"},
-      { text: '状态', value: 'state'},
-      { text: '负责人', value: 'man'},
-      { text: '', value: "alarm", sortable: false},
-      { text: '', value: 'action', sortable: false}
-    ],
-  tasks: [
-    {
-      name: '任务一',
-      sons: [
-          {
-              name: '子任务一',
-              time: "2022-3-4",
-              contribute: "10",
-              state: "进行中",
-              man: "罗本",
-              intro: " 2014年,罗本荣膺荷兰年度最佳运动员。 罗本代表荷兰出战三届世界杯三届欧洲杯,连续三届世界杯取得进球,连续六届大赛取得助攻,是荷兰大赛总助攻王、荷兰世界杯历史第二射手。"
-          },
-          {
-              name: '子任务二',
-              time: " 2022-3-4",
-              contribute: "10",
-              state: "进行中",
-              man: "里贝里",
-              intro: "内切"
-          },
-      ]
-    },
-    {
-      name: '任务二',
-      sons: [
       {
-              name: '子任务一',
-              time: "2022-3-4",
-              contribute: "10",
-              state: "进行中",
-              man: "罗本",
-              intro: "内切"
-          },
-          {
-              name: '子任务二',
-              time: "2022-3-4",
-              contribute: "10",
-              state: "进行中",
-              man: "里贝里",
-              intro: "内切"
-          },
-      ]
-    },
-  ]
-}),
-
-methods: {
-  getAll() {
-    // showTaskList({userId: this.user.id, projectId: this.selectedProj.id}).then(
-    //   res => {
-
-    //   }
-    // ) 
-  },
-  newFather() {
-    // newFather()
-    this.setupFather = false;
-    // addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id});
-    this.newFatherForm.name = '';
-  },
-  editSon() {
-    this.editTask = false;
-    this.newSonForm.contribute = 0;
-    this.newSonForm.name = '';
-    this.newSonForm.man = '';
-    this.newSonForm.time = '';
-    // modifyTaskContent(userId: this.user.id, taskId: )
-  },
-  newSon() {
-    // newSon()
-    this.setupSon = false;
-    // addSubTask(userId: this.user.id, deadline: '', contribute:this.newSonForm.contribute, 
-    // managerId: this.newSonForm. )
-  },
-  handleClose(done) {
-    this.$confirm('确认关闭？')
-      .then(()=> {
-        done();
-      })
-      .catch(() => {});
-  },
-  checkMyTask() {
-    //checkMyTask
-    console.log(this.checkMyFlag);
-    this.checkMyFlag = true;
-    //watchMyTask
-  },
-  checkAllTask() {
-    this.checkMyFlag = false;
-  },
-  newAlarm() {
-    // notice({taskId: this.temp.id, deadline: });
-    console.log(this.newAlarmForm.date);
-    console.log(this.newAlarmForm.time);
-    this.setupAlarm = false;
-    //
-  },
-  switchAction(action, index, item) {
-      this.temp = item
-      if (action == "删除任务") {
-      this.handleDelete(index);
-      } else if (action == "编辑任务") { 
-        this.newSonForm.contribute = item['contribute'];
-        this.newSonForm.name = item['name'];
-        this.newSonForm.time = item['time'];
-        this.newSonForm.man = item['man'];
-        this.editTask = true;
-      } else if (action == "详细信息") {
-        // this.detailFlag = true;
-      } else {
-         this.handleComplete(index);
+        "name": 'ppppp2',
+        "state": '进行中',
+        "time": "2002-12-17",
+        "owner": 'szx',
+        'intro': 'very bad'
+      }],
+      search: '',
+      setupDialog: false,
+      editDialog: false,
+      form: {
+        name: '',
+        intro: '',
+        id: ''
       }
+    }
   },
-  handleDelete(index) {
-    this.$confirm('此操作将移除该任务, 是否继续?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(() => {
-      this.$message({
-        type: 'success',
-        message: '删除成功!'
+  methods: {
+    filterOnlyCapsText (value, search, item) {
+      console.log(value);
+      var s = item['name'];
+        return s != null &&
+      search != null &&
+      typeof s=== 'string' &&
+      s.toString().toLocaleUpperCase().indexOf(search.toLocaleUpperCase()) !== -1
+    },
+    get_project() {
+      console.log("get_project");
+      watchAllProject({userId: this.user.id}).then(
+        res => {
+          console.log(res['data']['data']);
+          this.projectData = res['data']['data'];
+          console.log(this.projectData);
+        }
+      )
+    },
+    handleEdit(row) {
+      this.form.id = row.id;
+      this.form.name = row.name;
+      this.form.intro = row.intro;
+      this.editDialog = true;
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(()=> {
+          done();
+        })
+        .catch(() => {});
+    },
+    handleDelete(row) {
+      this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+        deleteProject({projectId: this.selectedProj.id, userId: this.user.id});
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
       });
-     // deletePerson(row.name);
-    }).catch(() => {
-      this.$message({
-        type: 'info',
-        message: '已取消删除'
-      });          
-    });
-  },
-  handleComplete(index) {
-    this.$confirm('确定已经完成任务?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(() => {
-      this.$message({
-        type: 'success',
-        message: '已完成!'
-    }).catch(() => {        });
-     // deletePerson(row.name);
-
-      this.$message({
-        type: 'info',
-        message: '已取消'
-      });          
-    });
-  },
-  openAlarm(item) {
-    this.temp = item;
-    this.setupAlarm = true;
+    },
+    setupProject() {
+      // console.log(this.search);
+      // console.log("submit");
+      this.setupDialog = false;
+      newProject(newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}));
+      // console.log("submit");
+      // console.log(this.form)
+      this.form =  {
+        name: '',
+        intro: ''
+      }
+      this.get_project();
+    },
+    editProject() {
+      this.editDialog = false;
+      modifyProject({projectId: this.selected.id, projectName: this.form.name, projectIntro: this.form.intro})
+      // editProject(this.form);
+    }
   }
-}
 }
 </script>
 
 <style scoped>
-.one {
-    height: 10%;
-    position: relative;    
-}
-.two {
-    height: 10%;    
-}
-.three {
-    position: absolute;
-    left:5%;
-    right: 5%;
-    height: 80%;    
-}
-.xiangmu {
-    position: absolute;
-    left:20%;
-}
-.divider {
-  position:relative;
-  height: 30px;
-  width: 30px;
-}
+  .one {
+      height: 10%;
+      position: relative;    
+  }
+  .two {
+      height: 10%;    
+  }
+  .three {
+      position: absolute;
+      left:5%;
+      right: 5%;
+      height: 80%;    
+  }
+  .xiangmu {
+      position: absolute;
+      left:20%;
+  }
 </style>

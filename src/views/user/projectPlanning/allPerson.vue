@@ -77,7 +77,7 @@
       style="position:relative">
       <el-form :label-position=left label-width="80px" :model="form" ref="form">
 <el-form-item label="用户id">
-  <el-input v-model="this.form.id" style="width: 400px;"></el-input>
+  <el-input v-model="form.id" style="width: 400px;"></el-input>
 </el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
@@ -120,7 +120,8 @@ import { showPersonList, removeMember, modifyRole, addMember } from '@/api/user'
 import project_messagesVue from '@/views/manager/project_messages.vue'
 export default {
   name: 'AllProject',
-  inject: ['user', 'selectedProj'],
+  inject: {user: {default: null},
+           selectedProj: {default: null}},
   created () {
     this.getPersonList()
   },
@@ -212,11 +213,21 @@ export default {
       });
     },
     setupPerson() {
-      addMember({projectId: this.selectedProj.id, personId: this.form.id, userId: this.user.id})
+      console.log(this.form);
+      console.log(this.selectedProj);
+      addMember({projectId: this.selectedProj.id, personId: this.form.id, userId: this.user.id}).then(
+        res => {
+          console.log(res);
+        }
+      );
       this.setupDialog = false;
     },
     changeRole() {
-      modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.form.role, personId: this.form.id});
+      modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.form.role, personId: this.form.id}).then(
+        res => {
+          console.log(res);
+        }
+      );
       this.changeDialog = false;
     },
     getColor(role) {
