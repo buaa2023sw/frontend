@@ -20,6 +20,10 @@ const router = new VueRouter({
       component: () => import('../views/user/projectPlanning/allPerson.vue')
     },
     {
+      path:'/progressPic',
+      component: () => import('../views/user/projectPlanning/progressPic.vue')
+    },
+    {
       path: '/home',
       name: 'home',
       component: () => import('../views/Home.vue'),

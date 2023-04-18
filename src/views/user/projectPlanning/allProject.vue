@@ -271,8 +271,6 @@ export default {
       // console.log("submit");
       this.setupDialog = false;
       newProject(newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}));
-      // console.log("submit");
-      // console.log(this.form)
       this.form =  {
         name: '',
         intro: ''
