@@ -83,9 +83,12 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data () {
     return {
+      msg: null,
+      data: "{\"managerId\": 1}",
       search: '',
       headers: [
         {
@@ -169,7 +172,15 @@ export default {
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
     showUserMessages() { // TODO
-
+      axios.post("/api/management/showUsers", JSON.parse(this.data))
+          .then((response) => {
+            console.log(response)
+            this.userMessages = response.data.users
+          })
+          .catch((err) => {
+            console.error(err);
+            this.userMessages = null
+          })
     },
     // 打开重置用户密码窗口
     openResetPasswordDialog(item) {

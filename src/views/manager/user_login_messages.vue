@@ -20,9 +20,12 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data () {
     return {
+      msg: null,
+      data: "{\"managerId\": 1}",
       search: '',
       headers: [
         {
@@ -81,9 +84,9 @@ export default {
       */
       //window.alert('您没有查看权限')
       //this.loginMessages = []
-      this.axios.get('/api/manager/showUsersLogin', {params: {}})
+      axios.post('/api/manager/showUsersLogin', JSON.parse(this.data))
           .then((response) => {
-            if (response.errcode !== 1) {
+            if (response.errcode !== 0) {
               window.alert('您没有查看权限');
             } else {
               console.log(response.data.loginMessages);
