@@ -1,3 +1,4 @@
+
 <template>
   <div style="width: 100%; height: 100%;">
       <div class="one">
@@ -7,7 +8,7 @@
 <v-data-table
   :headers="headers"
   hide-default-header
-  :items="projectData"
+  :items="personData"
   :items-per-page="5"
   class="elevation-1"
   item-key='name'
@@ -56,12 +57,12 @@
     </div>
   </template>
   <template v-slot:[`item.remove`] ="{item}">
-     <v-btn depressed @click="handleDelete(item)">
+     <v-btn v-if="item.role != '负责人'" depressed @click="handleDelete(item)">
       移除用户
     </v-btn>
   </template>
   <template v-slot:[`item.change`] ="{item}">
-     <v-btn depressed @click="handleChange(item)">
+     <v-btn v-if="item.role != '负责人'" depressed @click="handleChange(item)">
       更改角色
     </v-btn>
   </template>
@@ -115,14 +116,13 @@
 </template>
 
 <script>
-// import newProject from '@/api/user.js'
-// import getProject from '@/api/user.js'
-// import deleteProject from '@/api/user.js'
-
+import { showPersonList, removeMember, modifyRole, addMember } from '@/api/user'
+import project_messagesVue from '@/views/manager/project_messages.vue'
 export default {
   name: 'AllProject',
+  inject: ['user', 'selectedProj'],
   created () {
-    this.get_project()
+    this.getPersonList()
   },
   data() {
     return {
@@ -133,20 +133,25 @@ export default {
           sortable: false,
           value: 'icon',
         },
-        { text: '介绍', value: 'people' },
+        { text: '介绍', value: 'personName' },
         { text: '移除', value: "remove"},
         { text: '更改', value: 'change'},
       ],
-    projectData: [{
-        "icon": '',
-        'name': '梅西',
-        "role": '管理员'
-      },
-      {
-        "icon": '',
-        'name': 'C罗',
-        "role": '开发人员'
-      }],
+    personData: [],
+    //     "icon": '',
+    //     'name': '梅西',
+    //     "role": '管理员'
+    //   },
+    //   {
+    //     "icon": '',
+    //     'name': 'C罗',
+    //     "role": '开发人员'
+    //   },
+    // {
+    //   "icon": '', 
+    //   "name": '罗本',
+    //   'role': '负责人'
+    // }],
       search: '',
       setupDialog: false,
       changeDialog: false,
@@ -157,6 +162,13 @@ export default {
     }
   },
   methods: {
+    getPersonList() {
+      showPersonList({projectId: this.selectedProj.id, userId: this.user.id}).then(
+        res => {
+          this.personData = res;
+        }
+      );
+    },
     filterName(value, search, item) {
       console.log('123');
       return  item == item && value != null &&
@@ -164,7 +176,7 @@ export default {
         typeof value === 'string' &&
         item.name.toString().indexOf(search) !== -1
     },
-    get_project() {
+    getAllPerson() {
       // getProject().then(res => {
       //   // this.projectData = res;
       // })
@@ -186,6 +198,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        removeMember({projectId: this.selectedProj.id, personId: row.id, userId: this.user.id});
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -199,23 +212,26 @@ export default {
       });
     },
     setupPerson() {
-      //setupPerson(this.form.id);
+      addMember({projectId: this.selectedProj.id, personId: this.form.id, userId: this.user.id})
       this.setupDialog = false;
     },
     changeRole() {
-      //changeRole(this.form);
+      modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.form.role, personId: this.form.id});
       this.changeDialog = false;
     },
     getColor(role) {
       if (role == '开发人员') {
         return 'orange';
-      } else {
+      } else if (role == '管理员') {
         return 'green';
+      } else {
+        return 'blue';
       }
     }
   }
 }
 </script>
+
 
 <style scoped>
   .one {
