@@ -18,5 +18,14 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       echarts: 'echarts/dist/echarts.js', // 支持echarts绘图
     }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://114.116.219.29:8000',
+        changeOrigin: true,
+        rewrite: path => path
+      }
+    }
   }
 })
