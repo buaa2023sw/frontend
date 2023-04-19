@@ -83,9 +83,11 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data () {
     return {
+      msg: null,
       search: '',
       headers: [
         {
@@ -121,21 +123,21 @@ export default {
       userMessages: [
         {
           name: 'user1',
-          userId: '1',
+          id: '1',
           email: '123@qq.com',
           registerTime: '2023.1.1',
           status: 'A',
         },
         {
           name: 'faskfl',
-          userId: '2',
+          id: '2',
           email: 'gers@qq.com',
           registerTime: '2023.2.1',
           status: 'B',
         },
         {
           name: 'saga',
-          userId: '3',
+          id: '3',
           email: '53@qq.com',
           registerTime: '2023.3.1',
           status: 'A',
@@ -168,12 +170,25 @@ export default {
   },
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
-    showUserMessages() { // TODO
-
+    // 显示用户信息
+    showUserMessages() {
+      let data = JSON.stringify({managerId: 1})
+      console.log(data)
+      axios.post("/api/management/showUsers", JSON.parse(data))
+          .then((response) => {
+            console.log(response)
+            this.userMessages = response.data.users
+          })
+          .catch((err) => {
+            console.error(err);
+            this.userMessages = null
+          })
     },
     // 打开重置用户密码窗口
     openResetPasswordDialog(item) {
       this.userResetPasswordDialogMessage = item
+      console.log("111")
+      console.log(this.userResetPasswordDialogMessage)
       this.showResetPassword = true
     },
     // 关闭重置用户密码窗口
@@ -182,10 +197,18 @@ export default {
       this.userResetPasswordDialogMessage = ''
     },
     // 重置用户密码
-    resetPassword() { // TODO
-      const userId = this.userResetPasswordDialogMessage.userId
-      console.log(userId)
-      // TODO 跟后端交互
+    resetPassword() {
+      let userId = this.userResetPasswordDialogMessage.id
+      let data = JSON.stringify({managerId: 1, userId: userId})
+      console.log(data)
+      axios.post("/api/management/resetUserPassword", JSON.parse(data))
+          .then((response) => {
+            console.log(response.data)
+            window.alert("成功将用户" + response.data.name + "的密码修改为" + response.data.resetPassword)
+          })
+          .catch((err) => {
+            console.error(err);
+          })
       this.showResetPassword = false
       this.userResetPasswordDialogMessage = ''
     },
