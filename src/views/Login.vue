@@ -7,10 +7,10 @@
             <v-form @submit.prevent="login">
               <v-row>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="用户名" v-model="inputUserName" outlined dense></v-text-field>
+                  <v-text-field label="用户名或邮箱" v-model="userNameOrEmail" outlined dense></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="密码" v-model="inputUserPwd" outlined dense type="password"></v-text-field>
+                  <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
                   <v-btn :disabled="busy" color="blue darken-2" class="white--text" block @click="login">登录</v-btn>
@@ -29,8 +29,9 @@
 </template>
 
 <script>
+import util from './util'
 import Cookies from 'js-cookie'
-import axios from "axios";
+import axios from "axios"
 
 if (Cookies.get('user') !== undefined) {
   alert('您已处于登录状态');
@@ -42,75 +43,41 @@ export default {
   data() {
     return {
       busy : false,
-      inputUserName: null,
-      inputUserPwd: null
+      userNameOrEmail: '',
+      password: '',
     }
   },
   methods: {
     async login() {
-      // this.busy = true
-      console.log(JSON.stringify({
-        id: 1,
-        name: 'TrickEye',
-        email: 'trickeye@buaa.edu.cn',
-        projects: [{
-          id: 1,
-          name: 'Project1'
-        }, {
-          id: 2,
-          name: 'Project2'
-        }]
-      }))
-      let inputUserName = this.inputUserName
-      let inputUserPwd = this.inputUserPwd
-      let data = "{\"username\":" + inputUserName + ", \"password\":" + inputUserPwd + "}"
-      console.log(data)
-      axios.post("/api/management/showUsers", JSON.parse(data))
+      if(!util.trim(this.userNameOrEmail) || !util.trim(this.password) ){
+        window.alert('用户名或邮箱、密码不能为空');
+        return;
+      }
+      axios.post("/api/login", {
+        userNameOrEmail: this.userNameOrEmail,
+        password: this.password
+      })
           .then((response) => {
-            console.log(response)
-            this.userMessages = response.data.users
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              window.alert('用户不存在')
+            } else if (response.data.errcode === 2) {
+              window.alert('密码错误')
+            } else if (response.data.errcode === 3) {
+              window.alert('您的账户目前已被禁用')
+            } else {
+              Cookies.set('user', JSON.stringify(response.data.data))
+              window.alert('登录成功')
+              if (response.data.data.status === 'C') {
+                window.location.href = '/manager'
+              } else {
+                window.location.href = '/home'
+              }
+            }
           })
           .catch((err) => {
             console.error(err);
-            this.userMessages = null
           })
-
-
-
-      setTimeout(() => {
-        this.busy = false
-        if (inputUserEmail === 'trickeye@buaa.edu.cn') {
-          Cookies.set('user', JSON.stringify({
-            id: 1,
-            name: 'TrickEye',
-            email: 'trickeye@buaa.edu.cn',
-            projects: [{
-              id: 1,
-              name: 'Project1'
-            }, {
-              id: 2,
-              name: 'Project2'
-            }]
-          }))
-          window.location.href = '/home'
-        } else if (inputUserEmail === '20373866@buaa.edu.cn') {
-          Cookies.set('user', JSON.stringify({
-            id: 1,
-            name: '20373866',
-            email: '20373866@buaa.edu.cn',
-            projects: [{
-              id: 1,
-              name: 'Project1'
-            }, {
-              id: 3,
-              name: 'Project3'
-            }]
-          }))
-          window.location.href = '/home'
-        } else {
-          alert('wrong!')
-        }
-      }, 1500)
     }
   }
 }

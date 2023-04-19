@@ -29,6 +29,7 @@
 
 <script>
 import axios from "axios";
+import util from "@/views/util";
 
 export default {
   name: "Register",
@@ -42,27 +43,37 @@ export default {
   },
   methods: {
     register() {
-      let data = JSON.stringify({
+      if(!util.trim(this.username) || !util.trim(this.email)
+          || !util.trim(this.password) || !util.trim(this.confirmPassword)){
+        window.alert('请完整填写所有注册信息');
+        return;
+      }
+      if (this.password !== this.confirmPassword) {
+        window.alert("请保证密码和确认密码的一致性")
+        return
+      }
+      axios.post("/api/register", {
         username: this.username,
         email: this.email,
         password: this.password
       })
-      // console.log(data)
-      axios.post("/api/register", JSON.parse(data))
           .then((response) => {
-            console.log(response)
-            this.userMessages = response.data.users
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              window.alert('发生未知错误，无法注册，请联系管理员')
+            } else if (response.data.errcode === 2) {
+              window.alert('该邮箱已被使用')
+            } else if (response.data.errcode === 3) {
+              window.alert('该用户名已被使用')
+            } else {
+              window.alert('注册成功')
+              window.location.href = '/login'
+            }
           })
           .catch((err) => {
-            console.error(err);
-            this.userMessages = null
+            console.error(err)
+            window.alert('发生未知错误，无法注册，请联系管理员')
           })
-      console.log('ok, I know your email is ' + this.inputUserEmail +
-          ' and your user pwd is ' + this.inputUserPwd +
-          ' and your confirm pwd is ' + this.confirmUserPwd)
-      console.log('but I dont want to process it now.')
-      console.log('Go back!')
-      window.location.href = '/login'
     }
   }
 }

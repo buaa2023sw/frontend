@@ -84,7 +84,7 @@ export default {
       */
       //window.alert('您没有查看权限')
       //this.loginMessages = []
-      axios.post('/api/manager/showUsersLogin', JSON.parse(this.data))
+      axios.post('/api/login', {})
           .then((response) => {
             if (response.errcode !== 0) {
               window.alert('您没有查看权限');

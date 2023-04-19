@@ -1,6 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+//import { defineAsyncComponent } from 'vue'
+//const ChatPage = defineAsyncComponent(() => import('../views/chat/ChatPage.vue'))
+
+
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -62,11 +66,20 @@ const router = new VueRouter({
       path: '/manager/loginMessages',
       name: 'loginMessages',
       component: () => import('../views/manager/user_login_messages.vue')
-    },{
+    },
+    {
       path: '/hidden/corner',
       name: 'hidden corner',
       component: () => import('../views/dev/hidden_corner.vue')
+    },
+      /*
+    {
+      path: '/user/chatRoom',
+      name: 'chatRoom',
+      component: ChatPage
     }
+
+       */
   ]
 })
 
