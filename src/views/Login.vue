@@ -13,11 +13,11 @@
                   <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-btn :disabled="busy" color="blue darken-2" class="white--text" block @click="login">登录</v-btn>
+                  <v-btn color="blue darken-2" class="white--text" block @click="login">登录</v-btn>
                 </v-col>
                 <v-col cols="12" class="text-center">
                   <span class="caption grey--text text--darken-1">没有账号？</span>
-                  <v-btn :disabled="busy" color="transparent" class="grey--text text--darken-1" text @click="$router.push('/register')">注册</v-btn>
+                  <v-btn color="transparent" class="grey--text text--darken-1" text @click="$router.push('/register')">前往注册</v-btn>
                 </v-col>
               </v-row>
             </v-form>
@@ -42,7 +42,6 @@ export default {
   name: "login",
   data() {
     return {
-      busy : false,
       userNameOrEmail: '',
       password: '',
     }
@@ -69,9 +68,9 @@ export default {
               Cookies.set('user', JSON.stringify(response.data.data))
               window.alert('登录成功')
               if (response.data.data.status === 'C') {
-                window.location.href = '/manager'
+                //window.location.href = '/manager'
               } else {
-                window.location.href = '/home'
+                //window.location.href = '/home'
               }
             }
           })

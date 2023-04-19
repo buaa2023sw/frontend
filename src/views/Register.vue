@@ -1,30 +1,37 @@
 <template>
-  <v-app>
-    <v-container>
-      <v-row>
-        <v-col cols="3" class=""></v-col>
-        <v-col cols="6">
-          <v-text-field label="用户名" v-model="username"></v-text-field>
-          <v-text-field label="邮箱" v-model="email"></v-text-field>
-          <v-text-field label="密码" type="password" v-model="password"></v-text-field>
-          <v-text-field label="确认密码" type="password" v-model="confirmPassword"></v-text-field>
-        </v-col>
-        <v-col cols="3" class=""></v-col>
-      </v-row>
-      <v-row class="">
-        <v-col cols="3"></v-col>
-        <v-col cols="2">
-          <v-btn block @click="register()">register</v-btn>
-        </v-col>
-        <v-col cols="2"></v-col>
-        <v-col cols="2">
-          <v-btn block link to="/login">have account?</v-btn>
-        </v-col>
-        <v-col cols="3"></v-col>
-      </v-row>
-    </v-container>
-
-  </v-app>
+  <v-container fluid>
+    <v-row align="center" justify="center" class="blue lighten-5" style="min-height: calc(100vh - 64px);">
+      <v-col cols="12" sm="8" md="6" lg="4" class="d-flex justify-center">
+        <v-card class="elevation-12" style="max-width: 500px;">
+          <v-card-text class="mt-4 mb-4">
+            <v-form @submit.prevent="register">
+              <v-row>
+                <v-col cols="12" class="mb-3">
+                  <v-text-field label="用户名" v-model="username" outlined dense></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-text-field label="邮箱" v-model="email" outlined dense></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-text-field label="确认密码" v-model="confirmPassword" outlined dense type="password"></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-btn color="blue darken-2" class="white--text" block @click="register">注册账号</v-btn>
+                </v-col>
+                <v-col cols="12" class="text-center">
+                  <span class="caption grey--text text--darken-1">已有账号？</span>
+                  <v-btn color="transparent" class="grey--text text--darken-1" text @click="$router.push('/login')">前往登录</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
