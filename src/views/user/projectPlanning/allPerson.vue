@@ -57,12 +57,12 @@
     </div>
   </template>
   <template v-slot:[`item.remove`] ="{item}">
-     <v-btn v-if="item.peopleJob != '负责人'" depressed @click="handleDelete(item)">
+     <v-btn v-if="item.peopleJob != 'C'" depressed @click="handleDelete(item)">
       移除用户
     </v-btn>
   </template>
   <template v-slot:[`item.change`] ="{item}">
-     <v-btn v-if="item.peopleJob != '负责人'" depressed @click="handleChange(item)">
+     <v-btn v-if="item.peopleJob != 'C'" depressed @click="handleChange(item)">
       更改角色
     </v-btn>
   </template>
