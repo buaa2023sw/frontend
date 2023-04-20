@@ -63,7 +63,7 @@
   </template>
   <template v-slot:[`item.change`] ="{item}">
      <v-btn v-if="item.peopleJob != 'C'" depressed @click="handleChange(item)">
-      更改角色
+      更改角色 
     </v-btn>
   </template>
 </v-data-table>
@@ -95,7 +95,7 @@
       <template v-slot:title>
         <div>请选择你要为该成员分配的<strong>角色</strong></div>
       </template>
-      <v-radio-group v-model="radioGroup" style="top:50px;position: absolute;">
+      <v-radio-group v-model="changeRoleForm.role" style="top:50px;position: absolute;">
       <v-radio value="管理员">
         <template v-slot:label>
           <div> <strong class="success--text">管理员</strong></div>
@@ -137,8 +137,10 @@ export default {
         { text: '移除', value: "remove"},
         { text: '更改', value: 'change'},
       ],
+      inject: {'user': {defualt: null},
+               'selectedProj': {defualt: null}},
       selectedProj: {
-        id: "17"
+        id: "12"
       }, 
       user: {
         id: "1"
@@ -188,6 +190,7 @@ export default {
         item['peopleName'].toString().indexOf(search) !== -1
     },
     handleChange(row) {
+      console.log('123');
       this.changeRoleForm.id = row.peopleId;
       this.changeDialog = true;
       console.log(this.changeRoleForm);
@@ -205,7 +208,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        removeMember({projectId: this.selectedProj.id, personId: row.peopleId, userId: this.user.id});
+        removeMember({projectId: this.selectedProj.id, personId: row.peopleId, userId: this.user.id}).then(
+          res => {
+            console.log(res);
+          }
+        );
         this.getPersonList();
         this.$message({
           type: 'success',
