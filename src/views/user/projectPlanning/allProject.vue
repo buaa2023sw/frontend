@@ -8,10 +8,12 @@
 <v-data-table
   :headers="headers"
   :items="projectData"
+  :single-expand="true"
   :items-per-page="5"
   show-expand
+  :expanded.sync="expanded"
   class="elevation-1"
-  item-key="name"
+  item-key="projectId"
   :search = search
   :custom-filter="filterOnlyCapsText"
 >
@@ -33,7 +35,7 @@
 </template>
     <template v-slot:expanded-item="{ headers, item }">
     <td :colspan="headers.length">
-      {{ item.intro }}
+      {{ item.projectIntro }}
     </td>
   </template>
     <template v-slot:[`item.actions`] ="{ item }">
@@ -50,6 +52,9 @@
     >
       mdi-delete
     </v-icon>
+  </template>
+  <template v-slot:[`item.state`] ="{ item }">
+    {{ transform(item.state )}}
   </template>
 </v-data-table>
       </div>
@@ -184,28 +189,30 @@ export default {
           text: '名称',
           align: 'start',
           sortable: false,
-          value: 'name',
+          value: 'projectName',
         },
         { text: '状态', value: 'state' },
-        { text: '创建时间', value: 'time', sortable: true},
-        { text: '负责人', value: 'owner' },
+        { text: '创建时间', value: 'deadline', sortable: true},
+        { text: '负责人', value: 'managerName' },
         { text: '', value: 'actions', sortable: false},
         { text: '', value: 'data-table-expand' },
       ],
-    projectData: [{
-        "name": 'ppppp1',
-        "state": '进行中',
-        "time": "2002-12-18",
-        "owner": 'szx',
-        "intro": 'very good'
-      },
-      {
-        "name": 'ppppp2',
-        "state": '进行中',
-        "time": "2002-12-17",
-        "owner": 'szx',
-        'intro': 'very bad'
-      }],
+    projectData: [
+      // {
+      //   "name": 'ppppp1',
+      //   "state": '进行中',
+      //   "time": "2002-12-18",
+      //   "owner": 'szx',
+      //   "intro": 'very good'
+      // },
+      // {
+      //   "name": 'ppppp2',
+      //   "state": '进行中',
+      //   "time": "2002-12-17",
+      //   "owner": 'szx',
+      //   'intro': 'very bad'
+      // }
+    ],
       search: '',
       setupDialog: false,
       editDialog: false,
@@ -213,13 +220,14 @@ export default {
         name: '',
         intro: '',
         id: ''
-      }
+      },
+      expanded: []
     }
   },
   methods: {
     filterOnlyCapsText (value, search, item) {
       console.log(value);
-      var s = item['name'];
+      var s = item['projectName'];
         return s != null &&
       search != null &&
       typeof s=== 'string' &&
@@ -229,16 +237,16 @@ export default {
       console.log("get_project");
       watchAllProject({userId: this.user.id}).then(
         res => {
-          console.log(res['data']['data']);
-          this.projectData = res['data']['data'];
+          var arr = res['data']['data'];
+          this.projectData = arr;
           console.log(this.projectData);
-        }
+          }
       )
     },
     handleEdit(row) {
-      this.form.id = row.id;
-      this.form.name = row.name;
-      this.form.intro = row.intro;
+      this.form.id = row.projectId;
+      this.form.name = row.projectName;
+      this.form.intro = row.projectIntro;
       this.editDialog = true;
     },
     handleClose(done) {
@@ -258,7 +266,8 @@ export default {
           type: 'success',
           message: '删除成功!'
         });
-        deleteProject({projectId: this.selectedProj.id, userId: this.user.id});
+        deleteProject({projectId: row.projectId, userId: this.user.id});
+        this.get_project();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -270,17 +279,29 @@ export default {
       // console.log(this.search);
       // console.log("submit");
       this.setupDialog = false;
-      newProject(newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}));
+      newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id});
       this.form =  {
         name: '',
         intro: ''
       }
-      this.get_project();
     },
     editProject() {
       this.editDialog = false;
-      modifyProject({projectId: this.selected.id, projectName: this.form.name, projectIntro: this.form.intro})
+      modifyProject({projectId: this.form.id, projectName: this.form.name, projectIntro: this.form.intro});
+      this.get_project();
       // editProject(this.form);
+    }, 
+    transform(state) {
+      if (state == 'A') {
+        return '已完成';
+      } else if (state == 'B') {
+        return '进行中';
+      } else if (state == 'C') {
+        return '未开始';
+      } else if (state == 'D') {
+        return '不合法';
+      }
+
     }
   }
 }

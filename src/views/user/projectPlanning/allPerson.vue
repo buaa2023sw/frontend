@@ -46,23 +46,23 @@
         alt="John"
       >
     </v-avatar>
-    <v-p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.name }}</v-p>
+    <v-p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.peopleName }}</v-p>
     <v-chip
-        :color="getColor(item.role)"
+        :color="getColor(item.peopleJob)"
         dark
         style="position:absolute;top: 50%;left: 9%"
       >
-        {{ item.role }}
+        {{ classify(item.peopleJob) }}
       </v-chip>
     </div>
   </template>
   <template v-slot:[`item.remove`] ="{item}">
-     <v-btn v-if="item.role != '负责人'" depressed @click="handleDelete(item)">
+     <v-btn v-if="item.peopleJob != '负责人'" depressed @click="handleDelete(item)">
       移除用户
     </v-btn>
   </template>
   <template v-slot:[`item.change`] ="{item}">
-     <v-btn v-if="item.role != '负责人'" depressed @click="handleChange(item)">
+     <v-btn v-if="item.peopleJob != '负责人'" depressed @click="handleChange(item)">
       更改角色
     </v-btn>
   </template>
@@ -75,9 +75,9 @@
        width="50%"
       :before-close="handleClose"
       style="position:relative">
-      <el-form :label-position=left label-width="80px" :model="form" ref="form">
+      <el-form :label-position=left label-width="80px">
 <el-form-item label="用户id">
-  <el-input v-model="form.id" style="width: 400px;"></el-input>
+  <el-input v-model="newPersonForm.id" style="width: 400px;"></el-input>
 </el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
@@ -95,7 +95,7 @@
       <template v-slot:title>
         <div>请选择你要为该成员分配的<strong>角色</strong></div>
       </template>
-      <v-radio-group v-model="this.form.role" style="top:50px;position: absolute;">
+      <v-radio-group v-model="radioGroup" style="top:50px;position: absolute;">
       <v-radio value="管理员">
         <template v-slot:label>
           <div> <strong class="success--text">管理员</strong></div>
@@ -120,8 +120,8 @@ import { showPersonList, removeMember, modifyRole, addMember } from '@/api/user'
 import project_messagesVue from '@/views/manager/project_messages.vue'
 export default {
   name: 'AllProject',
-  inject: {user: {default: null},
-           selectedProj: {default: null}},
+  // inject: {user: {default: null},
+  //          selectedProj: {default: null}},
   created () {
     this.getPersonList()
   },
@@ -134,10 +134,16 @@ export default {
           sortable: false,
           value: 'icon',
         },
-        { text: '介绍', value: 'personName' },
         { text: '移除', value: "remove"},
         { text: '更改', value: 'change'},
       ],
+      selectedProj: {
+        id: "17"
+      }, 
+      user: {
+        id: "1"
+      },
+      radioGroup: "管理员",
     personData: [],
     //     "icon": '',
     //     'name': '梅西',
@@ -156,9 +162,13 @@ export default {
       search: '',
       setupDialog: false,
       changeDialog: false,
-      form: {
+      newPersonForm: {
         id: '',
-        role: ''
+      },
+      idTemp: '',
+      changeRoleForm: {
+        id: '',
+        role: '',
       }
     }
   },
@@ -166,25 +176,21 @@ export default {
     getPersonList() {
       showPersonList({projectId: this.selectedProj.id, userId: this.user.id}).then(
         res => {
-          this.personData = res;
+          console.log(res);
+          this.personData = res['data']['data'];
         }
       );
     },
     filterName(value, search, item) {
       console.log('123');
-      return  item == item && value != null &&
-        search != null &&
-        typeof value === 'string' &&
-        item.name.toString().indexOf(search) !== -1
-    },
-    getAllPerson() {
-      // getProject().then(res => {
-      //   // this.projectData = res;
-      // })
+      console.log(item);
+      return search != null  &&
+        item['peopleName'].toString().indexOf(search) !== -1
     },
     handleChange(row) {
-      this.form.id = row.id;
+      this.changeRoleForm.id = row.peopleId;
       this.changeDialog = true;
+      console.log(this.changeRoleForm);
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -199,7 +205,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        removeMember({projectId: this.selectedProj.id, personId: row.id, userId: this.user.id});
+        removeMember({projectId: this.selectedProj.id, personId: row.peopleId, userId: this.user.id});
+        this.getPersonList();
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -213,30 +220,54 @@ export default {
       });
     },
     setupPerson() {
-      console.log(this.form);
-      console.log(this.selectedProj);
-      addMember({projectId: this.selectedProj.id, personId: this.form.id, userId: this.user.id}).then(
+      addMember({projectId: this.selectedProj.id, personId: this.newPersonForm.id, userId: this.user.id}).then(
         res => {
           console.log(res);
-        }
+          var errorCode = res['data']['errcode'];
+          console.log(errorCode);
+          if (errorCode == 3) {
+            this.$message({
+              type: 'info',
+              message: '您没有权限邀请成员'});
+            };  
+          }
       );
+      this.getPersonList();
       this.setupDialog = false;
+      this.newPersonForm.id = '';
     },
     changeRole() {
-      modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.form.role, personId: this.form.id}).then(
+      if (this.changeRoleForm.role == '开发人员') {
+        this.changeRoleForm.role = 'A';
+      } else if (this.changeRoleForm.role == '管理员') {
+        this.changeRoleForm.role = 'B';
+      } 
+      console.log(this.changeRoleForm);
+      modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.changeRoleForm.role, personId: this.changeRoleForm.id}).then(
         res => {
           console.log(res);
         }
       );
       this.changeDialog = false;
+      this.changeRoleForm.id = '';
+      this.changeRoleForm.role = '';
     },
     getColor(role) {
-      if (role == '开发人员') {
+      if (role == 'A') {
         return 'orange';
-      } else if (role == '管理员') {
+      } else if (role == 'B') {
         return 'green';
       } else {
         return 'blue';
+      }
+    },
+    classify(role) {
+      if (role == 'A') {
+        return '开发人员'
+      } else if (role == 'B') {
+        return '管理员'
+      } else if (role == 'C') {
+        return '负责人'
       }
     }
   }

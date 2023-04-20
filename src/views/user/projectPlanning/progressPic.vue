@@ -20,9 +20,9 @@ export default {
       draw() {
         var chart = echarts.init(this.$refs.chart);
 
-        let projectItem = ['项目启动','任务一','任务二','任务三','撰写总报告'],
-        projectItemStart = ['2022-01-01','2022-01-03','2022-01-10','2022-01-16','2022-01-19'],
-        projectItemEnd = ['2022-01-02','2022-01-12','2022-01-16','2022-01-19','2022-01-20'];
+        let projectItem = ['项目启动','任务一','任务二','任务三','撰写总报告'], //每个任务的名称
+        projectItemStart = ['2022-01-01','2022-01-03','2022-01-10','2022-01-16','2022-01-19'], //每个任务的启动时间
+        projectItemEnd = ['2022-01-02','2022-01-12','2022-01-16','2022-01-19','2022-01-20']; //每个任务的结束时间
 
         let projectItemStartValue = projectItemStart.map((item)=>{
         return new Date(item).valueOf()
@@ -31,7 +31,7 @@ export default {
         let projectItemDuringValue = projectItemEnd.map((item,i)=>{
         return new Date(item).valueOf()-projectItemStartValue[i]
         })
-
+        let dateMin = projectItemStartValue.sort()[0];
         var option = {
             title: {   
                 text: '甘特图',
@@ -96,7 +96,7 @@ export default {
             ]
             };
         // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        chart.setOption(option);
       },
     }
   }
