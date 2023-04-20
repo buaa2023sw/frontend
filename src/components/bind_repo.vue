@@ -1,4 +1,6 @@
 <script>
+import axios from 'axios'
+
 export default {
   name: "bindGithubRepo",
   data() {
@@ -11,25 +13,40 @@ export default {
     }
   },
   inject: {
+      user: {default: null},
     proj: { default: null }
   },
   methods: {
-    bind() {
+    bindSplit() {
       console.log(
           'I will bind ' +
           this.gh_username + '/' +
           this.gh_reponame + 'to' +
           this.proj.id + ',' + this.proj.name)
       this.bindingInProgress = true
-      this.axios.post('api/userBindRepo',
+      axios.post('/api/userBindRepo',
           {
-            userId: 1,
-            projectId: 1,
+            userId: this.user.id,
+            projectId: this.proj.id,
             repoRemotePath: this.gh_username + '/' + this.gh_reponame
           }
       ).then((res) => { console.log(res); this.bindingInProgress = false; })
           .catch((err) => { console.log(err); this.bindingInProgress = false; })
     },
+  bindWhole() {
+      console.log(
+          'I will bind ' +
+          this.git_url + 'to' +
+          this.proj.id + ',' + this.proj.name)
+      this.bindingInProgress = true
+      axios.post('/api/userBindRepo',
+          {
+              userId: this.user.id,
+              projectId: this.proj.id,
+              repoRemotePath: this.git_url
+          }
+      ).then((res) => { console.log(res); this.bindingInProgress = false; }).catch((err) => { console.log(err); this.bindingInProgress = false; })
+  }
   }
 }
 </script>
@@ -47,7 +64,7 @@ export default {
             <v-text-field v-model="gh_reponame" label="GitHub Reponame"></v-text-field>
         </v-col>
         </v-row>
-        <v-btn @click="bind()">
+        <v-btn @click="bindSplit()">
             Bind 
             {{ gh_username === '' ? '?' : gh_username }} / 
             {{ gh_reponame === '' ? '?' : gh_reponame }}
@@ -65,7 +82,7 @@ export default {
                 <v-text-field v-model="git_url" label="git url"></v-text-field>
             </v-col>
         </v-row>
-        <v-btn @click="bind()">
+        <v-btn @click="bindWhole()">
             Bind 
             {{ git_url === '' ? 'github.com/?/?' : git_url }}
             to {{ proj.name }}

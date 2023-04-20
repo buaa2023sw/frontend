@@ -1,12 +1,48 @@
 <script>
 import {computed} from "vue";
 import commit_view from "@/components/commit_view.vue";
+import axios from "axios";
 export default {
   name: "branchView",
   components: {
     commit_view
   },
+  methods: {
+    updateBranches() {
+        axios.post('/api/develop/getRepoBranches', {
+            userId: this.user.id,
+            repoId: this.selectedRepo.id,
+            projectId: this.proj.id
+        }).then((res) => {
+            if (res.data.errcode === 0) {
+                console.log(res);
+                console.log('success')
+                let branches = res.data.data.map((cur, index, arr) => {
+                    return {
+                        id: index,
+                        name: cur.branchName,
+                        lastCommit: {
+                            sha: cur.lastCommit.sha,
+                            authorName: cur.lastCommit.authorName,
+                            authorEmail: cur.lastCommit.authorEmail,
+                            commitDate: cur.lastCommit.commitDate,
+                            commitMessage: cur.lastCommit.commitMessage
+                        }
+                    }
+                })
+                console.log(branches)
+                this.branches = branches
+            } else {
+                console.log(res);
+                alert('/api/develop/getBindRepos error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
+            }
+        }).catch((err) => {
+            alert('/api/develop/getBindRepos error' + err)
+        })
+    }
+  },
   data() {
+    this.updateBranches()
     return {
       selectedBranchIndex: 0,
       branches: [
@@ -16,6 +52,7 @@ export default {
     }
   },
   inject: {
+    user: {default: null},
     proj: { default: null },
     selectedRepo: { default: null }
   },
@@ -35,7 +72,7 @@ export default {
     <h2>Branches</h2>
     <p>{{ selectedBranchIndex }}</p>
     <v-list>
-      <v-list-item-group v-model="selectedBranchIndex">
+      <v-list-item-group v-model="selectedBranchIndex" mandatory>
         <v-list-item v-for="branch in branches" :key="branch.id">
           {{ branch.name }}
         </v-list-item>

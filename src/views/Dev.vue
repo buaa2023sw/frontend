@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import bindGithubRepo from "../components/bind_repo.vue"
 import bindedGithubRepos from "../components/repo_list.vue"
 import repoView from "../components/repo_view.vue"
+import axios from 'axios'
 
 export default {
     name: "Dev",
@@ -12,7 +13,9 @@ export default {
         repoView,
     },
     data() {
+        this.updateBindRepos();
         return {
+            bindRepos: null,
             my_ghusername: 'trickeye',
             my_ghuseremail: '20373866@buaa.edu.cn',
         }
@@ -24,6 +27,7 @@ export default {
     provide() {
         return {
             proj: computed(() => this.selectedProj),
+            bindRepos: computed(() => this.bindRepos)
         }
     },
     methods: {
@@ -31,7 +35,28 @@ export default {
             alert('not implemented!')
         },
         updateBindRepos () {
-
+            axios.post('/api/develop/getBindRepos', {
+                userId: this.user.id,
+                projectId: this.selectedProj.id
+            }).then((res) => {
+                if (res.data.errcode === 0) {
+                    this.bindRepos = res.data.data.map((cur, index, arr) => {
+                        let remotePath = cur.repoRemotePath;
+                        remotePath = remotePath.split('/')
+                        return {
+                            id: cur.repoId,
+                            user: remotePath[0],
+                            repo: remotePath[1],
+                            intro: cur.repoIntroduction
+                        }
+                    })
+                } else {
+                    console.log(res);
+                    alert('/api/develop/getBindRepos error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
+                }
+            }).catch((err) => {
+                alert('/api/develop/getBindRepos error' + err)
+            })
         }
     }
 }
@@ -48,6 +73,9 @@ export default {
             </v-row>
             <v-row>
                 <p>selectedProj = {{selectedProj}}</p>
+            </v-row>
+            <v-row>
+                <p>bindRepos = {{bindRepos}}</p>
             </v-row>
             <v-row>
                 <h1>开发 - {{ selectedProj.name }}</h1>

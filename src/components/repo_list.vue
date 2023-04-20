@@ -4,23 +4,24 @@ export default {
     name: "bindedGithubRepos",
     data() {
         return {
-          bondedRepos: [
-            {
-              id: 1,
-              user: "opencv",
-              repo: "opencv",
-              intro: "opencv introduction. A Bonded repo of #" + this.proj.id + " called " + this.proj.name
-            }, {
-              id: 2,
-              user: "buaa2023sw",
-              repo: "doc",
-              intro: "doc introduction. A Bonded repo of #" + this.proj.id + " called " + this.proj.name
-            }
-          ]
+          // bondedRepos: [
+          //   {
+          //     id: 1,
+          //     user: "opencv",
+          //     repo: "opencv",
+          //     intro: "opencv introduction. A Bonded repo of #" + this.proj.id + " called " + this.proj.name
+          //   }, {
+          //     id: 2,
+          //     user: "buaa2023sw",
+          //     repo: "doc",
+          //     intro: "doc introduction. A Bonded repo of #" + this.proj.id + " called " + this.proj.name
+          //   }
+          // ]
         }
     },
     inject: {
-      proj: { default: null }
+      proj: { default: null },
+        bindRepos: {default: null}
     },
     methods: {
     }
@@ -31,7 +32,7 @@ export default {
 <template>
     <v-expansion-panels>
         <v-expansion-panel
-            v-for="repo in bondedRepos"
+            v-for="repo in bindRepos"
             :key="repo.id"
         >
           <v-expansion-panel-header>
