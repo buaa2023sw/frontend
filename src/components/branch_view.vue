@@ -30,11 +30,12 @@ export default {
                         }
                     }
                 })
+                console.log('branches=')
                 console.log(branches)
                 this.branches = branches
             } else {
                 console.log(res);
-                alert('/api/develop/getBindRepos error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
+                alert('/api/develop/getRepoBranches error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
             }
         }).catch((err) => {
             alert('/api/develop/getBindRepos error' + err)
@@ -45,10 +46,11 @@ export default {
     this.updateBranches()
     return {
       selectedBranchIndex: 0,
-      branches: [
-        { id: 1, name: 'branch1 of this repo' },
-        { id: 2, name: 'branch2 of this repo' },
-      ]
+      branches: [{
+          id: 0,
+          name: 'master',
+          lastCommit: {}
+      }]
     }
   },
   inject: {
@@ -69,8 +71,9 @@ export default {
   <p>I am branch view, I am aware that my proj = {{ proj }}, and that my selected repo = {{ selectedRepo }}</p>
 <v-row>
   <v-col cols="3">
-    <h2>Branches</h2>
-    <p>{{ selectedBranchIndex }}</p>
+    <h2>分支</h2>
+<!--    <p> selectedBranchIndex is {{ selectedBranchIndex }}</p>-->
+<!--    <p>{{ branches }}</p>-->
     <v-list>
       <v-list-item-group v-model="selectedBranchIndex" mandatory>
         <v-list-item v-for="branch in branches" :key="branch.id">
