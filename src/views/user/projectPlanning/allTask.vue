@@ -454,8 +454,19 @@
   </template>
 
 <script>
+import {showTaskList, addTask, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask} from '@/api/user.js'
+
 export default {
+  created() {
+    this.getTaskList();
+  },
   data: () => ({
+    user: {
+      id: 1
+    },
+    selectedProj: {
+      id :1
+    },
     checkMyFlag: false,
     search: '',
     setupFather: false,
@@ -513,14 +524,16 @@ export default {
         sons: [
             {
                 name: '子任务一',
-                time: "2022-3-1 to 2022-3-4",
+                startTime: "2022-3-1",
+                endTime: "2022-3-4",
                 contribute: "10%",
                 state: "进行中",
                 man: "罗本"
             },
             {
                 name: '子任务二',
-                time: "2022-3-1 to 2022-3-4",
+                startTime: "2022-3-1",
+                endTime: "2022-3-25",
                 contribute: "10%",
                 state: "进行中",
                 man: "里贝里"
@@ -535,14 +548,16 @@ export default {
         sons: [
         {
                 name: '子任务一',
-                time: "2022-3-1 to 2022-3-4",
+                startTime: "2022-3-1",
+                endTime: "2022-3-4",
                 contribute: "10%",
                 state: "进行中",
                 man: "罗本"
             },
             {
                 name: '子任务二',
-                time: "2022-3-1 to 2022-3-4",
+                startTime: "2022-3-5",
+                endTime: "2022-3-8",
                 contribute: "10%",
                 state: "进行中",
                 man: "里贝里"
@@ -553,9 +568,19 @@ export default {
   }),
 
   methods: {
+    getTaskList() {
+      showTaskList({userId: this.user.id, projectId: this.selectedProj.id}).then(
+         res => {
+          console.log(res);
+          this.tasks = res;
+        }
+      );
+    },
     newFather() {
       // newFather()
       this.setupFather = false;
+      addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id})
+      this.newFatherForm.name = '';
     },
     newSon() {
       // newSon()
