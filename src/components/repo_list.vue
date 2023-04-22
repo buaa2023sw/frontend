@@ -50,10 +50,14 @@ export default {
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <v-divider></v-divider>
-                    {{ repo.intro }}<br/>
+                    <span class="description" v-if="repo.intro !== ''">{{ repo.intro }}</span>
+                    <span class="description" v-else>存储库的简介空空如也呢</span>
                     <v-divider></v-divider>
-                    <v-btn>GitHub</v-btn>
-                    <v-btn>Unbind</v-btn>
+                    <br>
+                    <v-row>
+                    <v-col cols="6" class="text-center"><v-btn link :href="'https://github.com/' + repo.user + '/' + repo.repo" target="_blank">GitHub</v-btn></v-col>
+                    <v-col cols="6" class="text-center"><v-btn>Unbind</v-btn></v-col>
+                    </v-row>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-expansion-panels>
@@ -69,3 +73,15 @@ export default {
         </v-card>
     </div>
 </template>
+
+<style scoped>
+.description {
+    word-break:normal;
+    width:auto;
+    display:block;
+    white-space:pre-wrap;
+    word-wrap : break-word ;
+    overflow: hidden ;
+    line-height: 1.5rem;
+}
+</style>

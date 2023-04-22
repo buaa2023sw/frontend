@@ -133,6 +133,8 @@ export default {
               smooth
               padding="20"
               stroke-linecap="round"
+              show-labels
+              auto-draw
       ></v-sparkline>
   </div>
   <v-skeleton-loader v-else type="table" class="mx-auto" />

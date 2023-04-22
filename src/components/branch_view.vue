@@ -76,9 +76,9 @@ export default {
 <v-row>
   <v-col cols="3">
     <h2>分支</h2>
-    <v-card v-if="branchBusy">
+    <div v-if="branchBusy">
         <v-card-title><v-progress-circular indeterminate></v-progress-circular>正在与服务器同步分支</v-card-title>
-    </v-card>
+    </div>
     <v-list v-if="!branchBusy">
       <v-list-item-group v-model="selectedBranchIndex" mandatory>
         <v-list-item v-for="branch in branches" :key="branch.id">
