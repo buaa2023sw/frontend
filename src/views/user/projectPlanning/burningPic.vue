@@ -21,7 +21,7 @@ export default {
     // 模拟数据
     this.chartData.workloads = [25, 15, 30, 20, 10]; //任务的工作量
     this.chartData.expectedDates = ['2023-04-10', '2023-04-20', '2023-04-30', '2023-05-10', '2023-05-20'];//预期的完成时间
-    this.chartData.actualDates = ['2023-04-13', '2023-04-21', '2023-04-28', '2023-05-08', '2023-05-22'];
+    this.chartData.actualDates = ['2023-04-13', '2023-04-21', '2023-04-28', '2023-05-08', ''];
 
     let sum = 0;
     for (let i = 0; i < this.chartData.workloads.length; i++) {
@@ -53,6 +53,12 @@ export default {
       resWorkloadsE.push([timeArr[i], res]);
     }
 
+    for (let i=0;i<this.chartData.actualDates.length;i++) {
+      if (this.chartData.actualDates[i] == '') {
+        this.chartData.actualDates.splice(i, 1);
+      }
+    }
+    
     let actualDatesValue = this.chartData.actualDates.map((item)=>{
         return new Date(item).valueOf();
      })
@@ -84,18 +90,25 @@ export default {
 
     let dateMin = (expectedDatesValue[0] < actualDatesValue[0]) ?  expectedDatesValue[0] : actualDatesValue[0];
     dateMin  = dateMin - 24 * 60 * 60 * 1000;
-    resWorkloadsA[dateMin] =  sum;
+    resWorkloadsA.push([dateMin, sum]);
     resWorkloadsE.push([dateMin, sum]);
     console.log(resWorkloadsA);
     console.log(resWorkloadsE);
 
-    
+    function sortByField(x, y) {
+      return x[0] - y[0];
+    }
+    resWorkloadsA.sort(sortByField);
+    resWorkloadsE.sort(sortByField);
 
     // 绘制燃尽图
     const chart = echarts.init(document.getElementById('burnup-chart'));
     chart.setOption({
       title: {
         text: '燃尽图',
+      },
+      legend: {
+        data: ['预期中的剩余工作量', '实际的剩余工作量']
       },
       tooltip: {
         trigger: 'axis',
@@ -121,10 +134,15 @@ export default {
       },
       series: [
         {
-          name: '剩余工作量',
+          name: '预期中的剩余工作量',
           type: 'line',
           data: resWorkloadsE,
         },
+        {
+          name: '实际的剩余工作量',
+          type: 'line',
+          data: resWorkloadsA,
+        }
         // {
         //   name: '剩余工作量1',
         //   type: 'line',

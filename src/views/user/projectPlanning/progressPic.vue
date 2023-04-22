@@ -34,8 +34,7 @@ export default {
         let dateMin = projectItemStartValue.sort()[0];
         var option = {
             title: {   
-                text: '甘特图',
-                subtext: '瀑布图转为甘特图'
+                text: '任务进度显示图',
                 },
             tooltip: {
             trigger: 'axis',
