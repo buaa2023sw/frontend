@@ -140,7 +140,7 @@ export default {
       inject: {'user': {defualt: null},
                'selectedProj': {defualt: null}},
       selectedProj: {
-        id: "12"
+        id: "1"
       }, 
       user: {
         id: "1"

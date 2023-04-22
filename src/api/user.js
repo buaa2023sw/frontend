@@ -78,6 +78,11 @@ export const addTask = (data) => {
   return request.post("/api/plan/addTask", data);
 }
 
+
+export const removeTask = (data) => {
+  return request.post("/api/plan/removeTask", data);
+}
+
 export const notice = (data) => {
   return request.post("/api/plan/notice", data);
 }
