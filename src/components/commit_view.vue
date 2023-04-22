@@ -89,10 +89,6 @@ export default {
 <template>
 <div>
 <h2>分支“{{ selectedBranch.name }}”上的提交记录</h2>
-<!--  <p>I am commit view, I am aware that:</p>-->
-<!--  <p>my proj = {{proj}}</p>-->
-<!--  <p>my selected repo = {{selectedRepo}}</p>-->
-<!--  <p>my selected branch = {{selectedBranch}}</p>-->
 
   <p v-if="!commitHistoryBusy">分支“{{selectedBranch.name}}”中有 {{ commitHistory.length }} 条提交记录。最新的提交记录：</p>
   <p v-else>正在与服务器同步分支{{selectedBranch.name}}上的最新提交记录...</p>
@@ -136,6 +132,11 @@ export default {
               show-labels
               auto-draw
       ></v-sparkline>
+      <br> <v-divider></v-divider> <br>
+      <v-row>
+          <v-col cols="6" class="text-center"><v-btn><v-icon>mdi-github</v-icon>在GitHub查看</v-btn></v-col>
+          <v-col cols="6" class="text-center"><v-btn link :to="selectedRepo.id + '/' + selectedBranch.name + '/'"><v-icon>mdi-send</v-icon>浏览详情</v-btn></v-col>
+      </v-row>
   </div>
   <v-skeleton-loader v-else type="table" class="mx-auto" />
 
