@@ -5,7 +5,6 @@ import axios from "axios";
 export default {
   name: "pr_view",
   data() {
-      this.updatePR()
     return {
       prs: [
         {
@@ -25,10 +24,12 @@ export default {
           toBranchId: 1,
           isOpen: true
         }
-      ]
+      ],
+      prsBusy: true,
     }
   }, methods: {
       updatePR() {
+          this.prsBusy = true
           axios.post('/api/develop/getPrList', {
               userId: this.user.id,
               projectId: this.proj.id,
@@ -49,17 +50,22 @@ export default {
                       }
                   })
                   this.prs = prs
+                  this.prsBusy = false
               } else {
                   console.log('get pr failure with not 0 err code + {' + res.data.errcode + ')' + res.data.message)
+                  this.prsBusy = false
               }
           }).catch((err) => {
               console.log('get pr failure with err: ' + err)
+              this.prsBusy = false
           })
       }
   }, inject: {
         user: {default: null},
         proj: {default: null},
         selectedRepo: {default: null}
+  }, created() {
+      this.updatePR()
   }
 }
 </script>
@@ -69,14 +75,16 @@ export default {
   <h2>和并请求</h2>
 <!--  <p>This is pr view</p>-->
 
-  <v-row v-if="this.prs.length > 0">
+  <v-skeleton-loader v-if="this.prsBusy" type="button, table" />
+  <v-row v-else-if="this.prs.length > 0">
     <v-col>
       <v-simple-table dense>
         <tbody>
         <tr v-for="pr in prs" :key="pr.id">
-          <td>{{pr.isOpen ? 'Open' : 'Closed'}}</td>
+          <td>#{{pr.id}} ({{pr.isOpen ? '开启' : '已关闭'}})</td>
           <td>{{pr.author}}</td>
           <td>{{pr.title}}</td>
+          <td>从分支“{{pr.fromBranchName}}”合并到“{{pr.toBranchName}}”</td>
         </tr>
         </tbody>
       </v-simple-table>
