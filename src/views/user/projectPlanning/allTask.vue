@@ -49,8 +49,8 @@
       >
         <template v-slot:default="{items, isExpanded, expand}">
             <v-row
-              v-for="item in items"
-              :key="item.name"
+              v-for="task in items"
+              :key="task.name"
               cols="12"
               sm="6"
               md="4"
@@ -58,12 +58,12 @@
             >
               <v-card style="width:100%;position: relative;">
                 <v-card-title>
-                  <h4>{{ item.name }}</h4>
+                  <h4>{{ task.name }}</h4>
                 <v-switch
                 style="position: absolute;right: 1%;"
-                :input-value="isExpanded(item)"
+                :input-value="isExpanded(task)"
                 class="pl-4 mt-0"
-                @change="(v) => expand(item, v)"></v-switch>
+                @change="(v) => expand(task, v)"></v-switch>
                 </v-card-title>
                 <!-- <v-switch
                   :input-value="isExpanded(item)"
@@ -73,10 +73,10 @@
                 ></v-switch> -->
                 <v-divider></v-divider>
                 <v-data-table
-                v-if="isExpanded(item)"
+                v-if="isExpanded(task)"
                 :search="search"
                 :headers="headers"
-                :items="item.sons"
+                :items="task.sons"
                 :items-per-page="5"
                 class="elevation-1"
                  item-key='name'
@@ -118,12 +118,12 @@
           v-for="(item) in options"
           :key="item.name"
         >
-          <v-btn text @click="switchAction(item, index)">{{ item}}</v-btn>
+          <v-btn text @click="switchAction(item, index)">{{ item }}</v-btn>
         </v-list-item>
       </v-list>
     </v-menu>
   </template>
-  <template v-slot:foot>
+  <template v-slot:foot="{item}">
             <!-- <v-text-field
               v-model="calories"
               type="number"
@@ -132,7 +132,7 @@
             <v-icon
         large
         class="mr-2"
-        @click="setupSon = true"
+        @click="setupNewSon(task)"
         style="position:absolute;left: 1.5%;top:82%"
       >
       mdi-plus-box
@@ -382,16 +382,9 @@
           <v-btn
             text
             color="primary"
-            @click="menu = false"
+            @click="editSubTask"
           >
-            Cancel
-          </v-btn>
-          <v-btn
-            text
-            color="primary"
-            @click="menu = false"
-          >
-            OK
+            确定
           </v-btn>
         </v-date-picker>
       </v-menu>
@@ -465,7 +458,7 @@ export default {
       id: 1
     },
     selectedProj: {
-      id :1
+      id: 12
     },
     checkMyFlag: false,
     search: '',
@@ -474,6 +467,7 @@ export default {
     setupAlarm: false,
     detailFlag: false,
     editTask: false,
+    menu: false,
     menu1: false,
     menu2: false,
     sonContribute: 0,
@@ -494,7 +488,8 @@ export default {
       time: '',
       contribute: '',
       state: '',
-      man: ''
+      managerId: '',
+      fatherTaskId: ''
     },
     newAlarmForm: {
         taskID: '',
@@ -572,19 +567,40 @@ export default {
       showTaskList({userId: this.user.id, projectId: this.selectedProj.id}).then(
          res => {
           console.log(res);
-          this.tasks = res;
+          this.tasks = res['data']['data'];
+          console.log(this.tasks);
         }
       );
     },
     newFather() {
       // newFather()
       this.setupFather = false;
-      addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id})
+      console.log(this.user.id);
+      addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id}).then(
+        res => {
+          console.log(res);
+        }
+      )
       this.newFatherForm.name = '';
+      // this.getTaskList();
+    },
+    setupNewSon(item) {
+      this.setupSon = true;
+      this.newSonForm.fatherTaskId = item.id;
     },
     newSon() {
-      // newSon()
+      addSubTask({userId: this.user.id, deadline: this.newSonForm.time, contribute: this.newSonForm.contribute, 
+        managerId: this.newSonForm.managerId, fatherTaskId: this.newSonForm.fatherTaskId, projectId: this.selectedProj.id, 
+        subTaskName: this.newSonForm.name});
+      console.log(this.newSonForm);
       this.setupSon = false;
+      this.newSonForm.contribute = '';
+      this.newSonForm.fatherTaskId = '';
+      this.newSonForm.managerId = '';
+      this.newSonForm.name = '';
+      this.newSonForm.state = '';
+      this.newSonForm.time = '';
+
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -624,7 +640,7 @@ export default {
           type: 'success',
           message: '删除成功!'
         });
-       // deletePerson(row.name);
+      //deleteSubTask(row.name);
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -632,6 +648,9 @@ export default {
         });          
       });
     },
+    editSubTask() {
+      
+    }
   }
 }
 </script>

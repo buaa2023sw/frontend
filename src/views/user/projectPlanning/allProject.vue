@@ -177,13 +177,19 @@ import { watchAllProject,  newProject, modifyProject, deleteProject} from '@/api
 
 
 export default {
-  inject: ['user', 'selectedProj'],
+  // inject: ['user', 'selectedProj'],
   name: 'AllProject',
   created () {
     this.get_project()
   },
   data() {
     return {
+      user: {
+        id: '1'
+      },
+      selectedProj: {
+        id: '1'
+      },
       headers: [
         {
           text: '名称',
@@ -279,7 +285,11 @@ export default {
       // console.log(this.search);
       // console.log("submit");
       this.setupDialog = false;
-      newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id});
+      newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
+        res => {
+          console.log(res);
+        }
+      );
       this.form =  {
         name: '',
         intro: ''
