@@ -124,7 +124,9 @@ export default {
   //          selectedProj: {default: null}},
   created () {
     this.getPersonList()
-  },
+  },   
+  inject: {'user': {defualt: null},
+               'selectedProj': {defualt: null}},
   data() {
     return {
       headers: [
@@ -137,8 +139,6 @@ export default {
         { text: '移除', value: "remove"},
         { text: '更改', value: 'change'},
       ],
-      inject: {'user': {defualt: null},
-               'selectedProj': {defualt: null}},
       radioGroup: "管理员",
     personData: [],
     //     "icon": '',

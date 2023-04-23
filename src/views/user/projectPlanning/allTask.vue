@@ -544,11 +544,11 @@ export default {
     this.getTaskList();
     this.getPersonList();
   },
+  inject: {'user': {defualt: null},
+            'selectedProj': {defualt: null}},
   data: () => ({
     personNameList: [],
     personIdList: [],
-    inject: {'user': {defualt: null},
-            'selectedProj': {defualt: null}},
     checkMyFlag: false,
     changeTaskNameFlag: false,
     search: '',

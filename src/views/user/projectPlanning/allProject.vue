@@ -181,11 +181,11 @@ export default {
   name: 'AllProject',
   created () {
     this.get_project()
-  },
+  },  
+  inject: {'user': {defualt: null},
+               'selectedProj': {defualt: null}},
   data() {
     return {
-      inject: {'user': {defualt: null},
-               'selectedProj': {defualt: null}},
       headers: [
         {
           text: '名称',
