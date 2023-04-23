@@ -184,12 +184,8 @@ export default {
   },
   data() {
     return {
-      user: {
-        id: '1'
-      },
-      selectedProj: {
-        id: '1'
-      },
+      inject: {'user': {defualt: null},
+               'selectedProj': {defualt: null}},
       headers: [
         {
           text: '名称',

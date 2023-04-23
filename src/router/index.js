@@ -16,6 +16,10 @@ const router = new VueRouter({
       component: () => import('../views/user/projectPlanning/allTask.vue')
     },
     {
+      path: '/picture',
+      component: () => import('../views/user/projectPlanning/picture.vue')
+    },
+    {
       path:'/plan',
       component: () => import('../views/user/projectPlanning/allProject.vue')
     },

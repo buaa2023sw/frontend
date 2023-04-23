@@ -13,7 +13,7 @@
       depressed
       color="primary"
       style="position:absolute;top:1%;right:30%;height:4%;width:10%;"
-      @click="setupDialog = true"
+      @click="gotoPic"
       >  <v-icon
       left
     >     mdi-align-vertical-bottom
@@ -59,6 +59,7 @@
               <v-card style="width:100%;position: relative;">
                 <v-card-title>
                   <h4>{{ task.taskName }}</h4>
+                   <v-icon size="small" @click="changeTaskName(task)">mdi-pencil</v-icon>
                 <v-switch
                 style="position: absolute;right: 1%;"
                 :input-value="isExpanded(task)"
@@ -101,6 +102,9 @@
     <template v-slot:[`item.contribute`]="{ item }">
       <div>{{ item.contribute }}%</div>
     </template>
+    <template v-slot:[`item.create_time`]="{ item }">
+      <div>{{ item.create_time.slice(0, 10) }}</div>
+    </template>
     <template v-slot:[`item.deadline`]="{ item }">
       <div>{{ item.deadline.slice(0, 10) }}</div>
     </template>
@@ -108,7 +112,7 @@
       <v-icon
         small
         class="mr-2"
-        @click="setupAlarm = true"
+        @click="setAlarm(item)"
       >
       mdi-alarm
       </v-icon>
@@ -127,11 +131,93 @@
       </template>
       <v-list>
         <v-list-item
-          v-for="(option) in options"
-          :key="option.name"
         >
-          <v-btn text @click="switchAction(option, index, item)">{{ option }}</v-btn>
+          <v-btn text @click="switchAction('编辑任务', index, item)">编辑任务</v-btn>
         </v-list-item>
+        <v-list-item
+        >
+          <v-btn text @click="switchAction('删除任务', index, item)">删除任务</v-btn>
+        </v-list-item>
+        <v-list-item
+        >
+          <v-btn text @click="switchAction('完成任务', index, item)">完成任务</v-btn>
+        </v-list-item>
+        <!-- <v-list-item
+        >
+        <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+    <template v-slot:activator="{ on, attrs }">
+          <v-btn text
+          v-bind="attrs" v-on="on" @click="switchAction('详细信息', index, item)">详细信息</v-btn>
+        </template>
+        <v-card
+    :loading="loading"
+  >
+    <template slot="progress">
+      <v-progress-linear
+        color="deep-purple"
+        height="10"
+        indeterminate
+      ></v-progress-linear>
+    </template>
+
+    <v-img
+      height="250"
+      src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
+    ></v-img>
+
+    <v-card-title>{{item.subTaskName}}</v-card-title>
+
+    <v-card-text>
+      <v-row
+        align="center"
+        class="mx-0"
+      >
+        <div class="grey--text ms-4">
+          时间:{{item.create_time.slice(0, 10)}} - {{ item.deadline.slice(0, 10) }}
+        </div>
+      </v-row>
+<div class="my-4 text-subtitle-1">
+        负责人:{{ getName(item.managerId) }}
+      </div> 
+
+      <div>Small plates, salads & sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
+    </v-card-text>
+
+    <v-divider class="mx-4"></v-divider>
+
+    <v-card-title>Tonight's availability</v-card-title>
+
+    <v-card-text>
+      <v-chip-group
+        v-model="selection"
+        active-class="deep-purple accent-4 white--text"
+        column
+      >
+        <v-chip>5:30PM</v-chip>
+
+        <v-chip>7:30PM</v-chip>
+
+        <v-chip>8:00PM</v-chip>
+
+        <v-chip>9:00PM</v-chip>
+      </v-chip-group>
+    </v-card-text>
+
+    <v-card-actions>
+      <v-btn
+        color="deep-purple lighten-2"
+        text
+        @click="reserve"
+      >
+        Reserve
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+      </v-dialog>
+        </v-list-item> -->
       </v-list>
     </v-menu>
   </template>
@@ -183,6 +269,22 @@
 </el-dialog> 
 
 <el-dialog
+        title="修改任务名称"
+        :visible.sync="changeTaskNameFlag"
+         width="50%"
+        :before-close="handleClose">
+        <el-form :label-position=left label-width="80px">
+    <el-form-item label="任务名称">
+      <el-input v-model="changeNameForm.name"></el-input>
+    </el-form-item>
+</el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="changeTaskNameFlag = false">取 消</el-button>
+    <el-button type="primary" @click="ctn">确 定</el-button>
+  </span>
+</el-dialog> 
+
+<el-dialog
         title="创建子任务"
         :visible.sync="setupSon"
          width="50%"
@@ -194,7 +296,7 @@
     <el-form-item>
       <p1>完成时间</p1>
       <v-menu
-        v-model="menu"
+        v-model="menu2"
         :close-on-content-click="false"
         :return-value.sync="sad"
         transition="scale-transition"
@@ -222,14 +324,14 @@
           <v-btn
             text
             color="primary"
-            @click="menu = false"
+            @click="menu2 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
             color="primary"
-            @click="menu = false"
+            @click="menu2 = false"
           >
             OK
           </v-btn>
@@ -368,7 +470,7 @@
         :before-close="handleClose">
         <el-form :label-position=left label-iwdth="80px" :model="newSonForm" ref="newSonForm">
     <el-form-item label="子任务名称">
-      <el-input v-model="newSonForm.name"></el-input>
+      <el-input v-model="editSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
       <p1>完成时间</p1>
@@ -382,7 +484,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-combobox
-            v-model="newSonForm.endTime"
+            v-model="editSonForm.endTime"
             chips
             small-chips
             label="请选择日期"
@@ -393,7 +495,7 @@
           ></v-combobox>
         </template>
         <v-date-picker
-          v-model="newSonForm.endTime"
+          v-model="editSonForm.endTime"
           no-title
           scrollable 
         >
@@ -415,51 +517,20 @@
       min="0"
       step="1"
       thumb-label
-      v-model="newSonForm.contribute"
+      v-model="editSonForm.contribute"
       style="position:relative;bottom:-5px"
     ></v-slider>
     </el-form-item>
     <p1 style="top:5%">负责人</p1>
       <v-select
-          v-model = newSonForm.managerId
+          v-model ="editSonForm.managerName"
           :items="personNameList"
         ></v-select>
 </el-form>
 <span slot="footer" class="dialog-footer">
     <el-button @click="editTask = false">取 消</el-button>
-    <el-button type="primary" @click="newSon">确 定</el-button>
+    <el-button type="primary" @click="editSubTask">确 定</el-button>
   </span>
-</el-dialog> 
-
-<el-dialog
-        no-title
-        :visible.sync="detailFlag"
-         width="50%"
-        :before-close="handleClose">
-      <v-card
-    class="mx-auto"
-    max-width="344"
-  >
-    <v-card-text>
-      <div>Word of the Day</div>
-      <p class="text-h4 text--primary">
-        be•nev•o•lent
-      </p>
-      <p>adjective</p>
-      <div class="text--primary">
-        well meaning and kindly.<br>
-        "a benevolent smile"
-      </div>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn
-        text
-        color="deep-purple accent-4"
-      >
-        Learn More
-      </v-btn>
-    </v-card-actions>
-  </v-card>
 </el-dialog> 
 
     </div>
@@ -476,13 +547,10 @@ export default {
   data: () => ({
     personNameList: [],
     personIdList: [],
-    user: {
-      id: 1
-    },
-    selectedProj: {
-      id: 1
-    },
+    inject: {'user': {defualt: null},
+            'selectedProj': {defualt: null}},
     checkMyFlag: false,
+    changeTaskNameFlag: false,
     search: '',
     setupFather: false,
     setupSon: false,
@@ -494,8 +562,9 @@ export default {
     menu2: false,
     sonContribute: 0,
     myName: "罗本",
+    tempItem: '',
     options: ['删除任务', "编辑任务", "详细信息", "完成任务"],
-    picker: 
+    picker:
     (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
     newFatherForm: {
       name: ''
@@ -505,26 +574,38 @@ export default {
       'zhaohuiya',
       'ghy'
     ],
+    editSonForm: {
+      name: '',
+      startTime: '', 
+      endTime: '', 
+      contribute: '', 
+      managerName: ''
+    },
     newSonForm: {
       name: '',
+      startTime: '',
       endTime: '',
       contribute: '',
       managerName: '',
       fatherTaskId: ''
     },
     newAlarmForm: {
-        taskID: '',
+        taskId: '',
         date: '',
         time: ''
+      },
+      changeNameForm: {
+        name: '',
+        id: ''
       },
     headers: [
         {
           text: "名称",
           align: 'start',
           sortable: false,
-          value: 'taskName',
+          value: 'subTaskName',
         },
-        { text: '开始时间', value: '' },
+        { text: '开始时间', value: 'create_time' },
         { text: '完成时间', value: 'deadline' },
         { text: "贡献程度", value: "contribute"},
         { text: '状态', value: 'state'},
@@ -604,6 +685,21 @@ export default {
         }
       );
     },
+    changeTaskName(task) {
+      this.changeTaskNameFlag = true;
+      this.changeNameForm.name = task.taskName;
+      this.changeNameForm.id = task.taskId;
+    },
+    ctn() {
+      modifyTaskContent({userId: this.user.id, taskId: this.changeNameForm.id, deadline:"2023-4-23", contribute: 0, taskName:this.changeNameForm.name, 
+      managerId: 1}).then(
+        res => {
+          console.log(res);
+        }
+      );
+      this.changeTaskNameFlag = false;
+      this.getTaskList();
+    },
     newFather() {
       // newFather()
       this.setupFather = false;
@@ -615,6 +711,31 @@ export default {
         }
       )
       this.getTaskList();
+    },
+    gotoPic() {
+      let projectItem = [];
+      let projectItemStart = [];
+      let projectItemEnd = [];
+      let workloads = [];
+      let expectedDates = [];
+      let actualDates = [];
+      console.log(this.tasks);
+      for(let i=0;i < this.tasks.length;i++) {
+        for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
+          projectItem.push(this.tasks[i].subTaskList[j].subTaskName);
+          projectItemStart.push(this.tasks[i].subTaskList[j].create_time.slice(0, 10));
+          projectItemEnd.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
+          workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
+          expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
+          actualDates.push(this.tasks[i].subTaskList[j].complete_time.slice(0, 10));
+        }
+      }
+      console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
+      this.$router.push({path:'/picture'
+      , query: {
+        projectItem: projectItem, projectItemStart: projectItemStart, projectItemEnd: projectItemEnd,
+        workloads: workloads, expectedDates: expectedDates, actualDates: actualDates
+      }});
     },
     deleteTask(task) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {
@@ -657,6 +778,7 @@ export default {
       this.setupSon = false;
       this.newSonForm.contribute = 0;
       this.newSonForm.fatherTaskId = '';
+      this.newSonForm.startTime = '';
       this.newSonForm.endTime = '';
       this.newSonForm.managerName = '';
       this.newSonForm.name = '';
@@ -678,27 +800,56 @@ export default {
         }
       );
     },
+    setAlarm(item) {
+      this.setupAlarm = true;
+      this.newAlarmForm.taskId = item.subTaskId;
+      this.newAlarmForm.time = '';
+      this.newAlarmForm.date = '';
+    },
     checkAllTask() {
       this.getTaskList();
       this.checkMyFlag = false;
     },
     newAlarm() {
       this.setupAlarm = false;
+      notice({taskId: this.newAlarmForm.taskId, deadline: this.newAlarmForm.date + '-' + this.newAlarmForm.time.replace(':', '-')}).then(
+        res => {
+          console.log(res);
+        }
+      )
+      // console.log(this.newAlarmForm.date);
+      // console.log(this.newAlarmForm.time);
+      // console.log(this.newAlarmForm.date + '-' + this.newAlarmForm.time.replace(':', '-'));
       //
     },
     switchAction(action, index, item) {
+        this.tempItem = item;
         if (action == "删除任务") {
         this.handleDelete(index, item);
         } else if (action == "编辑任务") { 
-          this.editTask = true;
-        } else if (action == "详细信息") {
-          this.detailFlag = true;
-        } else if (actino == "完成任务") {
-          handleComplete();
+          this.handleEdit(item);
+        } else if (action == "完成任务") {
+          this.handleComplete(item);
         }
     },
-    handleComplete() {
-      //completeTask
+    handleEdit(item) {
+      this.editSonForm.name = item.subTaskName;
+      this.editSonForm.startTime = item.create_time.slice(0, 10);
+      this.editSonForm.endTime = item.deadline.slice(0, 10);
+      this.editSonForm.contribute = item.contribute;
+      this.editSonForm.managerName = this.personNameList[this.personIdList.indexOf(item.managerId)];
+      this.editTask = true;
+    },
+    handleComplete(item) {
+      completeTask({taskId: item.subTaskId, userId: this.user.id}).then(
+        res => {
+          this.$message({
+          type: 'success',
+          message: '提交成功!'
+        });
+        console.log(res);
+        }
+      );
     },
     handleDelete(index, item) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {
@@ -711,7 +862,7 @@ export default {
           message: '删除成功!'
         });
         console.log(item);
-      removeTask({taskId: item.taskId, userId: this.user.id}).then(
+      removeTask({taskId: item.subTaskId, userId: this.user.id}).then(
         res => {
           console.log(res);
         }
@@ -724,7 +875,13 @@ export default {
       });
     },
     editSubTask() {
-      
+      modifyTaskContent({userId: this.user.id, taskId: this.tempItem.subTaskId, deadline:this.editSonForm.endTime, contribute:this.editSonForm.contribute, 
+      taskName: this.editSonForm.name, managerId: this.personIdList[this.personNameList.indexOf(this.editSonForm.managerName)]}).then(
+        res => {
+          console.log(res);
+        }
+      )
+      this.editTask = false;
     },
     transform(state) {
       if (state == 'A') {
