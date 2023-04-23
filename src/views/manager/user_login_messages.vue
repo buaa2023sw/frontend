@@ -22,6 +22,9 @@
 <script>
 import axios from "axios";
 export default {
+  inject: {
+    user: { default: null }
+  },
   data () {
     return {
       msg: null,
@@ -72,26 +75,18 @@ export default {
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
     showLoginMessages() {
-      /*
-      this.axios.get('/api/manager/showUsersLogin', {params: {}})
+      axios.post("/api/management/showUsersLogin", {managerId: this.user.id})
           .then((response) => {
-            console.log(response.data.loginMessages);
-            this.loginMessages = response.data.loginMessages
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      */
-      //window.alert('您没有查看权限')
-      //this.loginMessages = []
-      axios.post('/api/login', {})
-          .then((response) => {
-            if (response.errcode !== 0) {
-              window.alert('您没有查看权限');
+            console.log(response)
+            if (response.data.errcode === 1) {
+              window.alert("您没有权限")
             } else {
-              console.log(response.data.loginMessages);
               this.loginMessages = response.data.loginMessages
             }
+          })
+          .catch((err) => {
+            console.error(err);
+            this.loginMessages = null
           })
     },
   },

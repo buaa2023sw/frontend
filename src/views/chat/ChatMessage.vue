@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import ChatMessageLeft from "@/views/chat/ChatMessageLeft";
-import ChatMessageRight from "@/views/chat/ChatMessageRight";
+import ChatMessageLeft from "./ChatMessageLeft.vue";
+import ChatMessageRight from "./ChatMessageRight.vue";
 export default {
   name: "ChatMessage",
   components:{

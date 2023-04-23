@@ -8,23 +8,24 @@
         </div>
         <!-- 右侧的注册盒子 -->
         <div class="content-login">
-          <NScrollbar class="chat" style="max-height: 500px">
+          <Scrollbar class="chat" style="max-height: 500px">
             <div>
               <div class="chat_top">
-                <img src="../../assets/img/kaleidoBlank.png" height="170" width="150">
+                <img src="" height="170" width="150">
               </div>
               <ChatMessage v-for="(item, index) in messages" v-bind:key="index" :type=item.type :time=item.time :content=item.content></ChatMessage>
             </div>
-          </NScrollbar>
+          </Scrollbar>
           <div class="bottom">
-            <NInput class="message" v-model:value="question" round placeholder="Type a message...">
-            </NInput>
-            <NButton class="send" @click="sendChat" strong secondary type="info">
+            <Input class="message" v-model:value="question" round placeholder="Type a message...">
+            </Input>
+            <Button class="send" @click="sendChat" strong secondary type="info">
               提问
-            </NButton>
+            </Button>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -32,16 +33,16 @@
 
 <script>
 
-import {NInput , NButton, NScrollbar} from 'naive-ui';
-import ChatMessage from "@/views/chat/ChatMessage";
-import {getHistoryChatAPI, sendChatAPI} from "@/request/api/chat";
+//import {NInput , NButton, NScrollbar} from 'naive-ui';
+import ChatMessage from "./ChatMessage.vue";
+//import {getHistoryChatAPI, sendChatAPI} from "";
 import {ref} from 'vue'
 
 export default {
   components:{
-    NInput,
-    NButton,
-    NScrollbar,
+    //NInput,
+    //NButton,
+    //NScrollbar,
     ChatMessage
   },
   name: 'HelloWorld',

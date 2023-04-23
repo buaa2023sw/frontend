@@ -57,6 +57,7 @@
 
 <script>
 import * as echarts from 'echarts'
+import axios from "axios";
 var DEFAULT_PANELS = [
   {
     // icon: "mdi-account",
@@ -74,6 +75,9 @@ var DEFAULT_PANELS = [
 ];
 
 export default {
+  inject: {
+    user: { default: null }
+  },
   components: {
 
   },
@@ -88,58 +92,29 @@ export default {
     }
   },
   mounted() {
-    // 计算饼状图数据并更新 chartData 数组
-    let data = [
-      {value: 335, name: '微小型（1~3人）'},
-      {value: 310, name: '小型（4~7人）'},
-      {value: 234, name: '中型（8~15人）'},
-      {value: 135, name: '大型（16~30人）'},
-      {value: 1548, name: '巨大型（>30人）'}
-    ]
-    this.chartData = data.map(item => ({
-      name: item.name,
-      value: item.value
-    }))
-
-    // 创建 ECharts 实例并绘制饼状图
-    let myChart = echarts.init(this.$refs.myChart)
-    // 窗口变化时重新渲染饼状图位置
-    window.addEventListener('resize', () => {
-      myChart.resize()
-    })
-    console.log(myChart)
-    myChart.setOption({
-      title: {
-        text: '',
-        left: 'center'
-      },
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c} ({d}%)'
-      },
-      legend: {
-        orient: 'vertical',
-        left: 10,
-        data: ['微小型（1~3人）', '小型（4~7人）', '中型（8~15人）', '大型（16~30人）', '巨大型（>30人）']
-      },
-      series: [
-        {
-          name: '项目规模',
-          type: 'pie',
-          radius: ['50%', '70%'],
-          center: ['50%', '50%'], // 设置饼状图的位置
-          avoidLabelOverlap: false,
-          label: {
-            show: false,
-            position: 'center'
-          },
-          labelLine: {
-            show: false
-          },
-          data: data
-        }
-      ]
-    })
+    axios.post("/api/management/getProjectsScale", {managerId: this.user.id})
+        .then((response) => {
+          console.log(response)
+          if (response.data.errcode === 1) {
+            window.alert("您没有权限")
+            let data = null
+            this.upPie(data)
+          } else {
+            let data = [
+              {value: response.data.tiny, name: '微小型（1~3人）'},
+              {value: response.data.small, name: '小型（4~7人）'},
+              {value: response.data.medium, name: '中型（8~15人）'},
+              {value: 0, name: '大型（16~30人）'}, // TODO
+              {value: response.data.large, name: '巨大型（>30人）'}
+            ]
+            this.upPie(data)
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          let data = null
+          this.upPie(data)
+        })
   },
   created() {
     this.getUserNum();
@@ -147,13 +122,85 @@ export default {
   },
   methods: {
     getUserNum() {
-      this.indicators[0].text = 1 + "（人）"
+      axios.post("/api/management/getUserNum", {managerId: this.user.id})
+          .then((response) => {
+            console.log(response)
+            if (response.data.errcode === 1) {
+              window.alert("您没有权限")
+              this.indicators[0].text = "error"
+            } else {
+              this.indicators[0].text = response.data.userSum + "（人）"
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            this.indicators[0].text = "error"
+          })
     },
     getProjectNum() {
       this.indicators[1].text = 2 + "（个）"
+      axios.post("/api/management/getProjectNum", {managerId: this.user.id})
+          .then((response) => {
+            console.log(response)
+            if (response.data.errcode === 1) {
+              window.alert("您没有权限")
+              this.indicators[1].text = "error"
+            } else {
+              this.indicators[1].text = response.data.projectSum + "（个）"
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            this.indicators[1].text = "error"
+          })
     },
-    updateData() {
-      this.chartData.datasets[0].data = [1, 2, 3, 4, 5];
+    upPie(data) {
+      // this.chartData.datasets[0].data = [1, 2, 3, 4, 5];
+      // 计算饼状图数据并更新 chartData 数组
+      this.chartData = data.map(item => ({
+        name: item.name,
+        value: item.value
+      }))
+
+      // 创建 ECharts 实例并绘制饼状图
+      let myChart = echarts.init(this.$refs.myChart)
+      // 窗口变化时重新渲染饼状图位置
+      window.addEventListener('resize', () => {
+        myChart.resize()
+      })
+      console.log(myChart)
+      myChart.setOption({
+        title: {
+          text: '',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 10,
+          data: ['微小型（1~3人）', '小型（4~7人）', '中型（8~15人）', '大型（16~30人）', '巨大型（>30人）']
+        },
+        series: [
+          {
+            name: '项目规模',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            center: ['50%', '50%'], // 设置饼状图的位置
+            avoidLabelOverlap: false,
+            label: {
+              show: false,
+              position: 'center'
+            },
+            labelLine: {
+              show: false
+            },
+            data: data
+          }
+        ]
+      })
     },
   },
 };
