@@ -15,6 +15,10 @@
           :items="userMessages"
           :search="search"
       >
+        <template #item.status="{item}">
+          <v-text v-if="item.status==='A'"> 正常 </v-text>
+          <v-text v-if="item.status==='B'"> 禁用 </v-text>
+        </template>
         <template #item.resetPassword="{item}">
           <v-btn class="ml-1" small outlined @click="openResetPasswordDialog(item)">重置用户密码</v-btn>
         </template>
@@ -85,6 +89,9 @@
 <script>
 import axios from "axios";
 export default {
+  inject: {
+    user: { default: null }
+  },
   data () {
     return {
       msg: null,
@@ -172,12 +179,15 @@ export default {
   methods: {
     // 显示用户信息
     showUserMessages() {
-      let data = JSON.stringify({managerId: 1})
-      console.log(data)
-      axios.post("/api/management/showUsers", JSON.parse(data))
+      console.log(this.user.id)
+      axios.post("/api/management/showUsers", {managerId: this.user.id})
           .then((response) => {
             console.log(response)
-            this.userMessages = response.data.users
+            if (response.data.errcode === 1) {
+              window.alert("您没有权限")
+            } else {
+              this.userMessages = response.data.users
+            }
           })
           .catch((err) => {
             console.error(err);
@@ -187,13 +197,14 @@ export default {
     // 打开重置用户密码窗口
     openResetPasswordDialog(item) {
       this.userResetPasswordDialogMessage = item
-      console.log("111")
+      console.log("open reset password dialog")
       console.log(this.userResetPasswordDialogMessage)
       this.showResetPassword = true
     },
     // 关闭重置用户密码窗口
     closeResetPasswordDialog() {
       this.showResetPassword = false
+      console.log("close reset password dialog")
       this.userResetPasswordDialogMessage = ''
     },
     // 重置用户密码
@@ -204,7 +215,11 @@ export default {
       axios.post("/api/management/resetUserPassword", JSON.parse(data))
           .then((response) => {
             console.log(response.data)
-            window.alert("成功将用户" + response.data.name + "的密码修改为" + response.data.resetPassword)
+            if (response.data.errcode === 1) {
+              window.alert("您没有该权限")
+            } else {
+              window.alert("成功将用户" + response.data.name + "的密码修改为" + response.data.resetPassword)
+            }
           })
           .catch((err) => {
             console.error(err);
@@ -215,6 +230,7 @@ export default {
     // 打开修改用户状态窗口，并显示当前状态
     openChangeUserStatusDialog(item) {
       console.log(item)
+      console.log("open change user status dialog")
       this.userStatusDialogMessage = item
       this.selectedStatus = item.status
       this.showChangeUserStatus = true
@@ -222,13 +238,51 @@ export default {
     // 关闭修改用户状态窗口
     closeChangeUserStatusDialog() {
       this.showChangeUserStatus = false
+      console.log("close change user status dialog")
       this.userStatusDialogMessage = ''
       this.selectedStatus = ''
     },
     // 修改用户状态
     changeStatus() {
       console.log(this.selectedStatus)
-      this.showChangeUserStatus = false
+      let userId = this.userStatusDialogMessage.id
+      let managerId = this.user.id
+      axios.post("/api/management/changeUserStatus", {
+        managerId: managerId,
+        userId: userId,
+        changeToStatus: this.selectedStatus
+      })
+          .then((response) => {
+            this.showChangeUserStatus = false
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              window.alert("您没有该权限")
+            } else if (response.data.errcode === 2) {
+              let showStatus;
+              if (this.selectedStatus === 'A') {
+                showStatus = "正常"
+              } else {
+                showStatus = "禁用"
+              }
+              setTimeout("alert('对不起, 要你久候')", 1000 )
+              // window.alert("用户" + this.userStatusDialogMessage.name + "的状态已为" + showStatus)
+            } else {
+              if (this.selectedStatus === 'A') {
+                window.alert("成功将用户" + this.userStatusDialogMessage.name + "的状态恢复为正常")
+              } else {
+                window.alert("成功将用户" + this.userStatusDialogMessage.name + "的状态修改为禁用")
+              }
+            }
+            this.userStatusDialogMessage = ''
+            this.selectedStatus = ''
+            this.showUserMessages()
+          })
+          .catch((err) => {
+            this.showChangeUserStatus = false
+            this.userStatusDialogMessage = ''
+            this.selectedStatus = ''
+            console.error(err);
+          })
     },
     // 打开用户个人信息窗口
     openUserProfileDialog(item) {

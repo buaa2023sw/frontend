@@ -68,9 +68,9 @@ export default {
               Cookies.set('user', JSON.stringify(response.data.data))
               window.alert('登录成功')
               if (response.data.data.status === 'C') {
-                //window.location.href = '/manager'
+                window.location.href = '/manager'
               } else {
-                //window.location.href = '/home'
+                window.location.href = '/home'
               }
             }
           })
