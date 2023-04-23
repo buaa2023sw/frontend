@@ -15,30 +15,37 @@
           :items="projectMessages"
           :search="search"
       >
-        <template #item.changeStatus="{item}">
-          <v-btn class="ml-1" small outlined @click="openChangeProjectStatusDialog(item)">修改项目状态</v-btn>
+        <template #item.access="{item}">
+          <v-text v-if="item.access==='A'"> 正常 </v-text>
+          <v-text v-if="item.access==='B'"> 禁用 </v-text>
+        </template>
+        <template #item.progress="{item}">
+          {{ item.progress }} %
+        </template>
+        <template #item.changeAccess="{item}">
+          <v-btn class="ml-1" small outlined @click="openChangeProjectAccessDialog(item)">修改项目状态</v-btn>
         </template>
         <template #item.projectDetail="{item}">
           <v-btn class="ml-1" small outlined @click="gotoProjectDetailPage(item)">项目详细信息</v-btn>
         </template>
       </v-data-table>
     </v-card>
-    <v-dialog v-model="showChangeProjectStatus" width="300">
+    <v-dialog v-model="showChangeProjectAccess" width="300">
       <template>
         <v-container class="pa-0">
           <v-card>
             <v-card-title class="headline font-weight text-left"> 修改项目状态 </v-card-title>
-            <v-card-text> 项目名:{{ dialogMessage.name }} / 创建人:{{ dialogMessage.leader }}</v-card-text>
+            <v-card-text> 项目名:{{ changeProjectAccessMessage.name }} / 创建人:{{ changeProjectAccessMessage.leader }}</v-card-text>
             <v-divider></v-divider>
             <v-card-text>
-              <v-radio-group v-model="selectedStatus">
-                <v-radio v-for="i in statusList" :key="i.value" :label="i.label" :value="i.value"></v-radio>
+              <v-radio-group v-model="selectedAccess">
+                <v-radio v-for="i in accessList" :key="i.value" :label="i.label" :value="i.value"></v-radio>
               </v-radio-group>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="red" text @click="closeChangeProjectStatusDialog">取消</v-btn>
-              <v-btn color="blue" text @click="changeStatus">确认修改</v-btn>
+              <v-btn color="red" text @click="closeChangeProjectAccessDialog">取消</v-btn>
+              <v-btn color="blue" text @click="changeAccess">确认修改</v-btn>
             </v-card-actions>
           </v-card>
         </v-container>
@@ -48,7 +55,12 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
+  inject: {
+    user: { default: null }
+  },
   data () {
     return {
       search: '',
@@ -63,11 +75,11 @@ export default {
         { text: '创建人邮箱', value: 'email' },
         { text: '创建时间', value: 'createTime' },
         { text: '完成进度', value: 'progress' },
-        { text: '状态', value: 'status' },
+        { text: '状态', value: 'access' },
         {
           text: '',
           sortable: false,
-          value: 'changeStatus'
+          value: 'changeAccess'
         },
         {
           text: '',
@@ -80,48 +92,46 @@ export default {
           name: 'project1',
           projectId: 0,
           leader: '123',
+          leaderId: 1,
           email: '123@qq.com',
           createTime: '2023.1.1',
           progress: 80,
           status: 'A',
+          access: 'A',
         },
         {
           name: 'faskfl',
           projectId: 1,
           leader: '432gsdf',
+          leaderId: 2,
           email: 'gers@qq.com',
           createTime: '2023.2.1',
           progress: '60',
           status: 'B',
+          access: 'A',
         },
         {
           name: 'project3',
           projectId: 2,
           leader: '435',
+          leaderId: 1,
           email: '53@qq.com',
           createTime: '2023.3.1',
           progress: '100',
           status: 'A',
+          access: 'A'
         },
       ],
-      showChangeProjectStatus: false,
-      dialogMessage: '',
-      selectedStatus: '',
-      statusList: [
+      showChangeProjectAccess: false,
+      changeProjectAccessMessage: '',
+      selectedAccess: '',
+      accessList: [
         {
-          label: '未完成',
+          label: '正常',
           value: 'A'
         },
         {
-          label: '进行中',
-          value: 'B'
-        },
-        {
-          label: '已完成',
-          value: 'C'
-        },
-        {
-          label: '非法',
+          label: '禁用',
           value: 'D'
         },
       ],
@@ -132,24 +142,73 @@ export default {
   },
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
+    // 显示项目信息
     showProjectMessages() {
-
+      console.log(this.user.id)
+      axios.post("/api/management/showAllProjects", {managerId: this.user.id})
+          .then((response) => {
+            console.log(response)
+            if (response.data.errcode === 1) {
+              window.alert("您没有权限")
+            } else {
+              this.projectMessages = response.data.projects
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            this.projectMessages = null
+          })
     },
     // 打开修改项目状态窗口，并显示当前状态
-    openChangeProjectStatusDialog(item) {
+    openChangeProjectAccessDialog(item) {
       console.log(item)
-      this.dialogMessage = item
-      this.selectedStatus = item.status
-      this.showChangeProjectStatus = true
+      this.changeProjectAccessMessage = item
+      this.selectedAccess = item.access
+      this.showChangeProjectAccess = true
     },
     // 关闭修改项目状态窗口
-    closeChangeProjectStatusDialog() {
-      this.showChangeProjectStatus = false
+    closeChangeProjectAccessDialog() {
+      this.showChangeProjectAccess = false
     },
     // 修改项目状态
-    changeStatus() {
-      console.log(this.selectedStatus)
-      this.showChangeProjectStatus = false
+    changeAccess() {
+      console.log(this.selectedAccess)
+      let projectId = this.changeProjectAccessMessage.projectId
+      let managerId = this.user.id
+      axios.post("/api/management/changeProjectAccess", {
+        managerId: managerId,
+        projectId: projectId,
+        changeToAccess: this.selectedAccess
+      })
+          .then((response) => {
+            this.showChangeProjectAccess = false
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              window.alert("您没有该权限")
+            } else if (response.data.errcode === 2) {
+              let showAccess;
+              if (this.selectedAccess === 'A') {
+                showAccess = "正常"
+              } else {
+                showAccess = "禁用"
+              }
+              window.alert("项目" + this.changeProjectAccessMessage.name + "的状态已为" + showAccess)
+            } else {
+              if (this.selectedAccess === 'A') {
+                window.alert("成功将项目" + this.changeProjectAccessMessage.name + "的状态恢复为正常")
+              } else {
+                window.alert("成功将项目" + this.changeProjectAccessMessage.name + "的状态修改为禁用")
+              }
+            }
+            this.changeProjectAccessMessage = ''
+            this.selectedAccess = ''
+          })
+          .catch((err) => {
+            this.showChangeProjectAccess = false
+            this.changeProjectAccessMessage = ''
+            this.selectedAccess = ''
+            console.error(err);
+          })
     },
     // 跳转到项目详情页面
     gotoProjectDetailPage(item) {
