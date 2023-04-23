@@ -922,7 +922,7 @@ export default {
       left:20%;
   }
   .divider {
-    postion:relative;
+    position:relative;
     height: 30px;
     width: 30px;
   }

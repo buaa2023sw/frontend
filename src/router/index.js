@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-//import { defineAsyncComponent } from 'vue'
-//const ChatPage = defineAsyncComponent(() => import('../views/chat/ChatPage.vue'))
+// import { defineAsyncComponent } from 'vue'
+// const ChatPage = defineAsyncComponent(() => import('../views/chat/ChatPage.vue'))
 
 
 Vue.use(VueRouter)
@@ -20,20 +20,16 @@ const router = new VueRouter({
       component: () => import('../views/user/projectPlanning/picture.vue')
     },
     {
-      path:'/allProject',
+      path:'/plan',
+      component: () => import('../views/user/projectPlanning/allProject.vue')
+    },
+    {
+      path:'/plan/home',
       component: () => import('../views/user/projectPlanning/allProject.vue')
     },
     {
       path:'/allPerson',
       component: () => import('../views/user/projectPlanning/allPerson.vue')
-    },
-    {
-      path:'/progressPic',
-      component: () => import('../views/user/projectPlanning/progressPic.vue')
-    },
-    {
-      path:'/burningPic',
-      component: () => import('../views/user/projectPlanning/burningPic.vue')
     },
     {
       path: '/home',
@@ -55,7 +51,7 @@ const router = new VueRouter({
       component: () => import('../views/Dev.vue')
     },
     {
-      path: '/profile',
+      path: '/user/profile',
       name: 'profile',
       component: () => import('../views/user/profile.vue')
     },
@@ -84,14 +80,11 @@ const router = new VueRouter({
       name: 'hidden corner',
       component: () => import('../views/dev/hidden_corner.vue')
     },
-      /*
     {
       path: '/user/chatRoom',
       name: 'chatRoom',
-      component: ChatPage
+      component: () => import('../views/chat/ChatPage.vue')
     }
-
-       */
   ]
 })
 

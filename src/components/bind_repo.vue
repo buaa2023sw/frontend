@@ -18,11 +18,6 @@ export default {
   },
   methods: {
     bindSplit() {
-      console.log(
-          'I will bind ' +
-          this.gh_username + '/' +
-          this.gh_reponame + 'to' +
-          this.proj.id + ',' + this.proj.name)
       this.bindingInProgress = true
       axios.post('/api/userBindRepo',
           {
@@ -30,24 +25,24 @@ export default {
             projectId: this.proj.id,
             repoRemotePath: this.gh_username + '/' + this.gh_reponame
           }
-      ).then((res) => { console.log(res); this.bindingInProgress = false; })
-          .catch((err) => { console.log(err); this.bindingInProgress = false; })
+      )
+          .then((res) => { this.bindingInProgress = false; })
+          .catch((err) => { alert('哦不，好像绑定失败了！'); this.bindingInProgress = false; })
     },
-  bindWhole() {
-      console.log(
-          'I will bind ' +
-          this.git_url + 'to' +
-          this.proj.id + ',' + this.proj.name)
-      this.bindingInProgress = true
-      axios.post('/api/userBindRepo',
-          {
-              userId: this.user.id,
-              projectId: this.proj.id,
-              repoRemotePath: this.git_url
-          }
-      ).then((res) => { console.log(res); this.bindingInProgress = false; }).catch((err) => { console.log(err); this.bindingInProgress = false; })
-  }
-  }
+      bindWhole() {
+          this.bindingInProgress = true
+          axios.post('/api/userBindRepo',
+              {
+                  userId: this.user.id,
+                  projectId: this.proj.id,
+                  repoRemotePath: this.git_url.replace(/https:\/\/github.com\//, '')
+              }
+          )
+              .then((res) => {this.bindingInProgress = false; })
+              .catch((err) => { alert('哦不，好像绑定失败了！'); this.bindingInProgress = false; })
+      }
+  }, watch: {
+    }
 }
 </script>
 
@@ -57,36 +52,48 @@ export default {
         <v-col cols="5">
             <v-text-field v-model="gh_username" label="GitHub Username"></v-text-field>
         </v-col>
-        <v-col cols="1">
-            <v-btn fab x-small @click="seperate = !seperate">/</v-btn>
+        <v-col cols="1" class="text-center my-3">
+            <v-btn fab @click="seperate = !seperate">/</v-btn>
         </v-col>
         <v-col cols="6">
             <v-text-field v-model="gh_reponame" label="GitHub Reponame"></v-text-field>
         </v-col>
         </v-row>
-        <v-btn @click="bindSplit()">
-            Bind 
-            {{ gh_username === '' ? '?' : gh_username }} / 
-            {{ gh_reponame === '' ? '?' : gh_reponame }}
-            to {{ proj.name }}
-        </v-btn>
-        <span v-if="bindingInProgress">binding, please wait.</span>
+        <v-row>
+            <v-col cols="4"></v-col>
+            <v-col cols="4">
+                <v-btn @click="bindSplit()" :disabled="bindingInProgress || gh_reponame === '' || gh_username === ''">
+                    绑定
+                    {{ gh_username === '' ? '?' : gh_username }} /
+                    {{ gh_reponame === '' ? '?' : gh_reponame }}
+                    到“{{ proj.name }}”
+                </v-btn>
+            </v-col>
+            <v-col cols="4"></v-col>
+        </v-row>
+<!--        <span v-if="bindingInProgress">binding, please wait.</span>-->
     </v-form>
     <v-form v-else>
         <v-row>
-            <v-col cols="3">
-                <v-btn block @click="seperate = !seperate">https://</v-btn>
+            <v-col cols="3" class="text-center my-3">
+                <v-btn block @click="seperate = !seperate">https://github.com/</v-btn>
             </v-col>
         
             <v-col cols="9">
-                <v-text-field v-model="git_url" label="git url"></v-text-field>
+                <v-text-field v-model="git_url" label="github url"></v-text-field>
             </v-col>
         </v-row>
-        <v-btn @click="bindWhole()">
-            Bind 
-            {{ git_url === '' ? 'github.com/?/?' : git_url }}
-            to {{ proj.name }}
-        </v-btn>
-        <span v-if="bindingInProgress">binding, please wait.</span>
+        <v-row>
+            <v-col cols="4"></v-col>
+            <v-col cols="4">
+                <v-btn @click="bindWhole()" :disabled="bindingInProgress || git_url === '' || !/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+/.test(git_url.replace(/https:\/\/github.com\//, ''))">
+                    绑定
+                    {{ git_url === '' ? '?' : git_url.replace(/https:\/\/github.com\//, '') }}
+                    到“{{ proj.name }}”
+                </v-btn>
+            </v-col>
+            <v-col cols="4"></v-col>
+        </v-row>
+<!--        <span v-if="bindingInProgress">binding, please wait.</span>-->
     </v-form>
 </template>

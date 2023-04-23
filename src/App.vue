@@ -1,7 +1,5 @@
 <template>
   <v-app id="main_page">
-
-
     <v-app-bar app clipped-left color="blue" dark extension-height="36">
       <v-app-bar-nav-icon v-if="user" @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>BUAA 2023 SW</v-toolbar-title>
@@ -15,14 +13,14 @@
           <v-icon v-else v-bind="attrs" v-on="on">mdi-account-remove</v-icon>
         </template>
         <v-card v-if="user" min-width="200px">
-          <v-card-title>Hello, {{ user.name }}</v-card-title>
+          <v-card-title>欢迎, {{ user.name }}</v-card-title>
           <v-card-subtitle>{{ user.email }}</v-card-subtitle>
           <v-list>
-            <v-list-item link to="">
-              <v-list-item-title>Profile</v-list-item-title>
+            <v-list-item link to="/user/profile">
+              <v-list-item-title>个人信息</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="logoff()">
-              <v-list-item-title>Log off</v-list-item-title>
+              <v-list-item-title>退出</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
@@ -37,20 +35,20 @@
         </v-card>
       </v-menu>
 
-      <template v-if="user" v-slot:extension>
+      <template v-if="showLabel()" v-slot:extension>
         <v-tabs v-model="routeSelect">
           <v-tab link to="/home/">Home</v-tab>
           <v-tab link to="/plan/">Plan</v-tab>
           <v-tab link to="/dev/">Dev</v-tab>
-<!--          <v-tab-->
-<!--                  v-for="project in user.projects"-->
-<!--                  :key="project.id"-->
-<!--                  link :to="'/' + ['proj', 'plan', 'dev'][drawerSelect] + '/' + project.id"-->
-<!--                  @click="selectedProj=project.id"-->
-<!--          >{{ project.name }}</v-tab>-->
-<!--          <v-tab v-for="project in user.projects" :key="project.id" link :to="'/proj/' + project.id">{{ project.name }}</v-tab>-->
+          <!--          <v-tab-->
+          <!--                  v-for="project in user.projects"-->
+          <!--                  :key="project.id"-->
+          <!--                  link :to="'/' + ['proj', 'plan', 'dev'][drawerSelect] + '/' + project.id"-->
+          <!--                  @click="selectedProj=project.id"-->
+          <!--          >{{ project.name }}</v-tab>-->
+          <!--          <v-tab v-for="project in user.projects" :key="project.id" link :to="'/proj/' + project.id">{{ project.name }}</v-tab>-->
 
-<!--          <v-tab link to="/newproj"><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>-->
+          <!--          <v-tab link to="/newproj"><v-icon class="px-1">mdi-plus-circle</v-icon> new project</v-tab>-->
         </v-tabs>
       </template>
 
@@ -73,47 +71,84 @@
           <v-list-item-title class="text-h6">{{ mini ? '展开' : '收回' }}</v-list-item-title>
         </v-list-item>
 
-      <v-divider></v-divider>
+        <v-divider></v-divider>
 
-        <v-list-item-group mandatory>
+        <v-list-item-group v-if="user.status==='A'" mandatory>
           <v-list-item link :to="routeSelect + 'home'" @click="selectedProj = null">
-              <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
-              <v-list-item-title>Home</v-list-item-title>
+            <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
+            <v-list-item-title>主页</v-list-item-title>
           </v-list-item>
-          <v-list-item link to="/newproj" @click="selectedProj = null">
-              <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
-              <v-list-item-title>New Project</v-list-item-title>
+          <v-list-item link @click="setupDialog = true">
+            <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
+            <v-list-item-title>新建项目</v-list-item-title>
           </v-list-item>
           <v-list-item link v-for="project in user.projects" :key="project.id" :to="routeSelect + project.id" @click="selectedProj = project">
-              <v-list-item-icon><v-icon>mdi-developer-board</v-icon></v-list-item-icon>
-              <v-list-item-title>{{project.name}}</v-list-item-title>
+            <v-list-item-icon><v-icon>mdi-developer-board</v-icon></v-list-item-icon>
+            <v-list-item-title>{{project.name}}</v-list-item-title>
           </v-list-item>
 
-<!--          <v-list-item link :to="'/proj/' + selectedProj">-->
-<!--            <v-list-item-icon>-->
-<!--              <v-icon>mdi-home-outline</v-icon>-->
-<!--            </v-list-item-icon>-->
-<!--            <v-list-item-title class="text-h6">主页</v-list-item-title>-->
-<!--          </v-list-item>-->
+          <!--          <v-list-item link :to="'/proj/' + selectedProj">-->
+          <!--            <v-list-item-icon>-->
+          <!--              <v-icon>mdi-home-outline</v-icon>-->
+          <!--            </v-list-item-icon>-->
+          <!--            <v-list-item-title class="text-h6">主页</v-list-item-title>-->
+          <!--          </v-list-item>-->
 
-<!--          <v-list-item link :to="'/plan/' + selectedProj">-->
-<!--            <v-list-item-icon>-->
-<!--              <v-icon>mdi-book-edit-outline</v-icon>-->
-<!--            </v-list-item-icon>-->
-<!--            <v-list-item-title class="text-h6">规划</v-list-item-title>-->
-<!--          </v-list-item>-->
+          <!--          <v-list-item link :to="'/plan/' + selectedProj">-->
+          <!--            <v-list-item-icon>-->
+          <!--              <v-icon>mdi-book-edit-outline</v-icon>-->
+          <!--            </v-list-item-icon>-->
+          <!--            <v-list-item-title class="text-h6">规划</v-list-item-title>-->
+          <!--          </v-list-item>-->
 
-<!--          <v-list-item link :to="'/dev/' + selectedProj">-->
-<!--            <v-list-item-icon>-->
-<!--              <v-icon>mdi-laptop</v-icon>-->
-<!--            </v-list-item-icon>-->
-<!--            <v-list-item-title class="text-h6">开发</v-list-item-title>-->
-<!--          </v-list-item>-->
+          <!--          <v-list-item link :to="'/dev/' + selectedProj">-->
+          <!--            <v-list-item-icon>-->
+          <!--              <v-icon>mdi-laptop</v-icon>-->
+          <!--            </v-list-item-icon>-->
+          <!--            <v-list-item-title class="text-h6">开发</v-list-item-title>-->
+          <!--          </v-list-item>-->
+        </v-list-item-group>
+        <v-list-item-group v-if="user.status==='C'">
+          <v-list-item link to="/manager">
+            <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
+            <v-list-item-title>主页</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/manager/userMessages">
+            <v-list-item-icon><v-icon>mdi-account-multiple</v-icon></v-list-item-icon>
+            <v-list-item-title>用户信息</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/manager/loginMessages">
+            <v-list-item-icon><v-icon>mdi-history</v-icon></v-list-item-icon>
+            <v-list-item-title>用户登录信息</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/manager/projectMessages">
+            <v-list-item-icon><v-icon>mdi-book-edit-outline</v-icon></v-list-item-icon>
+            <v-list-item-title>项目信息</v-list-item-title>
+          </v-list-item>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
+    <el-dialog
+            title="创建项目"
+            :visible.sync="setupDialog"
+            width="50%"
+            :before-close="handleClose">
+        <el-form label-position="left" label-width="80px" :model="form" ref="form">
+            <el-form-item label="项目名称">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="活动概述">
+                <el-input type="textarea" v-model="form.intro"  :autosize="{ minRows: 5, maxRows: 10}"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="setupDialog = false">取 消</el-button>
+        <el-button type="primary" @click="setupProject">确 定</el-button>
+        </span>
+    </el-dialog>
+
+      <v-main>
       <router-view v-if="showRouterView" />
     </v-main>
   </v-app>
@@ -122,6 +157,7 @@
 <script>
 import Cookies from 'js-cookie'
 import { computed } from 'vue'
+import {newProject} from "@/api/user";
 
 let user = Cookies.get('user')
 if (user === undefined) {
@@ -144,22 +180,28 @@ export default {
   //     })
   // },
   watch: {
-      selectedProj(n, o) {
-          console.log('selectedProj change! from ' + o + ' to ' + n)
-          this.showRouterView = false;
-          this.$nextTick(() => (this.showRouterView = true));
-      }
+    selectedProj(n, o) {
+      console.log('selectedProj change! from ' + o + ' to ' + n)
+      this.showRouterView = false;
+      this.$nextTick(() => (this.showRouterView = true));
+    }
   },
   data: () => {
-      return {
-          drawer: true,
-          mini: true,
-          showRouterView: true,
-          user: user,
-          drawerIndex: null,
-          routeSelect: null,
-          selectedProj: null
-      }
+    return {
+      drawer: true,
+      mini: true,
+      showRouterView: true,
+      user: user,
+      drawerIndex: null,
+      routeSelect: null,
+      selectedProj: null,
+      setupDialog: false,
+      form: {
+          name: '',
+          intro: '',
+          id: ''
+      },
+    }
   },
   provide() {
     return {
@@ -168,6 +210,9 @@ export default {
     }
   },
   methods: {
+    showLabel() {
+      return this.user !== null && !window.location.pathname.startsWith('/manager')
+    },
     // getSelectedProj() {
     //     let pid = this.$route.params.projid;
     //     if (pid === undefined) return null;
@@ -179,7 +224,28 @@ export default {
     logoff() {
       Cookies.remove('user');
       window.location.href = '/login'
-    }
+    },
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+            .then(()=> {
+                done();
+            })
+            .catch(() => {});
+    },
+    setupProject() {
+        // console.log(this.search);
+        // console.log("submit");
+        this.setupDialog = false;
+        newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
+            res => {
+                console.log(res);
+            }
+        );
+        this.form =  {
+            name: '',
+            intro: ''
+        }
+    },
   }
 };
 </script>
