@@ -43,7 +43,7 @@ const router = new VueRouter({
       component: () => import('../views/Dev.vue')
     },
     {
-      path: '/profile',
+      path: '/user/profile',
       name: 'profile',
       component: () => import('../views/user/profile.vue')
     },

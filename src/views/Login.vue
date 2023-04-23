@@ -59,14 +59,26 @@ export default {
           .then((response) => {
             console.log(response.data)
             if (response.data.errcode === 1) {
-              window.alert('用户不存在')
+              this.$message({
+                type: 'error',
+                message: "用户不存在"
+              });
             } else if (response.data.errcode === 2) {
-              window.alert('密码错误')
+              this.$message({
+                type: 'error',
+                message: "密码错误"
+              });
             } else if (response.data.errcode === 3) {
-              window.alert('您的账户目前已被禁用')
+              this.$message({
+                type: 'error',
+                message: "您的账户目前已被禁用"
+              });
             } else {
               Cookies.set('user', JSON.stringify(response.data.data))
-              window.alert('登录成功')
+              this.$message({
+                type: 'success',
+                message: "登录成功"
+              });
               if (response.data.data.status === 'C') {
                 window.location.href = '/manager'
               } else {

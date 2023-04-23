@@ -13,14 +13,14 @@
           <v-icon v-else v-bind="attrs" v-on="on">mdi-account-remove</v-icon>
         </template>
         <v-card v-if="user" min-width="200px">
-          <v-card-title>Hello, {{ user.name }}</v-card-title>
+          <v-card-title>欢迎, {{ user.name }}</v-card-title>
           <v-card-subtitle>{{ user.email }}</v-card-subtitle>
           <v-list>
-            <v-list-item link to="">
-              <v-list-item-title>Profile</v-list-item-title>
+            <v-list-item link to="/user/profile">
+              <v-list-item-title>个人信息</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="logoff()">
-              <v-list-item-title>Log off</v-list-item-title>
+              <v-list-item-title>退出</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
@@ -114,15 +114,15 @@
             <v-list-item-title>主页</v-list-item-title>
           </v-list-item>
           <v-list-item link to="/manager/userMessages">
-            <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
+            <v-list-item-icon><v-icon>mdi-account-multiple</v-icon></v-list-item-icon>
             <v-list-item-title>用户信息</v-list-item-title>
           </v-list-item>
           <v-list-item link to="/manager/loginMessages">
-            <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
+            <v-list-item-icon><v-icon>mdi-history</v-icon></v-list-item-icon>
             <v-list-item-title>用户登录信息</v-list-item-title>
           </v-list-item>
           <v-list-item link to="/manager/projectMessages">
-            <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
+            <v-list-item-icon><v-icon>mdi-book-edit-outline</v-icon></v-list-item-icon>
             <v-list-item-title>项目信息</v-list-item-title>
           </v-list-item>
         </v-list-item-group>

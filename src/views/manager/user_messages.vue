@@ -210,15 +210,19 @@ export default {
     // 重置用户密码
     resetPassword() {
       let userId = this.userResetPasswordDialogMessage.id
-      let data = JSON.stringify({managerId: 1, userId: userId})
-      console.log(data)
-      axios.post("/api/management/resetUserPassword", JSON.parse(data))
+      axios.post("/api/management/resetUserPassword", {managerId: this.user.id, userId: userId})
           .then((response) => {
             console.log(response.data)
             if (response.data.errcode === 1) {
-              window.alert("您没有该权限")
+              this.$message({
+                type: 'error',
+                message: "您没有该权限"
+              });
             } else {
-              window.alert("成功将用户" + response.data.name + "的密码修改为" + response.data.resetPassword)
+              this.$message({
+                type: 'success',
+                message: "成功将用户" + response.data.name + "的密码修改为" + response.data.resetPassword
+              });
             }
           })
           .catch((err) => {
@@ -256,7 +260,10 @@ export default {
             this.showChangeUserStatus = false
             console.log(response.data)
             if (response.data.errcode === 1) {
-              window.alert("您没有该权限")
+              this.$message({
+                type: 'error',
+                message: "您没有该权限"
+              });
             } else if (response.data.errcode === 2) {
               let showStatus;
               if (this.selectedStatus === 'A') {
@@ -264,13 +271,21 @@ export default {
               } else {
                 showStatus = "禁用"
               }
-              setTimeout("alert('对不起, 要你久候')", 1000 )
-              // window.alert("用户" + this.userStatusDialogMessage.name + "的状态已为" + showStatus)
+              this.$message({
+                type: 'info',
+                message: "用户" + this.userStatusDialogMessage.name + "的状态已为" + showStatus
+              });
             } else {
               if (this.selectedStatus === 'A') {
-                window.alert("成功将用户" + this.userStatusDialogMessage.name + "的状态恢复为正常")
+                this.$message({
+                  type: 'success',
+                  message: "成功将用户" + this.userStatusDialogMessage.name + "的状态恢复为正常"
+                });
               } else {
-                window.alert("成功将用户" + this.userStatusDialogMessage.name + "的状态修改为禁用")
+                this.$message({
+                  type: 'success',
+                  message: "成功将用户" + this.userStatusDialogMessage.name + "的状态修改为禁用"
+                });
               }
             }
             this.userStatusDialogMessage = ''
