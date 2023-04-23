@@ -1,13 +1,12 @@
 <template>
-<v-main>
-    <h1>分支详情 - </h1>
-    <p>this is branch specific view</p>
-    <p>projId: {{projId}} so proj is {{this.proj}}</p>
-    <p>repoId: {{repoId}} so repo is {{this.repo}}</p>
-    <p>branchName: {{branchName}}</p>
-    <p>commitHistory: {{commitHistory}}</p>
+<!--    <p>this is branch specific view</p>-->
+<!--    <p>projId: {{projId}} so proj is {{this.proj}}</p>-->
+<!--    <p>repoId: {{repoId}} so repo is {{this.repo}}</p>-->
+<!--    <p>branchName: {{branchName}}</p>-->
+<!--    <p>commitHistory: {{commitHistory}}</p>-->
 
     <v-container fluid>
+        <h1>分支详情 - {{branchName}}</h1>
         <v-row>
             <v-col cols="3" class="px-3">
                 <h2>提交记录</h2>
@@ -36,15 +35,18 @@
                                     show-labels
                                     auto-draw
                                 ></v-sparkline>
-                                <v-card-title>{{entry.title}}</v-card-title>
+                                <v-card-title>从 {{entry.label[0]}} 到 {{entry.label[entry.label.length-1]}} 的提交</v-card-title>
                             </v-card>
                         </v-col>
                     </v-row>
+                    <br>
+                    <v-divider></v-divider>
+                    <br>
+                    <v-row dense></v-row>
                 </v-container>
             </v-col>
         </v-row>
     </v-container>
-</v-main>
 </template>
 
 <script>
@@ -63,21 +65,21 @@ export default {
             branches: null,
             commitHistory: null,
             daily: {
-                col: 6,
+                col: 4,
                 color: 'red',
                 title: '过去三十日内的提交',
-                label: ['123', '456', '789'],
-                data: [1, 2, 3]
+                label: [],
+                data: []
             },
             monthly: {
-                col: 6,
+                col: 4,
                 color: 'blue',
                 title: '过去一年内的提交',
                 label: [],
                 data: []
             },
             yearly: {
-                col: 6,
+                col: 4,
                 color: 'green',
                 title: '过去十年内的提交',
                 label: [],
@@ -159,9 +161,79 @@ export default {
     },
     methods: {
         prep_data() {
-            // 遍历commitHistory，将每个commit的时间戳转换为八位数字，然后统计每天的commit数量
-            // todo
-        }
+            // 获取commitHistory最后一个元素的日期
+            let last_commit = this.commitHistory[this.commitHistory.length - 1]
+            let last_commit_time = new Date(last_commit.commitTime)
+            last_commit_time.setDate(last_commit_time.getDate() - 1)
+            // 从 last_commit_time 开始，每天加一天，直到今天，每天的日期作为key，value为0
+            let daily = {}
+            let today = new Date()
+            while (today >= last_commit_time) {
+                let key = last_commit_time.toLocaleDateString()
+                daily[key] = 0
+                last_commit_time.setDate(last_commit_time.getDate() + 1)
+            }
+            // 遍历commitHistory，每个元素的日期作为key，value加一
+            this.commitHistory.forEach((cur, index, arr) => {
+                let key = new Date(cur.commitTime).toLocaleDateString()
+                if (daily[key] === undefined) {
+                    daily[key] = 1
+                } else {
+                    daily[key] += 1
+                }
+            })
+            // 将daily的key和value分别放入label和data
+            this.daily.label = Object.keys(daily)
+            // 除了第一个和最后一个，将this.daily.label其他元素换为''
+            for (let i = 1; i < this.daily.label.length - 1; i++) {
+                this.daily.label[i] = ''
+            }
+            this.daily.data = Object.values(daily)
+
+            // 从 last_commit_time 开始，每月加一月，直到今天，每月的日期作为key，value为0
+            let monthly = {}
+            last_commit_time = new Date(last_commit.commitTime)
+            last_commit_time.setMonth(last_commit_time.getMonth() - 1)
+            while (today >= last_commit_time) {
+                let key = last_commit_time.getFullYear() + '-' + (last_commit_time.getMonth() + 1)
+                monthly[key] = 0
+                last_commit_time.setMonth(last_commit_time.getMonth() + 1)
+            }
+            // 遍历commitHistory，每个元素的日期作为key，value加一
+            this.commitHistory.forEach((cur, index, arr) => {
+                let key = new Date(cur.commitTime).getFullYear() + '-' + (new Date(cur.commitTime).getMonth() + 1)
+                if (monthly[key] === undefined) {
+                    monthly[key] = 1
+                } else {
+                    monthly[key] += 1
+                }
+            })
+            // 将monthly的key和value分别放入label和data
+            this.monthly.label = Object.keys(monthly)
+            this.monthly.data = Object.values(monthly)
+
+            // 从 last_commit_time 开始，每年加一年，直到今天，每年的日期作为key，value为0
+            let yearly = {}
+            last_commit_time = new Date(last_commit.commitTime)
+            last_commit_time.setFullYear(last_commit_time.getFullYear() - 1)
+            while (today >= last_commit_time) {
+                let key = last_commit_time.getFullYear()
+                yearly[key] = 0
+                last_commit_time.setFullYear(last_commit_time.getFullYear() + 1)
+            }
+            // 遍历commitHistory，每个元素的日期作为key，value加一
+            this.commitHistory.forEach((cur, index, arr) => {
+                let key = new Date(cur.commitTime).getFullYear()
+                if (yearly[key] === undefined) {
+                    yearly[key] = 1
+                } else {
+                    yearly[key] += 1
+                }
+            })
+            // 将yearly的key和value分别放入label和data
+            this.yearly.label = Object.keys(yearly)
+            this.yearly.data = Object.values(yearly)
+        },
     }
 }
 </script>
