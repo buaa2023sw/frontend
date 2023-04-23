@@ -139,12 +139,6 @@ export default {
       ],
       inject: {'user': {defualt: null},
                'selectedProj': {defualt: null}},
-      selectedProj: {
-        id: "1"
-      }, 
-      user: {
-        id: "1"
-      },
       radioGroup: "管理员",
     personData: [],
     //     "icon": '',

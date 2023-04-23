@@ -19,7 +19,10 @@ export default {
   },
   mounted() {
     // 模拟数据
-    this.chartData.workloads = [25, 15, 30, 20, 10]; //任务的工作量
+    for (let i=0;i<this.$route.query.workloads.length;i++) {
+      this.chartData.workloads.push(parseInt(this.$route.query.workloads[i]));
+    }
+    console.log(this.chartData.workloads)
     this.chartData.expectedDates = ['2023-04-10', '2023-04-20', '2023-04-30', '2023-05-10', '2023-05-20'];//预期的完成时间
     this.chartData.actualDates = ['2023-04-13', '2023-04-21', '2023-04-28', '2023-05-08', ''];
 
@@ -27,6 +30,7 @@ export default {
     for (let i = 0; i < this.chartData.workloads.length; i++) {
       sum += this.chartData.workloads[i];
     }
+    console.log(sum);
     
     let expectedDatesValue = this.chartData.expectedDates.map((item)=>{
         return new Date(item).valueOf();
