@@ -59,12 +59,18 @@ export default {
             <v-text-field v-model="gh_reponame" label="GitHub Reponame"></v-text-field>
         </v-col>
         </v-row>
-        <v-btn @click="bindSplit()" :disabled="bindingInProgress || gh_reponame === '' || gh_username === ''">
-            绑定
-            {{ gh_username === '' ? '?' : gh_username }} / 
-            {{ gh_reponame === '' ? '?' : gh_reponame }}
-            到“{{ proj.name }}”
-        </v-btn>
+        <v-row>
+            <v-col cols="4"></v-col>
+            <v-col cols="4">
+                <v-btn @click="bindSplit()" :disabled="bindingInProgress || gh_reponame === '' || gh_username === ''">
+                    绑定
+                    {{ gh_username === '' ? '?' : gh_username }} /
+                    {{ gh_reponame === '' ? '?' : gh_reponame }}
+                    到“{{ proj.name }}”
+                </v-btn>
+            </v-col>
+            <v-col cols="4"></v-col>
+        </v-row>
 <!--        <span v-if="bindingInProgress">binding, please wait.</span>-->
     </v-form>
     <v-form v-else>
@@ -77,11 +83,17 @@ export default {
                 <v-text-field v-model="git_url" label="github url"></v-text-field>
             </v-col>
         </v-row>
-        <v-btn @click="bindWhole()" :disabled="bindingInProgress || git_url === ''">
-            绑定
-            {{ git_url === '' ? 'github.com/?/?' : git_url.replace(/https:\/\/github.com\//, '') }}
-            到“{{ proj.name }}”
-        </v-btn>
+        <v-row>
+            <v-col cols="4"></v-col>
+            <v-col cols="4">
+                <v-btn @click="bindWhole()" :disabled="bindingInProgress || git_url === '' || !/[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+/.test(git_url.replace(/https:\/\/github.com\//, ''))">
+                    绑定
+                    {{ git_url === '' ? '?' : git_url.replace(/https:\/\/github.com\//, '') }}
+                    到“{{ proj.name }}”
+                </v-btn>
+            </v-col>
+            <v-col cols="4"></v-col>
+        </v-row>
 <!--        <span v-if="bindingInProgress">binding, please wait.</span>-->
     </v-form>
 </template>

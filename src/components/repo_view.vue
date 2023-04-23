@@ -29,15 +29,9 @@ export default {
       }
     },
     inject: {
-        proj: {
-          default: null
-        },
-        bindRepos: {
-          default: null
-        },
-        bindReposBusy: {
-          default: null
-        }
+        proj: { default: null },
+        bindRepos: {default: null},
+        bindReposBusy: {default: null}
     },
     provide() {
         return {
@@ -49,13 +43,12 @@ export default {
 
 <template>
 <v-col cols="12" class="px-1">
-  <h2 v-if="!bindReposBusy">代码存储库 - {{ bindRepos[selectedRepo].user }} / {{ bindRepos[selectedRepo].repo}}</h2>
+  <h2 v-if="bindReposBusy">代码存储库</h2>
+  <h2 v-else-if="bindRepos.length > 0">代码存储库 - {{ bindRepos[selectedRepo].user }} / {{ bindRepos[selectedRepo].repo}}</h2>
   <h2 v-else>代码存储库</h2>
 
-<!--  <p>选择一个代码存储库： = {{ selectedRepo }}</p>-->
   <v-skeleton-loader v-if="bindReposBusy" type="card"></v-skeleton-loader>
-
-  <div v-else>
+  <div v-else-if="bindRepos.length > 0">
       <v-tabs v-model="selectedRepo">
           <v-tab v-for="repository in bindRepos" :key="repository.id">{{ repository.repo }}</v-tab>
       </v-tabs>
@@ -68,6 +61,9 @@ export default {
               <v-row><v-col class="ma-1"><v-card raised class="pa-2"><pr_view /></v-card></v-col></v-row>
           </v-tab-item>
       </v-tabs-items>
+  </div>
+  <div v-else>
+      <p>这个项目还没有绑定代码存储库哦</p>
   </div>
 </v-col>
 </template>

@@ -78,7 +78,7 @@
             <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
             <v-list-item-title>主页</v-list-item-title>
           </v-list-item>
-          <v-list-item link to="/newproj" @click="selectedProj = null">
+          <v-list-item link @click="setupDialog = true">
             <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
             <v-list-item-title>新建项目</v-list-item-title>
           </v-list-item>
@@ -129,7 +129,26 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
+    <el-dialog
+            title="创建项目"
+            :visible.sync="setupDialog"
+            width="50%"
+            :before-close="handleClose">
+        <el-form label-position="left" label-width="80px" :model="form" ref="form">
+            <el-form-item label="项目名称">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="活动概述">
+                <el-input type="textarea" v-model="form.intro"  :autosize="{ minRows: 5, maxRows: 10}"></el-input>
+            </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="setupDialog = false">取 消</el-button>
+        <el-button type="primary" @click="setupProject">确 定</el-button>
+        </span>
+    </el-dialog>
+
+      <v-main>
       <router-view v-if="showRouterView" />
     </v-main>
   </v-app>
@@ -138,6 +157,7 @@
 <script>
 import Cookies from 'js-cookie'
 import { computed } from 'vue'
+import {newProject} from "@/api/user";
 
 let user = Cookies.get('user')
 if (user === undefined) {
@@ -174,7 +194,13 @@ export default {
       user: user,
       drawerIndex: null,
       routeSelect: null,
-      selectedProj: null
+      selectedProj: null,
+      setupDialog: false,
+      form: {
+          name: '',
+          intro: '',
+          id: ''
+      },
     }
   },
   provide() {
@@ -185,7 +211,7 @@ export default {
   },
   methods: {
     showLabel() {
-      return this.user !== null && window.location.pathname.startsWith('/user')
+      return this.user !== null && !window.location.pathname.startsWith('/manager')
     },
     // getSelectedProj() {
     //     let pid = this.$route.params.projid;
@@ -198,7 +224,28 @@ export default {
     logoff() {
       Cookies.remove('user');
       window.location.href = '/login'
-    }
+    },
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+            .then(()=> {
+                done();
+            })
+            .catch(() => {});
+    },
+    setupProject() {
+        // console.log(this.search);
+        // console.log("submit");
+        this.setupDialog = false;
+        newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
+            res => {
+                console.log(res);
+            }
+        );
+        this.form =  {
+            name: '',
+            intro: ''
+        }
+    },
   }
 };
 </script>

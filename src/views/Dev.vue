@@ -72,7 +72,7 @@ export default {
 
 <template>
     <v-app>
-        <v-container>
+        <v-container fluid>
 <!--            <v-row>-->
 <!--                <p>injected info:</p>-->
 <!--            </v-row>-->
