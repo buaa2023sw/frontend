@@ -83,7 +83,11 @@
             <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
             <v-list-item-title>新建项目</v-list-item-title>
           </v-list-item>
-          <v-list-item link v-for="project in user.projects" :key="project.id" :to="routeSelect" @click="selectedProj = project">
+            <v-list-item @click="updateUserProj()">
+                <v-list-item-icon><v-icon>mdi-refresh</v-icon></v-list-item-icon>
+                <v-list-item-title>更新项目</v-list-item-title>
+            </v-list-item>
+          <v-list-item v-for="project in user.projects" :key="project.id" :to="routeSelect" @click="selectedProj = project">
             <v-list-item-icon><v-icon>mdi-developer-board</v-icon></v-list-item-icon>
             <v-list-item-title>{{project.name}}</v-list-item-title>
           </v-list-item>
