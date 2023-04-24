@@ -25,7 +25,8 @@ export default {
     },
     inject: {
         user: {default: null},
-        selectedProj: {default: null}
+        selectedProj: {default: null},
+        changeSelectedProj: {default: null}
     },
     provide() {
         return {
@@ -65,14 +66,19 @@ export default {
                 alert('/api/develop/getBindRepos error' + err)
                 this.bindReposBusy = false;
             })
-        }
+        },
+        // projSelected(proj) {
+        //     console.log(JSON.stringify(this.selectedProj) + '<-' + JSON.stringify(proj));
+        //     this.selectedProj = proj;
+        //     console.log(JSON.stringify(this.selectedProj));
+        // }
     }
 }
 </script>
 
 <template>
     <v-app>
-        <v-container fluid>
+        <v-container fluid v-if="selectedProj !== null">
 <!--            <v-row>-->
 <!--                <p>injected info:</p>-->
 <!--            </v-row>-->
@@ -102,6 +108,23 @@ export default {
 
             <v-row>
                 <repoView />
+            </v-row>
+        </v-container>
+        <v-container v-else>
+            <v-row>
+                <h1>开发</h1>
+                <p>选择一个项目以继续！</p>
+                <p>selectedProj = {{selectedProj === null ? 'null' : selectedProj}}</p>
+            </v-row>
+            <v-row>
+                <v-col cols="4" v-for="project in user.projects" :key="project.id">
+                    <v-card>
+                        <v-card-title>{{ project.name }}</v-card-title>
+                        <v-card-actions>
+                            <v-btn @click="changeSelectedProj(project)">开始！</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-col>
             </v-row>
         </v-container>
     </v-app>

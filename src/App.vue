@@ -208,7 +208,8 @@ export default {
   provide() {
     return {
       user: computed(() => this.user),
-      selectedProj: computed(() => this.selectedProj)
+      selectedProj: computed(() => this.selectedProj),
+      changeSelectedProj: this.changeSelectedProj
     }
   },
   methods: {
@@ -248,6 +249,9 @@ export default {
             intro: ''
         }
     },
+    changeSelectedProj(proj) {
+      this.selectedProj = proj;
+    }
   }
 };
 </script>
