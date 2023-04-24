@@ -101,11 +101,11 @@ export default {
             this.upPie(data)
           } else {
             let data = [
-              {value: response.data.tiny, name: '微小型（1~3人）'},
-              {value: response.data.small, name: '小型（4~7人）'},
-              {value: response.data.medium, name: '中型（8~15人）'},
-              {value: 0, name: '大型（16~30人）'}, // TODO
-              {value: response.data.large, name: '巨大型（>30人）'}
+              {value: response.data.tinyNum, name: '微小型（1~3人）'},
+              {value: response.data.smallNum, name: '小型（4~7人）'},
+              {value: response.data.mediumNum, name: '中型（8~15人）'},
+              {value: response.data.bigNum, name: '大型（16~30人）'}, // TODO
+              {value: response.data.largeNum, name: '巨大型（>30人）'}
             ]
             this.upPie(data)
           }
