@@ -37,9 +37,10 @@
 
       <template v-if="showLabel()" v-slot:extension>
         <v-tabs v-model="routeSelect">
-          <v-tab link to="/home/">Home</v-tab>
-          <v-tab link to="/plan/">Plan</v-tab>
+          <v-tab link to="/allProject/">Home</v-tab>
+          <v-tab link to="/allProject/allTask/">Plan</v-tab>
           <v-tab link to="/dev/">Dev</v-tab>
+          <v-tab link to="/allProject/allPerson">Team</v-tab>
           <!--          <v-tab-->
           <!--                  v-for="project in user.projects"-->
           <!--                  :key="project.id"-->
@@ -74,7 +75,7 @@
         <v-divider></v-divider>
 
         <v-list-item-group v-if="user.status==='A'" mandatory>
-          <v-list-item link :to="routeSelect + 'home'" @click="selectedProj = null">
+          <v-list-item link :to="'/allProject/'" @click="selectedProj = null">
             <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
             <v-list-item-title>主页</v-list-item-title>
           </v-list-item>
@@ -82,7 +83,7 @@
             <v-list-item-icon><v-icon>mdi-plus-circle</v-icon></v-list-item-icon>
             <v-list-item-title>新建项目</v-list-item-title>
           </v-list-item>
-          <v-list-item link v-for="project in user.projects" :key="project.id" :to="routeSelect + project.id" @click="selectedProj = project">
+          <v-list-item link v-for="project in user.projects" :key="project.id" :to="routeSelect" @click="selectedProj = project">
             <v-list-item-icon><v-icon>mdi-developer-board</v-icon></v-list-item-icon>
             <v-list-item-title>{{project.name}}</v-list-item-title>
           </v-list-item>
@@ -160,6 +161,7 @@ import { computed } from 'vue'
 import {newProject} from "@/api/user";
 
 let user = Cookies.get('user')
+console.log(user);
 if (user === undefined) {
   console.log('not logged in')
   if (window.location.pathname === '/register') {

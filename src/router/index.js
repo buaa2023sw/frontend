@@ -12,7 +12,7 @@ const router = new VueRouter({
   base: import.meta.env.BASE_URL,
   routes: [
     {
-      path:'/allTask',
+      path:'/allProject/allTask',
       component: () => import('../views/user/projectPlanning/allTask.vue')
     },
     {
@@ -24,7 +24,7 @@ const router = new VueRouter({
       component: () => import('../views/user/projectPlanning/allProject.vue')
     },
     {
-      path: '/plan/home',
+      path: '/allProject',
       component: () => import('../views/user/projectPlanning/allProject.vue')
     },
     {
@@ -32,7 +32,7 @@ const router = new VueRouter({
       component: () => import('../views/user/projectPlanning/allTask.vue')
     },
     {
-      path:'/allPerson',
+      path:'/allProject/allPerson',
       component: () => import('../views/user/projectPlanning/allPerson.vue')
     },
     {

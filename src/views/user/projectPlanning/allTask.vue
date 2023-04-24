@@ -705,6 +705,7 @@ export default {
       this.setupFather = false;
       console.log(this.user.id);
       console.log(this.newFatherForm.name);
+      console.log(this.selectedProj);
       addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id}).then(
         res => {
           console.log(res);
