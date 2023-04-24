@@ -113,7 +113,9 @@ export default {
         <v-container v-else>
             <v-row>
                 <h1>开发</h1>
-                <p>选择一个项目以继续！</p>
+            </v-row>
+            <v-row>
+                <p>请选择一个项目以继续</p>
             </v-row>
             <v-row>
                 <v-col cols="4" v-for="project in user.projects" :key="project.id">
