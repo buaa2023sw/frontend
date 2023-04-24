@@ -10,7 +10,7 @@
         <v-row>
             <v-col cols="3" class="px-3">
                 <h2>提交记录</h2>
-                <v-list>
+                <v-list class="overflow-y-auto" max-height="1200px">
                     <v-list-item v-for="commit in commitHistory" :key="commit.id">
                         <v-list-item-content>
                             <v-list-item-title>{{commit.commitMessage}}</v-list-item-title>
@@ -42,7 +42,30 @@
                     <br>
                     <v-divider></v-divider>
                     <br>
-                    <v-row dense></v-row>
+                    <v-row dense>
+                        <v-col cols="12">
+                            <v-card>
+                                <v-container fluid>
+                                    <v-row>
+                                        <v-col cols="8">
+                                            <div ref="user_specific_pie_chart" style="height: 20em" class="lime"></div>
+                                        </v-col>
+                                        <v-col cols="4">
+                                            <v-list dense max-height="20em" class="overflow-y-auto">
+                                                <v-list-item v-for="user in perUser" :key="user.key">
+                                                    <v-list-item-content>
+                                                        <v-list-item-title>{{user.key}}</v-list-item-title>
+                                                        <v-list-item-subtitle>{{user.value}} 次提交</v-list-item-subtitle>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                                <v-card-title>用户提交数量</v-card-title>
+                            </v-card>
+                        </v-col>
+                    </v-row>
                 </v-container>
             </v-col>
         </v-row>
@@ -51,6 +74,7 @@
 
 <script>
 import axios from "axios";
+import * as echarts from "echarts";
 
 export default {
     name: "Branch",
@@ -66,25 +90,26 @@ export default {
             commitHistory: null,
             daily: {
                 col: 4,
-                color: 'red',
+                color: '#FFCDD2',
                 title: '过去三十日内的提交',
                 label: [],
                 data: []
             },
             monthly: {
                 col: 4,
-                color: 'blue',
+                color: '#B2EBF2',
                 title: '过去一年内的提交',
                 label: [],
                 data: []
             },
             yearly: {
                 col: 4,
-                color: 'green',
+                color: '#C8E6C9',
                 title: '过去十年内的提交',
                 label: [],
                 data: []
-            }
+            },
+            perUser: []
         }
     },
     created() {
@@ -148,7 +173,9 @@ export default {
                         commitTime: cur.commitTime
                     }
                 })
-                this.prep_data()
+                this.prep_data_in_time_scope()
+                this.prep_data_in_user_scope()
+                this.draw_pie_chart()
             } else {
                 alert('/api/develop/getCommitHistory error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
             }
@@ -160,7 +187,7 @@ export default {
         user: {default: null}
     },
     methods: {
-        prep_data() {
+        prep_data_in_time_scope() {
             // 获取commitHistory最后一个元素的日期
             let last_commit = this.commitHistory[this.commitHistory.length - 1]
             let last_commit_time = new Date(last_commit.commitTime)
@@ -234,6 +261,58 @@ export default {
             this.yearly.label = Object.keys(yearly)
             this.yearly.data = Object.values(yearly)
         },
+        prep_data_in_user_scope() {
+            // 遍历commitHistory，统计每个author的commit次数
+            let user = {}
+            this.commitHistory.forEach((cur, index, arr) => {
+                if (user[cur.author] === undefined) {
+                    user[cur.author] = 1
+                } else {
+                    user[cur.author] += 1
+                }
+            })
+            // 将 user 转换为 {key, value}的数组
+            for (let key in user) {
+                this.perUser.push({key: key, value: user[key]})
+            }
+            this.perUser.sort((a, b) => {
+                return b.value - a.value
+            })
+        },
+        draw_pie_chart() {
+            let pieChart = echarts.init(this.$refs.user_specific_pie_chart)
+            window.addEventListener('resize', () => {pieChart.resize()})
+            console.log(pieChart)
+            pieChart.setOption({
+                title: {
+                    text: '', left: 'center'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    data: this.perUser.label
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(args) {
+                        return args.data.key + ' : ' + args.data.value + '次'
+                    }
+                },
+                series: [
+                    {
+                        name: '提交次数',
+                        type: 'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        labelLine: {
+                            show: false
+                        },
+                        data: this.perUser
+                    }
+                ]
+            })
+
+        }
     }
 }
 </script>
