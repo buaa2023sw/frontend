@@ -16,7 +16,7 @@
       style="position:absolute;top:1%;right:30%;height:4%;width:10%;"
       @click="gotoPic"
       >  <v-icon
-      left
+       left
     >     mdi-align-vertical-bottom
     </v-icon>
     图表展示</v-btn>
@@ -721,6 +721,7 @@ export default {
           console.log(res);
         }
       )
+      this.newFatherForm.name = '';
       this.getTaskList();
     },
     gotoPic() {
@@ -771,6 +772,7 @@ export default {
         }
       )
       this.getTaskList();
+      this.getTaskList();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -793,7 +795,7 @@ export default {
           }
         );
       console.log(this.newSonForm);
-      this.getPersonList();
+      this.getTaskList();
       this.getTaskList();
       this.setupSon = false;
       this.newSonForm.contribute = 0;
