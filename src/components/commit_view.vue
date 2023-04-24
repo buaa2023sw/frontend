@@ -135,7 +135,7 @@ export default {
       <br> <v-divider></v-divider> <br>
       <v-row>
           <v-col cols="6" class="text-center"><v-btn><v-icon>mdi-github</v-icon>在GitHub查看</v-btn></v-col>
-          <v-col cols="6" class="text-center"><v-btn link :to="selectedRepo.id + '/' + selectedBranch.name + '/'"><v-icon>mdi-send</v-icon>浏览详情</v-btn></v-col>
+          <v-col cols="6" class="text-center"><v-btn link :to="proj.id + '/' + selectedRepo.id + '/' + selectedBranch.name + '/'"><v-icon>mdi-send</v-icon>浏览详情</v-btn></v-col>
       </v-row>
   </div>
   <v-skeleton-loader v-else type="table" class="mx-auto" />
