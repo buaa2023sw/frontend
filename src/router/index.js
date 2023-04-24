@@ -24,8 +24,12 @@ const router = new VueRouter({
       component: () => import('../views/user/projectPlanning/allProject.vue')
     },
     {
-      path:'/plan/home',
+      path: '/plan/home',
       component: () => import('../views/user/projectPlanning/allProject.vue')
+    },
+    {
+      path:'/plan/:projid',
+      component: () => import('../views/user/projectPlanning/allTask.vue')
     },
     {
       path:'/allPerson',

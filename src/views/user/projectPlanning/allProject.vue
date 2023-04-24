@@ -173,7 +173,7 @@ methods: {
 
 
 <script>
-import { watchAllProject,  newProject, modifyProject, deleteProject} from '@/api/user'
+import {deleteProject, modifyProject, newProject, watchAllProject} from '@/api/user'
 
 
 export default {
@@ -239,8 +239,7 @@ export default {
       console.log("get_project");
       watchAllProject({userId: this.user.id}).then(
         res => {
-          var arr = res['data']['data'];
-          this.projectData = arr;
+          this.projectData = res['data']['data'];
           console.log(this.projectData);
           }
       )
@@ -298,13 +297,13 @@ export default {
       // editProject(this.form);
     }, 
     transform(state) {
-      if (state == 'A') {
+      if (state === 'A') {
         return '已完成';
-      } else if (state == 'B') {
+      } else if (state === 'B') {
         return '进行中';
-      } else if (state == 'C') {
+      } else if (state === 'C') {
         return '未开始';
-      } else if (state == 'D') {
+      } else if (state === 'D') {
         return '不合法';
       }
 

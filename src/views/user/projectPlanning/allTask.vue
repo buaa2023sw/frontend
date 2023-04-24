@@ -24,7 +24,7 @@
       color="primary"
       style="position:absolute;top:1%;right:17%;height:4%;width:10%;"
       @click="checkMyTask"
-      v-if="checkMyFlag == false"
+      v-if="checkMyFlag === false"
       >查看我的任务</v-btn>
       <v-btn
       depressed
@@ -289,16 +289,16 @@
         :visible.sync="setupSon"
          width="50%"
         :before-close="handleClose">
-        <el-form :label-position=left label-iwdth="80px" :model="newSonForm" ref="newSonForm">
+        <el-form label-position="left" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
     <el-form-item label="子任务名称">
       <el-input v-model="newSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
-      <p1>完成时间</p1>
+      <h1>完成时间</h1>
       <v-menu
         v-model="menu2"
         :close-on-content-click="false"
-        :return-value.sync="sad"
+        return-value.sync="sad"
         transition="scale-transition"
         offset-y
         min-width="auto"
@@ -349,7 +349,7 @@
       style="position:relative;bottom:-5px"
     ></v-slider>
     </el-form-item>
-    <p1 style="top:5%">负责人</p1>
+    <h1 style="top:5%">负责人</h1>
       <v-select
           v-model = "newSonForm.managerName"
           :items="personNameList"
@@ -366,7 +366,7 @@
         :visible.sync="setupAlarm"
          width="25%"
         :before-close="handleClose">
-        <el-form :label-position=left label-width="80px" :model="newFatherForm" ref="newFatherForm" style="poition:relative">
+        <el-form label-position="left" label-width="80px" :model="newFatherForm" ref="newFatherForm" style="position:relative">
           <v-menu
         v-model="menu1"
         :close-on-content-click="false"
@@ -468,16 +468,16 @@
         :visible.sync="editTask"
          width="50%"
         :before-close="handleClose">
-        <el-form :label-position=left label-iwdth="80px" :model="newSonForm" ref="newSonForm">
+        <el-form label-position="left" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
     <el-form-item label="子任务名称">
       <el-input v-model="editSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
-      <p1>完成时间</p1>
+      <h1>完成时间</h1>
       <v-menu
         v-model="menu"
         :close-on-content-click="false"
-        :return-value.sync="sad"
+        return-value.sync="sad"
         transition="scale-transition"
         offset-y
         min-width="auto"
@@ -521,7 +521,7 @@
       style="position:relative;bottom:-5px"
     ></v-slider>
     </el-form-item>
-    <p1 style="top:5%">负责人</p1>
+    <h1 style="top:5%">负责人</h1>
       <v-select
           v-model ="editSonForm.managerName"
           :items="personNameList"
@@ -673,7 +673,7 @@ export default {
           for (let i=0;i < res['data']['data'].length;i++) {
             this.personIdList.push(res['data']['data'][i]['peopleId']);
             this.personNameList.push(res['data']['data'][i]['peopleName']);
-          };
+          }
         }
       )
     },
@@ -824,11 +824,11 @@ export default {
     },
     switchAction(action, index, item) {
         this.tempItem = item;
-        if (action == "删除任务") {
+        if (action === "删除任务") {
         this.handleDelete(index, item);
-        } else if (action == "编辑任务") { 
+        } else if (action === "编辑任务") {
           this.handleEdit(item);
-        } else if (action == "完成任务") {
+        } else if (action === "完成任务") {
           this.handleComplete(item);
         }
     },
@@ -884,13 +884,13 @@ export default {
       this.editTask = false;
     },
     transform(state) {
-      if (state == 'A') {
+      if (state === 'A') {
         return '已完成';
-      } else if (state == 'B') {
+      } else if (state === 'B') {
         return '进行中';
-      } else if (state == 'C') {
+      } else if (state === 'C') {
         return '未开始';
-      } else if (state == 'D') {
+      } else if (state === 'D') {
         return '不合法';
       }
   },
