@@ -119,3 +119,7 @@ export const modifyProject = (data) => {
 export const deleteProject  = (data) => {
   return request.post("/api/plan/deleteProject", data);
 }
+
+export const modifyProjectStatus  = (data) => {
+  return request.post("/api/plan/modifyProjectStatus", data);
+}

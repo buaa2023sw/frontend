@@ -55,6 +55,22 @@
   </template>
   <template v-slot:[`item.state`] ="{ item }">
     {{ transform(item.state )}}
+    <v-icon
+      v-if='transform(item.state ) !== "已完成"'
+      small
+      class="mr-2"
+      @click="handleComplete(item)"
+    >
+      mdi-check
+    </v-icon>
+    <v-icon
+     v-else
+      small
+      class="mr-2"
+      @click="handleNotComplete(item)"
+    >
+      mdi-backup-restore
+    </v-icon>
   </template>
 </v-data-table>
       </div>
@@ -77,8 +93,6 @@
   <el-button type="primary" @click="setupProject">确 定</el-button>
 </span>
 </el-dialog> 
-
-
 
 <el-dialog
       title="编辑项目"
@@ -173,7 +187,7 @@ methods: {
 
 
 <script>
-import {deleteProject, modifyProject, newProject, watchAllProject} from '@/api/user'
+import {deleteProject, modifyProject, newProject, watchAllProject,  modifyProjectStatus} from '@/api/user'
 
 
 export default {
@@ -279,6 +293,52 @@ export default {
         });          
       });
     },
+    handleComplete(row) {
+      this.$confirm('确定已完成项目?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '项目已完成!'
+        });
+        modifyProjectStatus({projectId:row.projectId, userId: this.user.id, status: 'A'}).then(
+          res => {
+            console.log(res);
+          }
+        );
+        this.get_project();
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });          
+      });
+    },
+    handleNotComplete(row) {
+      this.$confirm('确定重新进行项目?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '项目已恢复进行!'
+        });
+        modifyProjectStatus({projectId:row.projectId, userId: this.user.id, status: 'B'}).then(
+          res => {
+            console.log(res);
+          }
+        );
+        this.get_project();
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });          
+      });
+    },
     setupProject() {
       // console.log(this.search);
       // console.log("submit");
@@ -293,6 +353,7 @@ export default {
         name: '',
         intro: ''
       }
+      this.get_project();
     },
     editProject() {
       this.editDialog = false;

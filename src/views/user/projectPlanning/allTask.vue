@@ -1,5 +1,6 @@
   <template>
-    <div style="width: 100%; height: 100%;">
+    <div v-if="this.selectedProj == null" style="width: 100%; height: 100%;"></div>
+    <div v-else style="width: 100%; height: 100%;">
       <div class="one">
           <h1 style="position:absolute;left:5%;top:10%">任务列表</h1>
       </div>
@@ -294,7 +295,7 @@
       <el-input v-model="newSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
-      <h1>完成时间</h1>
+      <p>完成时间</p>
       <v-menu
         v-model="menu2"
         :close-on-content-click="false"
@@ -349,7 +350,7 @@
       style="position:relative;bottom:-5px"
     ></v-slider>
     </el-form-item>
-    <h1 style="top:5%">负责人</h1>
+    <p style="top:5%">负责人</p>
       <v-select
           v-model = "newSonForm.managerName"
           :items="personNameList"
@@ -368,7 +369,7 @@
         :before-close="handleClose">
         <el-form label-position="left" label-width="80px" :model="newFatherForm" ref="newFatherForm" style="position:relative">
           <v-menu
-        v-model="menu1"
+        v-model="menu3"
         :close-on-content-click="false"
         transition="scale-transition"
         offset-y
@@ -396,14 +397,14 @@
           <v-btn
             text
             color="primary"
-            @click="menu1 = false"
+            @click="menu3 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
             color="primary"
-            @click="menu1 = false"
+            @click="menu3 = false"
           >
             OK
           </v-btn>
@@ -411,7 +412,7 @@
       </v-menu>
 
       <v-menu
-        v-model="menu2"
+        v-model="menu4"
         :close-on-content-click="false"
         transition="scale-transition"
         offset-y
@@ -443,14 +444,14 @@
           <v-btn
             text
             color="primary"
-            @click="menu2 = false"
+            @click="menu4 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
             color="primary"
-            @click="menu2 = false"
+            @click="menu4 = false"
           >
             OK
           </v-btn>
@@ -473,7 +474,7 @@
       <el-input v-model="editSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
-      <h1>完成时间</h1>
+      <p>完成时间</p>
       <v-menu
         v-model="menu"
         :close-on-content-click="false"
@@ -521,7 +522,7 @@
       style="position:relative;bottom:-5px"
     ></v-slider>
     </el-form-item>
-    <h1 style="top:5%">负责人</h1>
+    <p style="top:5%">负责人</p>
       <v-select
           v-model ="editSonForm.managerName"
           :items="personNameList"
@@ -541,11 +542,18 @@ import {showTaskList, addTask, notice, addSubTask, modifyTaskContent, watchMyTas
 
 export default {
   created() {
+    if (this.selectedProj == null){
+      this.$message({
+          type: 'info',
+          message: '请在左侧选择项目以继续！'
+        });
+    } else {
     this.getTaskList();
     this.getPersonList();
+    }
   },
-  inject: {'user': {defualt: null},
-            'selectedProj': {defualt: null}},
+  inject: {'user': {default: null},
+            'selectedProj': {default: null}},
   data: () => ({
     personNameList: [],
     personIdList: [],
@@ -560,6 +568,8 @@ export default {
     menu: false,
     menu1: false,
     menu2: false,
+    menu3: false,
+    menu4: false,
     sonContribute: 0,
     myName: "罗本",
     tempItem: '',
@@ -732,11 +742,18 @@ export default {
         }
       }
       console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
+      if (projectItem.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '您还没有任务!'
+        });
+      } else {
       this.$router.push({path:'/picture'
       , query: {
         projectItem: projectItem, projectItemStart: projectItemStart, projectItemEnd: projectItemEnd,
         workloads: workloads, expectedDates: expectedDates, actualDates: actualDates
       }});
+    }
     },
     deleteTask(task) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {
@@ -776,6 +793,8 @@ export default {
           }
         );
       console.log(this.newSonForm);
+      this.getPersonList();
+      this.getTaskList();
       this.setupSon = false;
       this.newSonForm.contribute = 0;
       this.newSonForm.fatherTaskId = '';
@@ -816,6 +835,10 @@ export default {
       notice({taskId: this.newAlarmForm.taskId, deadline: this.newAlarmForm.date + '-' + this.newAlarmForm.time.replace(':', '-')}).then(
         res => {
           console.log(res);
+          this.$message({
+          type: 'success',
+          message: '设置成功!'
+        });
         }
       )
       // console.log(this.newAlarmForm.date);
@@ -851,6 +874,7 @@ export default {
         console.log(res);
         }
       );
+      this.getTaskList();
     },
     handleDelete(index, item) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {
@@ -868,6 +892,7 @@ export default {
           console.log(res);
         }
       );
+      this.getTaskList();
       }).catch(() => {
         this.$message({
           type: 'info',

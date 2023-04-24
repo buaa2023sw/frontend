@@ -1,6 +1,7 @@
 
 <template>
-  <div style="width: 100%; height: 100%;">
+   <div v-if="this.selectedProj == null" style="width: 100%; height: 100%;"></div>
+  <div v-else style="width: 100%; height: 100%;">
       <div class="one">
           <h1 style="position:absolute;left:5%;top:10%">项目人员列表</h1>
       </div>
@@ -40,11 +41,8 @@
 </template>
     <template v-slot:[`item.icon`] ="{item}">
       <div style="height: 70px;position: relative;width:900px;">
-    <v-avatar size="60" style="inline-block;position: absolute;top:10%" >
-      <img
-        src="https://cdn.vuetifyjs.com/images/john.jpg"
-        alt="John"
-      >
+    <v-avatar size="60" style="inline-block;position: absolute;top:10%" color="indigo" >
+      <span class="white--text text-h5">{{ item.peopleName}}</span>
     </v-avatar>
     <v-p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.peopleName }}</v-p>
     <v-chip
@@ -123,7 +121,14 @@ export default {
   // inject: {user: {default: null},
   //          selectedProj: {default: null}},
   created () {
-    this.getPersonList()
+    if (this.selectedProj == null){
+      this.$message({
+          type: 'info',
+          message: '请在左侧选择项目以继续！'
+        });
+    } else {
+    this.getPersonList();
+    }
   },   
   inject: {'user': {defualt: null},
                'selectedProj': {defualt: null}},
@@ -230,8 +235,16 @@ export default {
             this.$message({
               type: 'info',
               message: '您没有权限邀请成员'});
-            };  
-          }
+            } else if (errorCode == 1) {
+            this.$message({
+              type: 'info',
+              message: '用户不存在'});
+            } else if (errorCode == 0) {
+              this.$message({
+              type: 'success',
+              message: '邀请成功'});
+            }
+          } 
       );
       this.getPersonList();
       this.setupDialog = false;
@@ -247,8 +260,15 @@ export default {
       modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.changeRoleForm.role, personId: this.changeRoleForm.id}).then(
         res => {
           console.log(res);
+          var errorCode = res['data']['errcode'];
+          if (errorCode == 3) {
+            this.$message({
+              type: 'info',
+              message: '您没有权限更改角色'});
+          }
         }
       );
+      this.getPersonList();
       this.changeDialog = false;
       this.changeRoleForm.id = '';
       this.changeRoleForm.role = '';
