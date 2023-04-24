@@ -182,8 +182,11 @@ export default {
   created () {
     this.get_project()
   },  
-  inject: {'user': {defualt: null},
-               'selectedProj': {defualt: null}},
+  inject: {
+      'user': {defualt: null},
+      'selectedProj': {defualt: null},
+      updateUserProj: {default: null}
+  },
   data() {
     return {
       headers: [
@@ -283,6 +286,7 @@ export default {
       newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
         res => {
           console.log(res);
+          this.updateUserProj();
         }
       );
       this.form =  {

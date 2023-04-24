@@ -159,6 +159,7 @@
 import Cookies from 'js-cookie'
 import { computed } from 'vue'
 import {newProject} from "@/api/user";
+import axios from "axios";
 
 let user = Cookies.get('user')
 console.log(user);
@@ -209,7 +210,8 @@ export default {
     return {
       user: computed(() => this.user),
       selectedProj: computed(() => this.selectedProj),
-      changeSelectedProj: this.changeSelectedProj
+      changeSelectedProj: this.changeSelectedProj,
+      updateUserProj: this.updateUserProj
     }
   },
   methods: {
@@ -242,6 +244,7 @@ export default {
         newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
             res => {
                 console.log(res);
+                this.updateUserProj();
             }
         );
         this.form =  {
@@ -251,6 +254,25 @@ export default {
     },
     changeSelectedProj(proj) {
       this.selectedProj = proj;
+    },
+    updateUserProj() {
+      axios.post('/api/plan/watchAllProject', {
+          userId: this.user.id
+      }).then(res => {
+          if (res.data.errcode === 0) {
+              this.user.projects = res.data.data.map((cur, index, arr) => {
+                  return {
+                      id: cur.projectId,
+                      name: cur.projectName
+                  }
+              })
+              Cookies.set('user', JSON.stringify(this.user))
+          } else {
+              alert('updateUserProj failure! with non 0 errcode ' + res.data.errcode);
+          }
+      }).catch(err => {
+          alert('updateUserProj failure! with error ' + err);
+      })
     }
   }
 };
