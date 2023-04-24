@@ -7,9 +7,17 @@
           <v-divider></v-divider>
           <v-row align="center">
             <v-col cols="3" class="text-center">
+              <v-avatar
+                  color="indigo"
+                  size="100"
+              >
+                <span class="white--text text-h5"> {{ showedUserName }} </span>
+              </v-avatar>
+              <!--
               <v-avatar size="100">
                 <img :src="userInfo.avatar" alt="avatar">
               </v-avatar>
+              -->
               <div> {{ showedUserName }} </div>
             </v-col>
             <v-col cols="8">
@@ -34,15 +42,15 @@
             <v-card-text>
               <v-row>
                 <v-col cols="4"><div class="input-label">原密码：</div></v-col>
-                <v-col cols="8"><div class="input-field"><v-text-field v-model="oldPassword" outlined dense></v-text-field></div></v-col>
+                <v-col cols="8"><div class="input-field"><v-text-field v-model="oldPassword" outlined dense type="password"></v-text-field></div></v-col>
               </v-row>
               <v-row>
                 <v-col cols="4"><div class="input-label">新密码：</div></v-col>
-                <v-col cols="8"><div class="input-field"><v-text-field v-model="newPassword" outlined dense></v-text-field></div></v-col>
+                <v-col cols="8"><div class="input-field"><v-text-field v-model="newPassword" outlined dense type="password"></v-text-field></div></v-col>
               </v-row>
               <v-row>
                 <v-col cols="4"><div class="input-label">确认新密码：</div></v-col>
-                <v-col cols="8"><div class="input-field"><v-text-field v-model="confirmNewPassword" outlined dense></v-text-field></div></v-col>
+                <v-col cols="8"><div class="input-field"><v-text-field v-model="confirmNewPassword" outlined dense type="password"></v-text-field></div></v-col>
               </v-row>
             </v-card-text>
             <v-card-actions>
@@ -58,16 +66,22 @@
 </template>
 
 <script>
+import axios from "axios";
+import util from "@/views/util";
+
 export default {
   name: "profile",
+  inject: {
+    user: { default: null }
+  },
   data() {
     return {
       // 用户信息
-      showedUserName: "aaa", // 显示在头像下方的用户名
+      showedUserName: '', // 显示在头像下方的用户名
       userInfo: {
-        username: "John Doe",
-        email: "johndoe@example.com",
-        avatar: "https://randomuser.me/api/portraits/men/75.jpg",
+        username: '',
+        email: '',
+        avatar: '',
       },
       // 修改密码对话框的显示
       showChangePassword: false,
@@ -83,62 +97,121 @@ export default {
   methods: {
     showProfile() {
       // 调用后端接口获取用户信息
-      this.axios.get('/api/user') // TODO
-          .then(response => {
-            this.showedUserName = response.data.userInfo.username
-            this.userInfo = response.data.userInfo
+      axios.post("/api/showProfile", {userId: this.user.id})
+          .then((response) => {
+            console.log(response)
+            if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "获取用户信息失败"
+              });
+            } else {
+              this.showedUserName = response.data.data.userName
+              this.userInfo.username = response.data.data.userName
+              this.userInfo.email = response.data.data.userEmail
+            }
           })
-          .catch(error => {
-            console.log(error)
+          .catch((err) => {
+            console.error(err);
+            this.userMessages = null
           })
     },
     // 保存用户信息
     save() {
       // 获取用户修改后的用户名和邮箱
-      const username = this.userInfo.username
+      const name = this.userInfo.username
       const email = this.userInfo.email
-
+      if (!util.trim(name) || !util.trim(email)) {
+        this.$message({
+          type: 'error',
+          message: "用户名或邮箱不能为空"
+        });
+        return;
+      }
+      console.log(name)
+      console.log(email)
       // 调用后端接口保存用户信息
-      this.axios.put('/api/user', { username, email }) // TODO:用户名已被使用等提示信息
+      axios.post('/api/editProfile', {
+        userId: this.user.id,
+        userName: name,
+        userEmail: email
+      })
           .then(response => {
-            // 保存成功，弹出提示框
-            this.$toast.success('保存成功')
+            console.log(1111111)
+            if (response.data.errcode === 0) {
+              this.$message({
+                type: 'success',
+                message: "保存成功"
+              });
+              this.showProfile();
+            } else if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "保存失败"
+              });
+            } else if (response.data.errcode === 2) {
+              this.$message({
+                type: 'error',
+                message: "该邮箱已被使用"
+              });
+            } else if (response.data.errcode === 3) {
+              this.$message({
+                type: 'error',
+                message: "该用户名已被使用"
+              });
+            }
           })
           .catch(error => {
-            // 保存失败，弹出提示框
-            this.$toast.error('保存失败')
             console.log(error)
           })
     },
     // 修改密码
     async changePassword() {
-      if (this.newPassword !== this.confirmNewPassword) {
-        window.alert('请保证新密码和确认新密码内容一致')
+      if (this.oldPassword === "") {
+        this.$message({
+          type: 'error',
+          message: "原密码不能为空"
+        });
+        return;
       }
       if (this.newPassword === "") {
-        window.alert('新密码不能为空')
+        this.$message({
+          type: 'error',
+          message: "新密码不能为空"
+        });
+        return;
       }
-      await this.axios.get('edit_password/', // TODO
-          {
-            params: {
-              old_password: this.oldPassword,
-              new_password: this.newPassword,
-              user_id: this.$store.state.userId // TODO
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-            window.alert('请重新确认原密码')
-          })
+      if (this.newPassword !== this.confirmNewPassword) {
+        this.$message({
+          type: 'error',
+          message: "请保证新密码和确认新密码内容一致"
+        });
+        return;
+      }
+      axios.post('/api/user/information/password', {
+        userId: this.user.id,
+        oldPassword: this.oldPassword,
+        newPassword: this.newPassword,
+      })
           .then((response) => {
-            if (response.data.errcode !== 0) { // TODO
-              this.res = false
-              console.log(response.data.msg);
-              window.alert('请重新确认原密码')
-              return
+            if (response.data.errcode === 1) { // TODO
+              this.$message({
+                type: 'error',
+                message: "请重新确认原密码"
+              });
+            } else {
+              this.showChangePassword = false;
+              this.oldPassword = ''
+              this.newPassword = ''
+              this.confirmNewPassword = ''
+              this.$message({
+                type: 'success',
+                message: "密码修改成功"
+              });
             }
-            this.showChangePassword = false;
-            window.alert('密码修改成功')
+          })
+          .catch(error => {
+            console.log(error)
           })
     },
     openChangePasswordDialog() {
