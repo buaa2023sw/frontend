@@ -72,7 +72,7 @@ export default {
 
 <template>
 <div>
-  <h2>和并请求</h2>
+  <h2>合并请求</h2>
 <!--  <p>This is pr view</p>-->
 
   <v-skeleton-loader v-if="this.prsBusy" type="button, table" />
@@ -92,7 +92,7 @@ export default {
   </v-row>
   <v-row v-else>
   <v-col>
-    <p>和并请求似乎空空如也？现在就去GitHub上发一个吧！</p>
+    <p>合并请求似乎空空如也？现在就去GitHub上发一个吧！</p>
   </v-col>
   </v-row>
 </div>
