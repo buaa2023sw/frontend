@@ -719,10 +719,10 @@ export default {
       addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id}).then(
         res => {
           console.log(res);
+          this.newFatherForm.name = '';
+          this.getTaskList();
         }
       )
-      this.newFatherForm.name = '';
-      this.getTaskList();
     },
     gotoPic() {
       let projectItem = [];
@@ -873,10 +873,10 @@ export default {
           type: 'success',
           message: '提交成功!'
         });
-        console.log(res);
+          this.getTaskList();
+          console.log(res);
         }
       );
-      this.getTaskList();
     },
     handleDelete(index, item) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {

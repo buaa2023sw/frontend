@@ -25,9 +25,11 @@
         <template #item.changeStatus="{item}">
           <v-btn class="ml-1" small outlined @click="openChangeUserStatusDialog(item)">修改用户状态</v-btn>
         </template>
+        <!--
         <template #item.userProfile="{item}">
           <v-btn class="ml-1" small outlined @click="openUserProfileDialog(item)">用户个人信息</v-btn>
         </template>
+        -->
         <template #item.userProject="{item}">
           <v-btn class="ml-1" small outlined @click="gotoUserProjectPage(item)">用户所在项目</v-btn>
         </template>
@@ -184,7 +186,10 @@ export default {
           .then((response) => {
             console.log(response)
             if (response.data.errcode === 1) {
-              window.alert("您没有权限")
+              this.$message({
+                type: 'error',
+                message: "您没有权限"
+              });
             } else {
               this.userMessages = response.data.users
             }

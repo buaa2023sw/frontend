@@ -184,7 +184,10 @@ export default {
             this.showChangeProjectAccess = false
             console.log(response.data)
             if (response.data.errcode === 1) {
-              window.alert("您没有该权限")
+              this.$message({
+                type: 'error',
+                message: "您没有权限"
+              });
             } else if (response.data.errcode === 2) {
               let showAccess;
               if (this.selectedAccess === 'A') {
@@ -192,13 +195,23 @@ export default {
               } else {
                 showAccess = "禁用"
               }
-              window.alert("项目" + this.changeProjectAccessMessage.name + "的状态已为" + showAccess)
+              this.$message({
+                type: 'success',
+                message: "项目" + this.changeProjectAccessMessage.name + "的状态已为" + showAccess
+              });
             } else {
               if (this.selectedAccess === 'A') {
-                window.alert("成功将项目" + this.changeProjectAccessMessage.name + "的状态恢复为正常")
+                this.$message({
+                  type: 'success',
+                  message: "成功将项目" + this.changeProjectAccessMessage.name + "的状态恢复为正常"
+                });
               } else {
-                window.alert("成功将项目" + this.changeProjectAccessMessage.name + "的状态修改为禁用")
+                this.$message({
+                  type: 'success',
+                  message: "成功将项目" + this.changeProjectAccessMessage.name + "的状态修改为禁用"
+                });
               }
+              this.showProjectMessages()
             }
             this.changeProjectAccessMessage = ''
             this.selectedAccess = ''

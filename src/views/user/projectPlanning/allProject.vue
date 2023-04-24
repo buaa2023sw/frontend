@@ -188,6 +188,7 @@ methods: {
 
 <script>
 import {deleteProject, modifyProject, newProject, watchAllProject,  modifyProjectStatus} from '@/api/user'
+import axios from "axios";
 
 
 export default {
@@ -284,8 +285,9 @@ export default {
           type: 'success',
           message: '删除成功!'
         });
-        deleteProject({projectId: row.projectId, userId: this.user.id});
-        this.get_project();
+        deleteProject({projectId: row.projectId, userId: this.user.id}).then(res =>{
+          this.get_project();
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
