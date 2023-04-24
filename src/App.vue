@@ -26,10 +26,10 @@
         </v-card>
 
         <v-card v-else min-width="200px" link to="/login">
-          <v-card-title>Please Login</v-card-title>
+          <v-card-title>请登录</v-card-title>
           <v-list>
             <v-list-item link to="/register">
-              <v-list-item-title>Register</v-list-item-title>
+              <v-list-item-title>注册</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
@@ -221,6 +221,8 @@ export default {
   methods: {
     showLabel() {
       return this.user !== null && !window.location.pathname.startsWith('/manager')
+          && !window.location.pathname.startsWith('/login')
+          && !window.location.pathname.startsWith('/register')
     },
     // getSelectedProj() {
     //     let pid = this.$route.params.projid;
