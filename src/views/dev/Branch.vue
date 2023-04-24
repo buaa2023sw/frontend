@@ -74,7 +74,7 @@
 
 <script>
 import axios from "axios";
-import * as echarts from "echarts";
+import * as echarts from 'echarts';
 
 export default {
     name: "Branch",
@@ -180,7 +180,7 @@ export default {
                 alert('/api/develop/getCommitHistory error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
             }
         }).catch((err) => {
-            alert('/api/develop/getBindRepos error' + err)
+            alert('/api/develop/getCommitHistory error' + err)
         })
     },
     inject: {
@@ -280,9 +280,10 @@ export default {
             })
         },
         draw_pie_chart() {
+            console.log('echarts=')
+            console.log(echarts)
             let pieChart = echarts.init(this.$refs.user_specific_pie_chart)
             window.addEventListener('resize', () => {pieChart.resize()})
-            console.log(pieChart)
             pieChart.setOption({
                 title: {
                     text: '', left: 'center'
