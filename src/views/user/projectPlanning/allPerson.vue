@@ -231,24 +231,24 @@ export default {
           console.log(res);
           var errorCode = res['data']['errcode'];
           console.log(errorCode);
-          if (errorCode == 3) {
+          if (errorCode === 3) {
             this.$message({
               type: 'info',
               message: '您没有权限邀请成员'});
-            } else if (errorCode == 1) {
+          } else if (errorCode === 1) {
             this.$message({
               type: 'info',
               message: '用户不存在'});
-            } else if (errorCode == 0) {
-              this.$message({
+          } else if (errorCode === 0) {
+            this.$message({
               type: 'success',
               message: '邀请成功'});
-            }
-          } 
+            this.setupDialog = false;
+            this.getPersonList();
+            this.newPersonForm.id = '';
+          }
+        }
       );
-      this.getPersonList();
-      this.setupDialog = false;
-      this.newPersonForm.id = '';
     },
     changeRole() {
       if (this.changeRoleForm.role == '开发人员') {
@@ -266,12 +266,12 @@ export default {
               type: 'info',
               message: '您没有权限更改角色'});
           }
+          this.getPersonList();
+          this.changeDialog = false;
+          this.changeRoleForm.id = '';
+          this.changeRoleForm.role = '';
         }
       );
-      this.getPersonList();
-      this.changeDialog = false;
-      this.changeRoleForm.id = '';
-      this.changeRoleForm.role = '';
     },
     getColor(role) {
       if (role == 'A') {
