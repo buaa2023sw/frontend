@@ -48,8 +48,11 @@ export default {
   },
   methods: {
     async login() {
-      if(!util.trim(this.userNameOrEmail) || !util.trim(this.password) ){
-        window.alert('用户名或邮箱、密码不能为空');
+      if(!util.trim(this.userNameOrEmail) || !util.trim(this.password)){
+        this.$message({
+          type: 'error',
+          message: "用户名或邮箱、密码不能为空"
+        });
         return;
       }
       axios.post("/api/login", {

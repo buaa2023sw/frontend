@@ -52,11 +52,17 @@ export default {
     register() {
       if(!util.trim(this.username) || !util.trim(this.email)
           || !util.trim(this.password) || !util.trim(this.confirmPassword)){
-        window.alert('请完整填写所有注册信息');
+        this.$message({
+          type: 'error',
+          message: "请完整填写所有注册信息"
+        });
         return;
       }
       if (this.password !== this.confirmPassword) {
-        window.alert("请保证密码和确认密码的一致性")
+        this.$message({
+          type: 'error',
+          message: "请保证密码和确认密码的一致性"
+        });
         return
       }
       axios.post("/api/register", {
@@ -67,13 +73,25 @@ export default {
           .then((response) => {
             console.log(response.data)
             if (response.data.errcode === 1) {
-              window.alert('发生未知错误，无法注册，请联系管理员')
+              this.$message({
+                type: 'error',
+                message: "发生未知错误，无法注册，请联系管理员"
+              });
             } else if (response.data.errcode === 2) {
-              window.alert('该邮箱已被使用')
+              this.$message({
+                type: 'error',
+                message: "该邮箱已被使用"
+              });
             } else if (response.data.errcode === 3) {
-              window.alert('该用户名已被使用')
+              this.$message({
+                type: 'error',
+                message: "该用户名已被使用"
+              });
             } else {
-              window.alert('注册成功')
+              this.$message({
+                type: 'success',
+                message: "注册成功"
+              });
               window.location.href = '/login'
             }
           })
