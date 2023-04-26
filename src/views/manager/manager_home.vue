@@ -163,6 +163,7 @@ export default {
       }))
 
       // 创建 ECharts 实例并绘制饼状图
+      console.log(echarts)
       let myChart = echarts.init(this.$refs.myChart)
       // 窗口变化时重新渲染饼状图位置
       window.addEventListener('resize', () => {
