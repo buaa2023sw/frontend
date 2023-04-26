@@ -1,11 +1,15 @@
 <script>
 
+import axios from "axios";
+
 export default {
     name: "bindedGithubRepos",
     inject: {
+        user: { default: null },
         proj: { default: null },
         bindRepos: {default: null},
-        bindReposBusy: {default: null}
+        bindReposBusy: {default: null},
+        updateBindRepos: {default: () => {}} // default is a function that returns nothing
     },
     data() {
         return {
@@ -25,6 +29,15 @@ export default {
         }
     },
     methods: {
+        unbind(repo) {
+            axios.post('/api/develop/userUnbindRepo',
+                {
+                    userId: this.user.id,
+                    projectId: this.proj.id,
+                    repoId: repo.id
+                }).then((res) => { this.updateBindRepos() })
+                .catch((err) => { alert('哦不，好像解绑失败了！'); this.bindingInProgress = false; })
+        }
     }
 }
 
@@ -56,7 +69,7 @@ export default {
                     <br>
                     <v-row>
                     <v-col cols="6" class="text-center"><v-btn link :href="'https://github.com/' + repo.user + '/' + repo.repo" target="_blank">GitHub</v-btn></v-col>
-                    <v-col cols="6" class="text-center"><v-btn>Unbind</v-btn></v-col>
+                    <v-col cols="6" class="text-center"><v-btn @click="unbind(repo)">Unbind</v-btn></v-col>
                     </v-row>
                 </v-expansion-panel-content>
             </v-expansion-panel>

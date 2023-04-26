@@ -14,7 +14,8 @@ export default {
   },
   inject: {
       user: {default: null},
-    proj: { default: null }
+      proj: { default: null },
+      updateBindRepos: {default: null}
   },
   methods: {
     bindSplit() {
@@ -26,7 +27,7 @@ export default {
             repoRemotePath: this.gh_username + '/' + this.gh_reponame
           }
       )
-          .then((res) => { this.bindingInProgress = false; })
+          .then((res) => { this.bindingInProgress = false; this.updateBindRepos()})
           .catch((err) => { alert('哦不，好像绑定失败了！'); this.bindingInProgress = false; })
     },
       bindWhole() {
@@ -38,7 +39,7 @@ export default {
                   repoRemotePath: this.git_url.replace(/https:\/\/github.com\//, '')
               }
           )
-              .then((res) => {this.bindingInProgress = false; })
+              .then((res) => {this.bindingInProgress = false; this.updateBindRepos() })
               .catch((err) => { alert('哦不，好像绑定失败了！'); this.bindingInProgress = false; })
       }
   }, watch: {

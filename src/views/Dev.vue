@@ -21,7 +21,8 @@ export default {
         }
     },
     created() {
-        this.updateBindRepos();
+        if (this.selectedProj !== null)
+          this.updateBindRepos();
     },
     inject: {
         user: {default: null},
@@ -32,7 +33,8 @@ export default {
         return {
             proj: computed(() => this.selectedProj),
             bindRepos: computed(() => this.bindRepos),
-            bindReposBusy: computed (() => this.bindReposBusy)
+            bindReposBusy: computed (() => this.bindReposBusy),
+            updateBindRepos: this.updateBindRepos,
         }
     },
     methods: {
