@@ -1,4 +1,3 @@
-<script src="../../test.js"></script>
 <script>
 import axios from "axios";
 
@@ -25,7 +24,7 @@ export default {
                       today.setDate(today.getDate() - 1)
                   }
 
-                  let commitHistory = res.data.data.map((cur, index, arr) => {
+                  this.commitHistory = res.data.data.map((cur, index) => {
                       let time = new Date(cur.commitTime)
                       let str = (time.getMonth() + 1) + '.' + time.getDate()
                       if (str in statsPerDay)
@@ -39,7 +38,6 @@ export default {
                           time: cur.commitTime
                       }
                   })
-                  this.commitHistory = commitHistory
                   this.commitHistoryBusy = false
 
                   this.statsPerDay = {
@@ -134,7 +132,11 @@ export default {
       ></v-sparkline>
       <br> <v-divider></v-divider> <br>
       <v-row>
-          <v-col cols="6" class="text-center"><v-btn><v-icon>mdi-github</v-icon>在GitHub查看</v-btn></v-col>
+          <v-col cols="6" class="text-center">
+              <v-btn
+                  link :href="'https://github.com/' + selectedRepo.user + '/' + selectedRepo.repo + '/tree/' + selectedBranch.name"
+              ><v-icon>mdi-github</v-icon>在GitHub查看</v-btn>
+          </v-col>
           <v-col cols="6" class="text-center"><v-btn link :to="proj.id + '/' + selectedRepo.id + '/' + selectedBranch.name + '/'"><v-icon>mdi-send</v-icon>浏览详情</v-btn></v-col>
       </v-row>
   </div>

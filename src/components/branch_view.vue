@@ -2,6 +2,7 @@
 import {computed} from "vue";
 import commit_view from "@/components/commit_view.vue";
 import axios from "axios";
+
 export default {
   name: "branchView",
   components: {
@@ -16,7 +17,7 @@ export default {
             projectId: this.proj.id
         }).then((res) => {
             if (res.data.errcode === 0) {
-                let branches = res.data.data.map((cur, index, arr) => {
+                this.branches = res.data.data.map((cur, index) => {
                     return {
                         id: index,
                         name: cur.branchName,
@@ -29,7 +30,6 @@ export default {
                         }
                     }
                 })
-                this.branches = branches
                 this.branchBusy = false
             } else {
                 console.log(res);
@@ -75,7 +75,7 @@ export default {
     <div v-if="branchBusy">
         <v-card-title><v-progress-circular indeterminate></v-progress-circular>正在与服务器同步分支</v-card-title>
     </div>
-    <v-list v-if="!branchBusy">
+    <v-list v-if="!branchBusy" class="overflow-y-auto">
       <v-list-item-group v-model="selectedBranchIndex" mandatory>
         <v-list-item v-for="branch in branches" :key="branch.id">
           {{ branch.name }}
