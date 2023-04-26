@@ -60,7 +60,6 @@ export default {
                     })
                     this.bindReposBusy = false;
                 } else {
-                    console.log(res);
                     this.bindReposBusy = false;
                     alert('/api/develop/getBindRepos error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
                 }

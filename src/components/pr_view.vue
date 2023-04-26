@@ -36,7 +36,6 @@ export default {
               repoId: this.selectedRepo.id
           }).then((res) => {
               if (res.data.errcode === 0) {
-                  console.log(res.data.data)
                   let prs = res.data.data.map((cur, index, arr) => {
                       return {
                           id: cur.prId,

@@ -47,8 +47,6 @@ export default {
             projectId: this.proj.id
         }).then((res) => {
             if (res.data.errcode === 0) {
-                console.log(res);
-                console.log('get issue success: ')
                 let issues = res.data.data.map((cur, index, arr) => {
                     return {
                         id: cur.issueId,
@@ -59,7 +57,6 @@ export default {
                         ghLink: cur.ghLink
                     }
                 })
-                console.log(issues)
                 this.issues = issues
                 this.issuesBusy = false
             } else {

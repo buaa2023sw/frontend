@@ -16,8 +16,6 @@ export default {
             projectId: this.proj.id
         }).then((res) => {
             if (res.data.errcode === 0) {
-                console.log(res);
-                console.log('success')
                 let branches = res.data.data.map((cur, index, arr) => {
                     return {
                         id: index,
@@ -31,8 +29,6 @@ export default {
                         }
                     }
                 })
-                console.log('branches=')
-                console.log(branches)
                 this.branches = branches
                 this.branchBusy = false
             } else {
