@@ -54,23 +54,13 @@
     </v-icon>
   </template>
   <template v-slot:[`item.state`] ="{ item }">
-    {{ transform(item.state )}}
-    <v-icon
-      v-if='transform(item.state ) !== "已完成"'
-      small
-      class="mr-2"
-      @click="handleComplete(item)"
-    >
-      mdi-check
-    </v-icon>
-    <v-icon
-     v-else
-      small
-      class="mr-2"
-      @click="handleNotComplete(item)"
-    >
-      mdi-backup-restore
-    </v-icon>
+      <v-chip
+        :color="getColor(item.state)"
+        dark
+        @click="handleState(item)"
+      >
+        {{ transform(item.state) }}
+      </v-chip>
   </template>
 </v-data-table>
       </div>
@@ -80,16 +70,16 @@
       :visible.sync="setupDialog"
        width="50%"
       :before-close="handleClose">
-      <el-form :label-position=left label-width="80px" :model="form" ref="form">
+      <el-form :label-position="labelPosition" label-width="80px" :model="form" ref="form">
 <el-form-item label="项目名称">
   <el-input v-model="form.name"></el-input>
 </el-form-item>
-<el-form-item label="活动概述">
+<el-form-item label="活动概述">  
   <el-input type="textarea" v-model="form.intro"  :autosize="{ minRows: 5, maxRows: 10}"></el-input>
 </el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
-  <el-button @click="setupDialog = false">取 消</el-button>
+  <el-button @click="cancelSetupProject">取 消</el-button>
   <el-button type="primary" @click="setupProject">确 定</el-button>
 </span>
 </el-dialog> 
@@ -99,7 +89,7 @@
       :visible.sync="editDialog"
        width="50%"
       :before-close="handleClose">
-      <el-form :label-position=left label-width="80px" :model="form" ref="form">
+      <el-form :label-position="labelPosition" label-width="80px" :model="form" ref="form">
 <el-form-item label="项目名称">
   <el-input v-model="form.name"></el-input>
 </el-form-item>
@@ -204,6 +194,7 @@ export default {
   },
   data() {
     return {
+      labelPosition: "left",
       headers: [
         {
           text: '名称',
@@ -287,6 +278,7 @@ export default {
         });
         deleteProject({projectId: row.projectId, userId: this.user.id}).then(res =>{
           this.get_project();
+          this.updateUserProj();
         })
       }).catch(() => {
         this.$message({
@@ -294,6 +286,13 @@ export default {
           message: '已取消删除'
         });          
       });
+    },
+    handleState(item) {
+      if (item.state == 'B') {
+        this.handleComplete(item);
+      } else if (item.state == 'A'){
+        this.handleNotComplete(item);
+      }
     },
     handleComplete(row) {
       this.$confirm('确定已完成项目?', '提示', {
@@ -308,9 +307,9 @@ export default {
         modifyProjectStatus({projectId:row.projectId, userId: this.user.id, status: 'A'}).then(
           res => {
             console.log(res);
+            this.get_project();
           }
         );
-        this.get_project();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -331,9 +330,9 @@ export default {
         modifyProjectStatus({projectId:row.projectId, userId: this.user.id, status: 'B'}).then(
           res => {
             console.log(res);
+            this.get_project();
           }
         );
-        this.get_project();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -341,27 +340,55 @@ export default {
         });          
       });
     },
+    cancelSetupProject() {
+      this.setupDialog = false;
+      this.form =  {
+        name: '',
+        intro: ''
+      }
+    },
     setupProject() {
       // console.log(this.search);
       // console.log("submit");
+      for (let i=0;i<this.projectData.length;i++) {
+        if (this.form.name === this.projectData[i].projectName) {
+          this.$message({
+          type: 'error',
+          message:'已存在同名项目'
+        });    
+        return;
+        }
+      }
       this.setupDialog = false;
       newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
         res => {
           console.log(res);
           this.updateUserProj();
+          this.get_project();
         }
       );
       this.form =  {
         name: '',
         intro: ''
       }
-      this.get_project();
     },
     editProject() {
+      for (let i=0;i<this.projectData.length;i++) {
+        if (this.form.name === this.projectData[i].projectName) {
+          this.$message({
+          type: 'error',
+          message:'已存在同名项目'
+        });    
+        return;
+        }
+      }
       this.editDialog = false;
-      modifyProject({projectId: this.form.id, projectName: this.form.name, projectIntro: this.form.intro});
-      this.get_project();
-      // editProject(this.form);
+      modifyProject({projectId: this.form.id, projectName: this.form.name, projectIntro: this.form.intro}).then(
+        res => {
+          this.get_project();
+          this.updateUserProj();
+        }
+      );
     }, 
     transform(state) {
       if (state === 'A') {
@@ -373,7 +400,13 @@ export default {
       } else if (state === 'D') {
         return '不合法';
       }
-
+    },
+    getColor(state) {
+      if (state === 'A') {
+        return 'blue';
+      } else if (state === 'B') {
+        return 'green';
+      } 
     }
   }
 }

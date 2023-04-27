@@ -44,7 +44,7 @@
     <v-avatar size="60" style="inline-block;position: absolute;top:10%" color="indigo" >
       <span class="white--text text-h5">{{ item.peopleName}}</span>
     </v-avatar>
-    <v-p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.peopleName }}</v-p>
+    <p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.peopleName }}</p>
     <v-chip
         :color="getColor(item.peopleJob)"
         dark
@@ -73,13 +73,13 @@
        width="50%"
       :before-close="handleClose"
       style="position:relative">
-      <el-form :label-position=left label-width="80px">
+      <el-form :label-position="labelPosition" label-width="80px">
 <el-form-item label="用户id">
   <el-input v-model="newPersonForm.id" style="width: 400px;"></el-input>
 </el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
-  <el-button @click="setupDialog = false">取 消</el-button>
+  <el-button @click="cancelSetupPerson">取 消</el-button>
   <el-button type="primary" @click="setupPerson">确 定</el-button>
 </span>
 </el-dialog> 
@@ -131,9 +131,11 @@ export default {
     }
   },   
   inject: {'user': {defualt: null},
-               'selectedProj': {defualt: null}},
+               'selectedProj': {defualt: null},
+         },
   data() {
     return {
+      labelPosition: 'left',
       headers: [
         {
           text: "图标",
@@ -179,6 +181,7 @@ export default {
         res => {
           console.log(res);
           this.personData = res['data']['data'];
+          this.updateP
         }
       );
     },
@@ -207,12 +210,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        console.log(row.peopleJob);
         removeMember({projectId: this.selectedProj.id, personId: row.peopleId, userId: this.user.id}).then(
           res => {
             console.log(res);
+            this.getPersonList();
           }
         );
-        this.getPersonList();
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -237,8 +241,12 @@ export default {
               message: '您没有权限邀请成员'});
           } else if (errorCode === 1) {
             this.$message({
-              type: 'info',
+              type: 'error',
               message: '用户不存在'});
+          }  else if (errorCode === 2) {
+            this.$message({
+              type: 'error',
+              message: '用户已经加入团队'});
           } else if (errorCode === 0) {
             this.$message({
               type: 'success',
@@ -249,6 +257,10 @@ export default {
           }
         }
       );
+    },
+    cancelSetupPerson() {
+      this.setupDialog = false;
+      this.newPersonForm.id = '';
     },
     changeRole() {
       if (this.changeRoleForm.role == '开发人员') {

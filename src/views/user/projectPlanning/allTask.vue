@@ -258,13 +258,13 @@
         :visible.sync="setupFather"
          width="50%"
         :before-close="handleClose">
-        <el-form :label-position=left label-width="80px" :model="newFatherForm" ref="newFatherForm">
+        <el-form :label-position="labelPosition" label-width="80px" :model="newFatherForm" ref="newFatherForm">
     <el-form-item label="任务名称">
       <el-input v-model="newFatherForm.name"></el-input>
     </el-form-item>
 </el-form>
   <span slot="footer" class="dialog-footer">
-    <el-button @click="setupFather = false">取 消</el-button>
+    <el-button @click="cancelNewFather">取 消</el-button>
     <el-button type="primary" @click="newFather">确 定</el-button>
   </span>
 </el-dialog> 
@@ -274,7 +274,7 @@
         :visible.sync="changeTaskNameFlag"
          width="50%"
         :before-close="handleClose">
-        <el-form :label-position=left label-width="80px">
+        <el-form :label-position="labelPosition" label-width="80px">
     <el-form-item label="任务名称">
       <el-input v-model="changeNameForm.name"></el-input>
     </el-form-item>
@@ -290,7 +290,7 @@
         :visible.sync="setupSon"
          width="50%"
         :before-close="handleClose">
-        <el-form label-position="left" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
+        <el-form label-position="lab" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
     <el-form-item label="子任务名称">
       <el-input v-model="newSonForm.name"></el-input>
     </el-form-item>
@@ -319,7 +319,7 @@
         <v-date-picker
           v-model="newSonForm.endTime"
           no-title
-          scrollable 
+          scrollabel
         >
           <v-spacer></v-spacer>
           <v-btn
@@ -357,7 +357,7 @@
         ></v-select>
 </el-form>
 <span slot="footer" class="dialog-footer">
-    <el-button @click="setupSon = false">取 消</el-button>
+    <el-button @click="cancelNewSon">取 消</el-button>
     <el-button type="primary" @click="newSon">确 定</el-button>
   </span>
 </el-dialog> 
@@ -367,7 +367,7 @@
         :visible.sync="setupAlarm"
          width="25%"
         :before-close="handleClose">
-        <el-form label-position="left" label-width="80px" :model="newFatherForm" ref="newFatherForm" style="position:relative">
+        <el-form label-position="labelPosition" label-width="80px" :model="newFatherForm" ref="newFatherForm" style="position:relative">
           <v-menu
         v-model="menu3"
         :close-on-content-click="false"
@@ -391,7 +391,7 @@
         <v-date-picker
           v-model="newAlarmForm.date"
           no-title
-          scrollable 
+          scrollabel
         >
           <v-spacer></v-spacer>
           <v-btn
@@ -434,11 +434,11 @@
         </template>
         <v-time-picker
             v-model="newAlarmForm.time"
-            :allowed-hours="allowedHours"
-            :allowed-minutes="allowedMinutes"
+            :allowed-hours="allowed_hours"
+            :allowed-minutes="allowed_minutes"
             class="mt-4"
             format="24hr"
-            scrollable
+            scrollabel
     >
           <v-spacer></v-spacer>
           <v-btn
@@ -469,7 +469,7 @@
         :visible.sync="editTask"
          width="50%"
         :before-close="handleClose">
-        <el-form label-position="left" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
+        <el-form label-position="labelPosition" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
     <el-form-item label="子任务名称">
       <el-input v-model="editSonForm.name"></el-input>
     </el-form-item>
@@ -498,13 +498,13 @@
         <v-date-picker
           v-model="editSonForm.endTime"
           no-title
-          scrollable 
+          scrollabel
         >
           <v-spacer></v-spacer>
           <v-btn
             text
             color="primary"
-            @click="editSubTask"
+            @click="menu = false"
           >
             确定
           </v-btn>
@@ -565,6 +565,9 @@ export default {
     setupAlarm: false,
     detailFlag: false,
     editTask: false,
+    labelPosition: "left",
+    allowed_hours: "allowedHours",
+    allowed_minutes: "allowedMinutes",
     menu: false,
     menu1: false,
     menu2: false,
@@ -674,7 +677,6 @@ export default {
       // },
     ]
   }),
-
   methods: {
     getPersonList() {
       showPersonList({projectId:this.selectedProj.id, userId: this.user.id}).then(
@@ -710,8 +712,21 @@ export default {
       this.changeTaskNameFlag = false;
       this.getTaskList();
     },
+    cancelNewFather() {
+      this.setupFather = false;
+      this.newFatherForm.name = '';
+    },
     newFather() {
       // newFather()
+      for (let i=0;i<this.tasks.length;i++) {
+        if (this.tasks[i].taskName === this.newFatherForm.name) {
+          this.$message({
+          type: 'error',
+          message: '已存在同名任务！'
+        });
+        return;
+        }
+      }
       this.setupFather = false;
       console.log(this.user.id);
       console.log(this.newFatherForm.name);
@@ -719,6 +734,7 @@ export default {
       addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id}).then(
         res => {
           console.log(res);
+          
           this.newFatherForm.name = '';
           this.getTaskList();
         }
@@ -769,10 +785,9 @@ export default {
         removeTask({taskId: task.taskId, userId: this.user.id}).then(
         res => {
           console.log(res);
+          this.getTaskList();
         }
       )
-      this.getTaskList();
-      this.getTaskList();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -784,7 +799,30 @@ export default {
       this.setupSon = true;
       this.newSonForm.fatherTaskId = item.taskId;
     },
+    cancelNewSon() {
+      this.setupSon = false;
+      this.newSonForm.contribute = 0;
+      this.newSonForm.fatherTaskId = '';
+      this.newSonForm.startTime = '';
+      this.newSonForm.endTime = '';
+      this.newSonForm.managerName = '';
+      this.newSonForm.name = '';
+    },
     newSon() {
+      for (let i=0;i<this.tasks.length;i++) {
+        if (this.tasks[i].taskId == this.newSonForm.fatherTaskId) {
+          for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
+            if (this.tasks[i].subTaskList[j].subTaskName === this.newSonForm.name) {
+              this.$message({
+                type: "error",
+                message: '已存在同名子任务'
+              })
+              return;
+            }
+          }
+        }
+        break;
+      }
       console.log(this.newSonForm.endTime);
       let managerId = this.personIdList[this.personNameList.indexOf(this.newSonForm.managerName)];
       addSubTask({userId: this.user.id, deadline: this.newSonForm.endTime, contribute: this.newSonForm.contribute, 
@@ -792,11 +830,10 @@ export default {
         subTaskName: this.newSonForm.name}).then(
           res => {
             console.log(res);
+            this.getTaskList();
           }
         );
       console.log(this.newSonForm);
-      this.getTaskList();
-      this.getTaskList();
       this.setupSon = false;
       this.newSonForm.contribute = 0;
       this.newSonForm.fatherTaskId = '';
@@ -907,6 +944,7 @@ export default {
       taskName: this.editSonForm.name, managerId: this.personIdList[this.personNameList.indexOf(this.editSonForm.managerName)]}).then(
         res => {
           console.log(res);
+          this.getTaskList();
         }
       )
       this.editTask = false;
