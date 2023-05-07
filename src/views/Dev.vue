@@ -45,7 +45,7 @@ export default {
             this.bindReposBusy = true;
             axios.post('/api/develop/getBindRepos', {
                 userId: this.user.id,
-                projectId: this.selectedProj.id
+                projectId: this.selectedProj.projectId
             }).then((res) => {
                 if (res.data.errcode === 0) {
                     this.bindRepos = res.data.data.map((cur, index, arr) => {
@@ -93,7 +93,7 @@ export default {
 <!--                <p>bindRepos = {{bindRepos}}</p>-->
 <!--            </v-row>-->
             <v-row>
-                <h1>开发 - {{ selectedProj.name }}</h1>
+                <h1>开发 - {{ selectedProj.projectName }}</h1>
             </v-row>
 
             <v-row>

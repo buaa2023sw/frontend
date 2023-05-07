@@ -10,9 +10,13 @@ Vue.use(VueRouter)
 const router = new VueRouter({
   mode: 'history',
   base: import.meta.env.BASE_URL,
-  routes: [
+  routes:[
     {
-      path:'/allProject/allTask',
+      path:'/allPerson',
+      component: () => import('../views/user/projectPlanning/allPerson.vue')
+    },
+    {
+      path:'/allTask',
       component: () => import('../views/user/projectPlanning/allTask.vue')
     },
     {
@@ -95,7 +99,6 @@ const router = new VueRouter({
     }
   ]
 })
-
 
 
 export default router

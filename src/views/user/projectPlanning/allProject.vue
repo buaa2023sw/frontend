@@ -38,6 +38,17 @@
       {{ item.projectIntro }}
     </td>
   </template>
+  <template v-slot:[`item.managerName`] ="{ item }">
+    <div style="position:relative;">
+    <v-avatar size="25"  color="indigo" >
+      <span class="white--text text-h6">{{ item.managerName[0]}}</span>
+    </v-avatar>
+    <div style="position: absolute;left:20%;bottom: 3%;">{{ item.managerName}}</div>
+  </div>
+  </template>
+  <template v-slot:[`item.projectName`] ="{ item }">
+    <a @click = "getProj(item)">{{ item.projectName}}</a>
+  </template>
     <template v-slot:[`item.actions`] ="{ item }">
     <v-icon
       small
@@ -178,8 +189,7 @@ methods: {
 
 <script>
 import {deleteProject, modifyProject, newProject, watchAllProject,  modifyProjectStatus} from '@/api/user'
-import axios from "axios";
-
+import Cookies from 'js-cookie'
 
 export default {
   // inject: ['user', 'selectedProj'],
@@ -236,6 +246,13 @@ export default {
     }
   },
   methods: {
+    getProj(project) {
+      console.log("getProj");
+      console.log(JSON.stringify(project));
+      Cookies.set('proj', JSON.stringify(project));
+      window.location.href = '/allTask'
+      // this.proj = Cookies.get(proj);
+    },
     filterOnlyCapsText (value, search, item) {
       console.log(value);
       var s = item['projectName'];
@@ -245,6 +262,7 @@ export default {
       s.toString().toLocaleUpperCase().indexOf(search.toLocaleUpperCase()) !== -1
     },
     get_project() {
+      Cookies.remove("proj");
       console.log("get_project");
       watchAllProject({userId: this.user.id}).then(
         res => {
@@ -350,6 +368,13 @@ export default {
     setupProject() {
       // console.log(this.search);
       // console.log("submit");
+      if (this.form.name.trim() === "") {
+        this.$message({
+          type: 'error',
+          message:'项目名不能为空！'
+        });    
+        return;
+      }
       for (let i=0;i<this.projectData.length;i++) {
         if (this.form.name === this.projectData[i].projectName) {
           this.$message({
@@ -362,6 +387,7 @@ export default {
       this.setupDialog = false;
       newProject({projectName: this.form.name, projectIntro: this.form.intro, userId: this.user.id}).then(
         res => {
+          console.log(this.user.id);
           console.log(res);
           this.updateUserProj();
           this.get_project();
@@ -373,8 +399,15 @@ export default {
       }
     },
     editProject() {
+      if (this.form.name.trim() === "") {
+        this.$message({
+          type: 'error',
+          message:'项目名不能为空！'
+        });    
+        return;
+      }
       for (let i=0;i<this.projectData.length;i++) {
-        if (this.form.name === this.projectData[i].projectName) {
+        if (this.form.name === this.projectData[i].projectName && this.form.id != this.projectData[i].projectId) {
           this.$message({
           type: 'error',
           message:'已存在同名项目'

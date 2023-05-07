@@ -58,15 +58,17 @@
               lg="3"
             >
               <v-card style="width:100%;position: relative;">
+                <div  @mouseenter="mouseenter(task)" @mouseleave="mouseleave(task)">
                 <v-card-title>
                   <h4>{{ task.taskName }}</h4>
-                   <v-icon size="small" @click="changeTaskName(task)">mdi-pencil</v-icon>
+                   <v-icon v-if="showPencil[task.taskId] == true" size="small" @click="changeTaskName(task)">mdi-pencil</v-icon>
                 <v-switch
                 style="position: absolute;right: 1%;"
                 :input-value="isExpanded(task)"
                 class="pl-4 mt-0"
                 @change="(v) => expand(task, v)"></v-switch>
                 </v-card-title>
+              </div>
                 <!-- <v-switch
                   :input-value="isExpanded(item)"
                   :label="isExpanded(item) ? 'Expanded' : 'Closed'"
@@ -103,12 +105,23 @@
     <template v-slot:[`item.contribute`]="{ item }">
       <div>{{ item.contribute }}%</div>
     </template>
-    <template v-slot:[`item.create_time`]="{ item }">
-      <div>{{ item.create_time.slice(0, 10) }}</div>
+    <template v-slot:[`item.start_time`]="{ item }">
+      <div>{{ item.start_time.slice(0, 10) }}</div>
     </template>
     <template v-slot:[`item.deadline`]="{ item }">
       <div>{{ item.deadline.slice(0, 10) }}</div>
     </template>
+    <template v-slot:[`item.complete_time`]="{ item }">
+      <div>{{ item.complete_time.slice(0, 10) === "2050-12-31" ? "---" : item.complete_time.slice(0, 10)}}</div>
+    </template>
+    <template v-slot:[`item.state`]="{ item }">
+      <v-chip
+        :color="getColor(item.state)"
+        dark
+      >
+        {{ transform(item.state) }}
+      </v-chip>
+    </template> 
   <template v-slot:[`item.alarm`]="{item}">
       <v-icon
         small
@@ -133,15 +146,15 @@
       <v-list>
         <v-list-item
         >
-          <v-btn text @click="switchAction('编辑任务', index, item)">编辑任务</v-btn>
+          <v-btn text @click="switchAction('编辑任务', item, task)">编辑任务</v-btn>
         </v-list-item>
         <v-list-item
         >
-          <v-btn text @click="switchAction('删除任务', index, item)">删除任务</v-btn>
+          <v-btn text @click="switchAction('删除任务', item, task)">删除任务</v-btn>
         </v-list-item>
         <v-list-item
         >
-          <v-btn text @click="switchAction('完成任务', index, item)">完成任务</v-btn>
+          <v-btn text @click="switchAction('完成任务', item, task)">完成任务</v-btn>
         </v-list-item>
         <!-- <v-list-item
         >
@@ -257,7 +270,7 @@
         title="创建任务"
         :visible.sync="setupFather"
          width="50%"
-        :before-close="handleClose">
+        :before-close="cancelNewFather">
         <el-form :label-position="labelPosition" label-width="80px" :model="newFatherForm" ref="newFatherForm">
     <el-form-item label="任务名称">
       <el-input v-model="newFatherForm.name"></el-input>
@@ -289,13 +302,58 @@
         title="创建子任务"
         :visible.sync="setupSon"
          width="50%"
-        :before-close="handleClose">
+        :before-close="cancelNewSon">
         <el-form label-position="lab" label-iwdth="80px" :model="newSonForm" ref="newSonForm">
     <el-form-item label="子任务名称">
       <el-input v-model="newSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
-      <p>完成时间</p>
+      <p>开始时间</p>
+      <v-menu
+        v-model="menu1"
+        :close-on-content-click="false"
+        return-value.sync="sad"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-combobox
+            v-model="newSonForm.startTime"
+            chips
+            small-chips
+            label="请选择日期"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-combobox>
+        </template>
+        <v-date-picker
+          v-model="newSonForm.startTime"
+          no-title
+          scrollabel
+        >
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            color="primary"
+            @click="menu1 = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            text
+            color="primary"
+            @click="menu1 = false"
+          >
+            OK
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+    </el-form-item>
+    <el-form-item>
+      <p>预计完成时间</p>
       <v-menu
         v-model="menu2"
         :close-on-content-click="false"
@@ -434,15 +492,15 @@
         </template>
         <v-time-picker
             v-model="newAlarmForm.time"
-            :allowed-hours="allowed_hours"
-            :allowed-minutes="allowed_minutes"
+            :allowed-hours="allowedHours"
+            :allowed-minutes="allowedMinutes"
             class="mt-4"
             format="24hr"
             scrollabel
     >
           <v-spacer></v-spacer>
           <v-btn
-            text
+            tftuext
             color="primary"
             @click="menu4 = false"
           >
@@ -474,9 +532,47 @@
       <el-input v-model="editSonForm.name"></el-input>
     </el-form-item>
     <el-form-item>
-      <p>完成时间</p>
+      <p>开始时间</p>
       <v-menu
-        v-model="menu"
+        v-model="menu3"
+        :close-on-content-click="false"
+        return-value.sync="sad"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-combobox
+            v-model="editSonForm.startTime"
+            chips
+            small-chips
+            label="请选择日期"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-combobox>
+        </template>
+        <v-date-picker
+          v-model="editSonForm.startTime"
+          no-title
+          scrollabel
+        >
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            color="primary"
+            @click="menu3 = false"
+          >
+            确定
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+    </el-form-item>
+    <el-form-item>
+      <p>预计完成时间</p>
+      <v-menu
+        v-model="menu4"
         :close-on-content-click="false"
         return-value.sync="sad"
         transition="scale-transition"
@@ -504,7 +600,7 @@
           <v-btn
             text
             color="primary"
-            @click="menu = false"
+            @click="menu4 = false"
           >
             确定
           </v-btn>
@@ -576,6 +672,7 @@ export default {
     sonContribute: 0,
     myName: "罗本",
     tempItem: '',
+    showPencil: [],
     options: ['删除任务', "编辑任务", "详细信息", "完成任务"],
     picker:
     (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
@@ -592,7 +689,8 @@ export default {
       startTime: '', 
       endTime: '', 
       contribute: '', 
-      managerName: ''
+      managerName: '',
+      fatherTaskId: ''
     },
     newSonForm: {
       name: '',
@@ -618,8 +716,9 @@ export default {
           sortable: false,
           value: 'subTaskName',
         },
-        { text: '开始时间', value: 'create_time' },
-        { text: '完成时间', value: 'deadline' },
+        { text: '开始时间', value: 'start_time' },
+        { text: '预计完成时间', value: 'deadline' },
+        { text: '实际完成时间', value: 'complete_time' },
         { text: "贡献程度", value: "contribute"},
         { text: '状态', value: 'state'},
         { text: '负责人', value: 'managerId'},
@@ -678,9 +777,20 @@ export default {
     ]
   }),
   methods: {
+    mouseenter(task) {
+      this.showPencil[task.taskId] = true;
+      console.log(this.showPencil);
+      console.log(task.taskId);
+    },
+    mouseleave(task) {
+      this.showPencil[task.taskId] = false;
+    },
     getPersonList() {
-      showPersonList({projectId:this.selectedProj.id, userId: this.user.id}).then(
+      console.log("getPersonList");
+      console.log(this.selectedProj);
+      showPersonList({projectId:this.selectedProj.projectId, userId: this.user.id}).then(
         res => {
+          console.log(res);
           console.log(res['data']['data']);
           for (let i=0;i < res['data']['data'].length;i++) {
             this.personIdList.push(res['data']['data'][i]['peopleId']);
@@ -690,8 +800,12 @@ export default {
       )
     },
     getTaskList() {
-      showTaskList({userId: this.user.id, projectId: this.selectedProj.id}).then(
+      console.log(this.user.id);
+      console.log(this.selectedProj);
+      showTaskList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
          res => {
+          console.log("showTaskList");
+          console.log(res);
           this.tasks = res['data']['data'];
           console.log(this.tasks);
         }
@@ -703,6 +817,22 @@ export default {
       this.changeNameForm.id = task.taskId;
     },
     ctn() {
+      if (this.changeNameForm.name.trim() === "") {
+        this.$message({
+          type: 'error',
+          message: '任务名不可为空！'
+        });
+        return;
+      }
+      for (let i=0;i<this.tasks.length;i++) {
+        if (this.tasks[i].taskName === this.changeNameForm.name && this.tasks[i].taskId != this.changeNameForm.id) {
+          this.$message({
+          type: 'error',
+          message: '已存在同名任务！'
+        });
+        return;
+        }
+      }
       modifyTaskContent({userId: this.user.id, taskId: this.changeNameForm.id, deadline:"2023-4-23", contribute: 0, taskName:this.changeNameForm.name, 
       managerId: 1}).then(
         res => {
@@ -718,6 +848,13 @@ export default {
     },
     newFather() {
       // newFather()
+      if (this.newFatherForm.name .trim() === "") {
+        this.$message({
+          type: 'error',
+          message: '任务名不可为空！'
+        });
+        return;
+      }
       for (let i=0;i<this.tasks.length;i++) {
         if (this.tasks[i].taskName === this.newFatherForm.name) {
           this.$message({
@@ -731,10 +868,9 @@ export default {
       console.log(this.user.id);
       console.log(this.newFatherForm.name);
       console.log(this.selectedProj);
-      addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.id}).then(
+      addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.projectId}).then(
         res => {
           console.log(res);
-          
           this.newFatherForm.name = '';
           this.getTaskList();
         }
@@ -751,7 +887,7 @@ export default {
       for(let i=0;i < this.tasks.length;i++) {
         for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
           projectItem.push(this.tasks[i].subTaskList[j].subTaskName);
-          projectItemStart.push(this.tasks[i].subTaskList[j].create_time.slice(0, 10));
+          projectItemStart.push(this.tasks[i].subTaskList[j].start_time.slice(0, 10));
           projectItemEnd.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
           workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
           expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
@@ -809,6 +945,41 @@ export default {
       this.newSonForm.name = '';
     },
     newSon() {
+      if (this.newSonForm.name.trim() === "") {
+        this.$message({
+                type: "error",
+                message: '任务名不能为空'
+              })
+              return;
+      }
+      if (this.newSonForm.startTime.trim() === "") {
+        this.$message({
+                type: "error",
+                message: '开始时间不能为空'
+              })
+              return;
+      }
+      if (this.newSonForm.endTime.trim() === "") {
+        this.$message({
+                type: "error",
+                message: '预计完成时间不能为空'
+              })
+              return;
+      }
+      if (this.newSonForm.contribute == 0) {
+        this.$message({
+                type: "error",
+                message: '贡献程度不能为0！'
+              })
+              return;
+      }
+      if (this.newSonForm.managerName === "") {
+        this.$message({
+                type: "error",
+                message: '请指定一个负责人！'
+              })
+              return;
+      }
       for (let i=0;i<this.tasks.length;i++) {
         if (this.tasks[i].taskId == this.newSonForm.fatherTaskId) {
           for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
@@ -823,10 +994,19 @@ export default {
         }
         break;
       }
+      if (this.newSonForm.startTime >= this.newSonForm.endTime) {
+        this.$message(
+          {
+            type: 'error',
+            message: '开始时间不能超过结束时间！'
+          }
+        )
+        return;
+      }
       console.log(this.newSonForm.endTime);
       let managerId = this.personIdList[this.personNameList.indexOf(this.newSonForm.managerName)];
-      addSubTask({userId: this.user.id, deadline: this.newSonForm.endTime, contribute: this.newSonForm.contribute, 
-        managerId: managerId, fatherTaskId: this.newSonForm.fatherTaskId, projectId: this.selectedProj.id, 
+      addSubTask({userId: this.user.id, start_time: this.newSonForm.startTime, deadline: this.newSonForm.endTime, contribute: this.newSonForm.contribute, 
+        managerId: managerId, fatherTaskId: this.newSonForm.fatherTaskId, projectId: this.selectedProj.projectId, 
         subTaskName: this.newSonForm.name}).then(
           res => {
             console.log(res);
@@ -842,6 +1022,10 @@ export default {
       this.newSonForm.managerName = '';
       this.newSonForm.name = '';
     },
+    handleSetupTaskClose() {
+      this.newFatherForm.name = "";
+      this.handleClose();
+    },
     handleClose(done) {
       this.$confirm('确认关闭？')
         .then(()=> {
@@ -853,9 +1037,11 @@ export default {
       //checkMyTask
       console.log(this.checkMyFlag);
       this.checkMyFlag = true;
-      watchMyTask({userId: this.user.id, projectId: this.selectedProj.id}).then(
+      watchMyTask({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
         res => {
+          console.log(res);
           this.tasks = res['data']['data'];
+          console.log(this.tasks);
         }
       );
     },
@@ -885,22 +1071,23 @@ export default {
       // console.log(this.newAlarmForm.date + '-' + this.newAlarmForm.time.replace(':', '-'));
       //
     },
-    switchAction(action, index, item) {
-        this.tempItem = item;
+    switchAction(action, item, task) {
         if (action === "删除任务") {
-        this.handleDelete(index, item);
+        this.handleDelete(item);
         } else if (action === "编辑任务") {
-          this.handleEdit(item);
+          this.handleEdit(item, task);
         } else if (action === "完成任务") {
           this.handleComplete(item);
         }
     },
-    handleEdit(item) {
+    handleEdit(item, task) {
       this.editSonForm.name = item.subTaskName;
-      this.editSonForm.startTime = item.create_time.slice(0, 10);
+      this.editSonForm.startTime = item.start_time.slice(0, 10);
       this.editSonForm.endTime = item.deadline.slice(0, 10);
       this.editSonForm.contribute = item.contribute;
       this.editSonForm.managerName = this.personNameList[this.personIdList.indexOf(item.managerId)];
+      this.editSonForm.fatherTaskId = task.taskId;
+      this.editSonForm.subTaskId = item.subTaskId;
       this.editTask = true;
     },
     handleComplete(item) {
@@ -915,7 +1102,7 @@ export default {
         }
       );
     },
-    handleDelete(index, item) {
+    handleDelete(item) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -926,12 +1113,12 @@ export default {
           message: '删除成功!'
         });
         console.log(item);
-      removeTask({taskId: item.subTaskId, userId: this.user.id}).then(
+         removeTask({taskId: item.subTaskId, userId: this.user.id}).then(
         res => {
           console.log(res);
+          this.getTaskList();
         }
       );
-      this.getTaskList();
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -940,7 +1127,49 @@ export default {
       });
     },
     editSubTask() {
-      modifyTaskContent({userId: this.user.id, taskId: this.tempItem.subTaskId, deadline:this.editSonForm.endTime, contribute:this.editSonForm.contribute, 
+      if (this.editSonForm.name.trim() === "") {
+        this.$message(
+          {
+            type: 'error',
+            message: '任务名不能为空！'
+          }
+        )
+        return;
+      }
+      for (let i=0;i<this.tasks.length;i++) {
+        if (this.tasks[i].taskId == this.editSonForm.fatherTaskId) {
+          for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
+            if (this.tasks[i].subTaskList[j].subTaskName === this.editSonForm.name && 
+            this.tasks[i].subTaskList[j].subTaskId !== this.editSonForm.subTaskId) {
+              this.$message({
+                type: "error",
+                message: '已存在同名子任务'
+              })
+              return;
+            }
+          }
+        }
+        break;
+      }
+      if (this.editSonForm.contribute == 0) {
+        this.$message(
+          {
+            type: 'error',
+            message: '贡献程度不能为0！'
+          }
+        )
+        return;
+      }
+      if (this.editSonForm.startTime >= this.editSonForm.endTime) {
+        this.$message(
+          {
+            type: 'error',
+            message: '开始时间不能超过结束时间！'
+          }
+        )
+        return;
+      }
+      modifyTaskContent({userId: this.user.id, taskId: this.editSonForm.subTaskId, start_time:this.editSonForm.startTime, deadline:this.editSonForm.endTime, contribute:this.editSonForm.contribute, 
       taskName: this.editSonForm.name, managerId: this.personIdList[this.personNameList.indexOf(this.editSonForm.managerName)]}).then(
         res => {
           console.log(res);
@@ -958,6 +1187,17 @@ export default {
         return '未开始';
       } else if (state === 'D') {
         return '不合法';
+      }
+  },
+  getColor(state) {
+    if (state === 'A') {
+        return 'green';
+      } else if (state === 'B') {
+        return 'orange';
+      } else if (state === 'C') {
+        return 'blue';
+      } else if (state === 'D') {
+        return 'red';
       }
   },
   getName(id) {

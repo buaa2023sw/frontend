@@ -73,8 +73,8 @@
        width="50%"
       :before-close="handleClose"
       style="position:relative">
-      <el-form :label-position="labelPosition" label-width="80px">
-<el-form-item label="用户id">
+      <el-form :label-position="labelPosition" label-width="120px">
+<el-form-item label="用户名称/邮箱">
   <el-input v-model="newPersonForm.id" style="width: 400px;"></el-input>
 </el-form-item>
 </el-form>
@@ -177,7 +177,7 @@ export default {
   },
   methods: {
     getPersonList() {
-      showPersonList({projectId: this.selectedProj.id, userId: this.user.id}).then(
+      showPersonList({projectId: this.selectedProj.projectId, userId: this.user.id}).then(
         res => {
           console.log(res);
           this.personData = res['data']['data'];
@@ -211,7 +211,7 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log(row.peopleJob);
-        removeMember({projectId: this.selectedProj.id, personId: row.peopleId, userId: this.user.id}).then(
+        removeMember({projectId: this.selectedProj.projectId, personId: row.peopleId, userId: this.user.id}).then(
           res => {
             console.log(res);
             this.getPersonList();
@@ -230,7 +230,7 @@ export default {
       });
     },
     setupPerson() {
-      addMember({projectId: this.selectedProj.id, personId: this.newPersonForm.id, userId: this.user.id}).then(
+      addMember({projectId: this.selectedProj.projectId, personId: this.newPersonForm.id, userId: this.user.id}).then(
         res => {
           console.log(res);
           var errorCode = res['data']['errcode'];
@@ -269,7 +269,7 @@ export default {
         this.changeRoleForm.role = 'B';
       } 
       console.log(this.changeRoleForm);
-      modifyRole({projectId: this.selectedProj.id, userId: this.user.id, role: this.changeRoleForm.role, personId: this.changeRoleForm.id}).then(
+      modifyRole({projectId: this.selectedProj.projectId, userId: this.user.id, role: this.changeRoleForm.role, personId: this.changeRoleForm.id}).then(
         res => {
           console.log(res);
           var errorCode = res['data']['errcode'];
