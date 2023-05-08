@@ -15,7 +15,7 @@
       color="primary"
       style="position:absolute;top:1%;right:30%;height:4%;width:10%;"
       @click="gotoPic"
-      >  <v-icon
+      >  <v-icon 
        left
     >     mdi-align-vertical-bottom
     </v-icon>
@@ -122,6 +122,14 @@
         {{ transform(item.state) }}
       </v-chip>
     </template> 
+    <template v-slot:[`item.managerId`] ="{ item }">
+    <div style="position:relative;">
+    <v-avatar size="25"  color="indigo" >
+      <span class="white--text text-h6">{{getName(item.managerId)[0]}}</span>
+    </v-avatar>
+    <div style="position: absolute;left:40%;bottom: 5%;">{{ getName(item.managerId) }}</div>
+  </div>
+    </template>
   <template v-slot:[`item.alarm`]="{item}">
       <v-icon
         small
@@ -883,6 +891,7 @@ export default {
       let workloads = [];
       let expectedDates = [];
       let actualDates = [];
+      let projectState = [];
       console.log(this.tasks);
       for(let i=0;i < this.tasks.length;i++) {
         for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
@@ -892,6 +901,7 @@ export default {
           workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
           expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
           actualDates.push(this.tasks[i].subTaskList[j].complete_time.slice(0, 10));
+          projectState.push(this.tasks[i].subTaskList[j].state);
         }
       }
       console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
@@ -904,7 +914,7 @@ export default {
       this.$router.push({path:'/picture'
       , query: {
         projectItem: projectItem, projectItemStart: projectItemStart, projectItemEnd: projectItemEnd,
-        workloads: workloads, expectedDates: expectedDates, actualDates: actualDates
+        workloads: workloads, expectedDates: expectedDates, actualDates: actualDates, projectState: projectState
       }});
     }
     },

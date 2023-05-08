@@ -150,7 +150,7 @@
               <v-list-item-title class="text-h6">
                 {{this.proj.managerName }}
               </v-list-item-title>
-              <v-list-item-subtitle>邮箱</v-list-item-subtitle>
+              <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -315,7 +315,7 @@
 <script>
 import Cookies from "js-cookie";
 import { computed } from "vue";
-import { newProject, showTaskList, watchAllProject} from "@/api/user";
+import { newProject, showTaskList, watchAllProject, getEmail} from "@/api/user";
 import axios from "axios";
 import AllProject from "./views/user/projectPlanning/allProject.vue";
 
@@ -408,6 +408,16 @@ export default {
     };
   },
   methods: {
+    getEmail(id) {
+      getEmail({id: id}).then(
+        res => {
+          console.log("getEmail");
+          console.log(res);
+          console.log(id);
+          return res['data']['data'];
+        }
+      )
+    },
     get_project() {
       Cookies.remove("proj");
       console.log("get_project");
@@ -423,7 +433,7 @@ export default {
       console.log(this.selectedProj);
       showTaskList({userId: this.user.id, projectId: this.proj.projectId}).then(
          res => {
-          console.log("showTaskList");
+          console.log("getTaskList");
           console.log(res);
           this.tasks = res['data']['data'];
           console.log(this.tasks);
@@ -442,7 +452,7 @@ export default {
       for(let i=0;i < this.tasks.length;i++) {
         for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
           projectItem.push(this.tasks[i].subTaskList[j].subTaskName);
-          projectItemStart.push(this.tasks[i].subTaskList[j].create_time.slice(0, 10));
+          projectItemStart.push(this.tasks[i].subTaskList[j].start_time.slice(0, 10));
           projectItemEnd.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
           workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
           expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));

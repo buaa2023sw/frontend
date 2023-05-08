@@ -12,6 +12,10 @@ const router = new VueRouter({
   base: import.meta.env.BASE_URL,
   routes:[
     {
+      path:'/chatPage',
+      component: () => import('../views/chat/ChatPage.vue')
+    },
+    {
       path:'/allPerson',
       component: () => import('../views/user/projectPlanning/allPerson.vue')
     },
