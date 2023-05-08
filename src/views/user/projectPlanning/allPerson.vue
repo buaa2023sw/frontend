@@ -75,7 +75,7 @@
       style="position:relative">
       <el-form :label-position="labelPosition" label-width="120px">
 <el-form-item label="用户名称/邮箱">
-  <el-input v-model="newPersonForm.id" style="width: 400px;"></el-input>
+  <el-input v-model="newPersonForm.nameOrEmail" style="width: 400px;"></el-input>
 </el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
@@ -166,7 +166,7 @@ export default {
       setupDialog: false,
       changeDialog: false,
       newPersonForm: {
-        id: '',
+        nameOrEmail: '',
       },
       idTemp: '',
       changeRoleForm: {
@@ -230,7 +230,7 @@ export default {
       });
     },
     setupPerson() {
-      addMember({projectId: this.selectedProj.projectId, personId: this.newPersonForm.id, userId: this.user.id}).then(
+      addMember({projectId: this.selectedProj.projectId, nameOrEmail: this.newPersonForm.nameOrEmail}).then(
         res => {
           console.log(res);
           var errorCode = res['data']['errcode'];
@@ -253,7 +253,7 @@ export default {
               message: '邀请成功'});
             this.setupDialog = false;
             this.getPersonList();
-            this.newPersonForm.id = '';
+            this.newPersonForm.nameOrEmail = '';
           }
         }
       );

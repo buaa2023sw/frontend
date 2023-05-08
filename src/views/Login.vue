@@ -55,6 +55,12 @@ export default {
         });
         return;
       }
+      console.log(this.userNameOrEmail)
+      console.log(this.password)
+      console.log({
+        userNameOrEmail: this.userNameOrEmail,
+        password: this.password
+      })
       axios.post("/api/login", {
         userNameOrEmail: this.userNameOrEmail,
         password: this.password
