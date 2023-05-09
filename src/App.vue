@@ -1,10 +1,6 @@
 <template>
   <v-app id="main_page">
     <v-app-bar app clipped-left color="blue" dark extension-height="36" :absolute="true">
-      <v-app-bar-nav-icon
-        v-if="user && proj"
-        @click="drawer = !drawer"
-      ></v-app-bar-nav-icon>
       <v-toolbar-title>BUAA 2023 SW</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -93,7 +89,7 @@
                 color="primary"
               >
               <v-list-item>
-                <router-link :to="{path: '/allProject'}" custom v-slot="{ navigate }">  
+                <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">  
                   <button @click="navigate" @keypress.enter="navigate" role="link">查看所有项目</button>
                 </router-link>
               </v-list-item>
@@ -127,12 +123,12 @@
       app
       clipped
       permanent
-      v-if="user && proj"
+      v-if="(user && proj && showLabel) || (user && user.status === 'C')"
     >
       <!-- <div style="background-color: aqua;width: 100%;">
 
       </div> -->
-      <v-list nav>
+      <v-list v-if="user.status !== 'C'">
           <v-list-item class="px-2">
             <v-avatar size="40" color="indigo" >
                 <span class="white--text text-h5">{{ this.proj.projectName[0] }}</span>
@@ -155,7 +151,7 @@
           </v-list-item>
         </v-list>
 
-        <v-list subheader>
+        <v-list subheader  v-if="user.status !== 'C'">
       <v-subheader>规划</v-subheader>
       <v-list-item  link :to="'/allTask'">
         <v-list-item-avatar>
@@ -197,69 +193,7 @@
       </v-list-item>
     </v-list>
 
-      <!-- <v-list>
-        <v-list-item @click.stop="mini = !mini">
-          <v-list-item-icon>
-            <v-icon v-if="mini">mdi-chevron-right</v-icon>
-            <v-icon v-else>mdi-chevron-left</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title class="text-h6">{{
-            mini ? "展开" : "收回"
-          }}</v-list-item-title>
-        </v-list-item> -->
-
-        <v-divider></v-divider>
-<!-- 
-        <v-list-item-group v-if="user.status === 'A'" mandatory>
-          <v-list-item link :to="'/allProject/'" @click="selectedProj = null">
-            <v-list-item-icon
-              ><v-icon>mdi-home-outline</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>主页</v-list-item-title>
-          </v-list-item>
-          <v-list-item link @click="setupDialog = true">
-            <v-list-item-icon
-              ><v-icon>mdi-plus-circle</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>新建项目</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="updateUserProj()">
-            <v-list-item-icon><v-icon>mdi-refresh</v-icon></v-list-item-icon>
-            <v-list-item-title>更新项目</v-list-item-title>
-          </v-list-item>
-          <v-list-item
-            v-for="project in user.projects"
-            :key="project.id"
-            :to="routeSelect"
-            @click="selectedProj = project"
-          >
-            <v-list-item-icon
-              ><v-icon>mdi-developer-board</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>{{ project.name }}</v-list-item-title>
-          </v-list-item> -->
-
-          <!--          <v-list-item link :to="'/proj/' + selectedProj">-->
-          <!--            <v-list-item-icon>-->
-          <!--              <v-icon>mdi-home-outline</v-icon>-->
-          <!--            </v-list-item-icon>-->
-          <!--            <v-list-item-title class="text-h6">主页</v-list-item-title>-->
-          <!--          </v-list-item>-->
-
-          <!--          <v-list-item link :to="'/plan/' + selectedProj">-->
-          <!--            <v-list-item-icon>-->
-          <!--              <v-icon>mdi-book-edit-outline</v-icon>-->
-          <!--            </v-list-item-icon>-->
-          <!--            <v-list-item-title class="text-h6">规划</v-list-item-title>-->
-          <!--          </v-list-item>-->
-
-          <!--          <v-list-item link :to="'/dev/' + selectedProj">-->
-          <!--            <v-list-item-icon>-->
-          <!--              <v-icon>mdi-laptop</v-icon>-->
-          <!--            </v-list-item-icon>-->
-          <!--            <v-list-item-title class="text-h6">开发</v-list-item-title>-->
-          <!--          </v-list-item>-->
-        <!-- </v-list-item-group> -->
+        <v-list>
         <v-list-item-group v-if="user.status === 'C'">
           <v-list-item link to="/manager">
             <v-list-item-icon
@@ -354,7 +288,7 @@ export default {
   data: () => {
     return {
       labelPosition: "left",
-      drawer: false,
+      drawer: true,
       mini: true,
       showRouterView: true,
       user: user,
@@ -375,9 +309,11 @@ export default {
   },
   beforeUpdate() {
     this.showLabel();
+    // this.drawer = user && proj && showLabel();
     console.log("beforeUpdate");
     let proj = undefined;
     if (user !== undefined) {
+      if (user.status !== 'C') {
       proj = Cookies.get("proj");
       console.log(proj);
       if (proj === undefined) {
@@ -386,8 +322,8 @@ export default {
         window.location.pathname === "/register" ||
         window.location.pathname === "/login" || window.location.pathname === "/manager"
          ) {
-         } else if (window.location.pathname !== "/allProject") {
-            window.location.pathname = "/allProject";
+         } else if (window.location.pathname !== "/allProject/") {
+            window.location.pathname = "/allProject/";
         }
       } else {
       proj = JSON.parse(proj);
@@ -395,6 +331,7 @@ export default {
       console.log(proj);
       console.log(proj.projectId);
       }
+    }
   }
   this.proj = proj;
   },
@@ -482,19 +419,24 @@ export default {
       this.proj = Cookies.get(proj);
     },
     showLabel() {
-      this.user = Cookies.get('user');
-      console.log(this.user);
-      if (this.user == null|| this.user.status === 'C') {
+      if (this.user === undefined|| this.user.status === 'C') {
         return false;
       }
       console.log("showLabel");
       console.log(this.proj);
       console.log(this.user);
       console.log(this.$route.path);
+
+      console.log(   this.user !== null && this.proj !== undefined && 
+        !window.location.pathname.startsWith("/manager") &&
+        this.$route.path !== "/allProject/" &&
+        !window.location.pathname.startsWith("/login") &&
+        !window.location.pathname.startsWith("/register"));
+
       return (
         this.user !== null && this.proj !== undefined && 
         !window.location.pathname.startsWith("/manager") &&
-        this.$route.path !== "/allProject" &&
+        this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
         !window.location.pathname.startsWith("/register")
       );
