@@ -90,6 +90,7 @@ export default {
               });
               if (response.data.data.status === 'C') {
                 window.location.href = '/manager'
+                
               } else {
                 window.location.href = '/allProject'
               }

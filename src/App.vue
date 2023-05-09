@@ -383,8 +383,8 @@ export default {
       if (proj === undefined) {
         console.log("not choose project");
         if (
-        window.location.pathname === "/register" &&
-        window.location.pathname === "/login"
+        window.location.pathname === "/register" ||
+        window.location.pathname === "/login" || window.location.pathname === "/manager"
          ) {
          } else if (window.location.pathname !== "/allProject") {
             window.location.pathname = "/allProject";
@@ -482,6 +482,11 @@ export default {
       this.proj = Cookies.get(proj);
     },
     showLabel() {
+      this.user = Cookies.get('user');
+      console.log(this.user);
+      if (this.user == null|| this.user.status === 'C') {
+        return false;
+      }
       console.log("showLabel");
       console.log(this.proj);
       console.log(this.user);
