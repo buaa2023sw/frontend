@@ -123,7 +123,7 @@
       app
       clipped
       permanent
-      v-if="(user && proj && showLabel) || (user && user.status === 'C')"
+      v-if="(user && proj && showLabel()) || (user && user.status === 'C')"
     >
       <!-- <div style="background-color: aqua;width: 100%;">
 
@@ -259,7 +259,6 @@ if (user === undefined) {
   console.log("not logged in");
   if (window.location.pathname === "/register") {
   } else if (window.location.pathname !== "/login") {
-    window.location.pathname = "/login";
   }
 } else {
   console.log("logged in");
@@ -308,9 +307,9 @@ export default {
     };
   },
   beforeUpdate() {
-    this.showLabel();
     // this.drawer = user && proj && showLabel();
     console.log("beforeUpdate");
+    this.showLabel();
     let proj = undefined;
     if (user !== undefined) {
       if (user.status !== 'C') {
@@ -319,7 +318,7 @@ export default {
       if (proj === undefined) {
         console.log("not choose project");
         if (
-        window.location.pathname === "/register" ||
+        window.location.pathname === "/register" ||  window.location.pathname === "/user/profile" ||
         window.location.pathname === "/login" || window.location.pathname === "/manager"
          ) {
          } else if (window.location.pathname !== "/allProject/") {

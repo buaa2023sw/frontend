@@ -18,16 +18,24 @@
         :custom-filter="filterOnlyCapsText"
       >
       <template v-slot:no-data>
-        <div style="position:relative;background-color: aliceblue;height: 300px;">
-          <v-img src="'../../assets/logo.svg'"></v-img>
+        <div style="text-align: center;">
+          <img src="../../../assets/search.png" height="150px" width="150px"/>
+        </div>
+        <div style="font-size:20px;font-weight: bold">
+          没有找到数据
+        </div>
      <!-- <v-img
       max-height="30%"
       max-width="30%"
       style  src="@/assets/search.png"></v-img>="position:absolute;left:35%;right:35%;top:5%" -->
-    </div>
      </template>
       <template v-slot:no-results>
-        111112345
+        <div style="text-align: center;">
+          <img src="../../../assets/search.png" height="150px" width="150px"/>
+        </div>
+        <div style="font-size:20px;font-weight: bold">
+          没有找到数据
+        </div>
       </template>
         <template v-slot:top>
           <div style="width: 100%; height: 100%; position: relative">

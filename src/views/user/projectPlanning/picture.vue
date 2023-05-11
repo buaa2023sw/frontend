@@ -2,7 +2,7 @@
   <div style="position: relative; width: 100%; height: 100%">
     <div
       id="burnup-chart"
-      style="position: absolute; width: 80%; height: 40%; left: 10%; top: 5%"
+      style="position: absolute; width: 80%; height: 40%; left: 10%; top: 6%"
     >
       燃尽图
     </div>

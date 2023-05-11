@@ -17,6 +17,22 @@
   :custom-filter="filterName"
   height=""
 >
+<template v-slot:no-data>
+  <div style="text-align: center;">
+          <img src="../../../assets/nobody.png" height="200px" width="170px"/>
+        </div>
+  <div style="font-size:20px;font-weight: bold">
+          没有找到成员
+        </div>
+</template>
+<template v-slot:no-results>
+  <div style="text-align: center;">
+          <img src="../../../assets/nobody.png" height="200px" width="170px"/>
+        </div>
+  <div style="font-size:20px;font-weight: bold">
+          没有找到成员
+        </div>
+</template>
 <template v-slot:top>
   <div style="width: 100%; height: 100%;position: relative;">
       <v-text-field

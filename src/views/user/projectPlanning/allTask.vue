@@ -23,7 +23,7 @@
         <v-btn
       depressed
       color="primary"
-      style="position:absolute;top:1%;right:17%;height:4%;width:10%;"
+      style="position:absolute;top:1%;right:17%;height:4%;width:11%;"
       @click="checkMyTask"
       v-if="checkMyFlag === false"
       >查看我的任务</v-btn>
@@ -39,8 +39,8 @@
       color="primary"
       style="position:absolute;top:1%;right:1%;height:4%;width:10%;"
       @click="setupFather = true"
-      >创建任务</v-btn>
-    <v-container fluid style="position:relative" class="grey lighten-5">
+      >创建冲刺</v-btn>
+    <v-container fluid style="position:relative">
       <v-data-iterator
         style="width:100%;position: absolute;"
         :items="tasks"
@@ -48,6 +48,22 @@
         hide-default-footer
         :single-expand="false"
       >
+      <template v-slot:no-data>
+        <div style="text-align: center;">
+          <img src="../../../assets/notask.png" height="400px" width="325px"/>
+        </div>
+        <div style="font-size:40px;font-weight: bold;text-align: center;">
+          您还没有设置任务
+        </div>
+      </template>
+      <template v-slot:no-results>
+        <div style="text-align: center;">
+          <img src="../../../assets/notask.png" height="400px" width="325px"/>
+        </div>
+        <div style="font-size:40px;font-weight: bold;text-align: center;">
+          未找到对应任务
+        </div>
+      </template>
         <template v-slot:default="{items, isExpanded, expand}">
             <v-row
               v-for="task in items"
@@ -58,10 +74,10 @@
               lg="3"
             >
               <v-card style="width:100%;position: relative;">
-                <div  @mouseenter="mouseenter(task)" @mouseleave="mouseleave(task)">
+                <div>
                 <v-card-title>
                   <h4>{{ task.taskName }}</h4>
-                   <v-icon v-if="showPencil[task.taskId] == true" size="small" @click="changeTaskName(task)">mdi-pencil</v-icon>
+                   <v-icon size="small" @click="changeTaskName(task)">mdi-pencil</v-icon>
                 <v-switch
                 style="position: absolute;right: 1%;"
                 :input-value="isExpanded(task)"
@@ -83,7 +99,8 @@
                 :items="task.subTaskList"
                 :items-per-page="5"
                 class="elevation-1"
-                 item-key='name'
+                 item-key='subTaskName'
+                 :custom-filter="filterOnlyCapsText"
                 >
 <!--    
   <template v-slot:[`item.remove`] ="{item}">
@@ -96,6 +113,16 @@
       更改角色
     </v-btn>
   </template> -->
+  <template v-slot:no-data>
+        <div style="font-size:15px;font-weight: bold;text-align: center;">
+          没有子任务
+        </div>
+      </template>
+  <template v-slot:no-results>
+        <div style="font-size:15px;font-weight: bold;text-align: center;">
+          没有找到对应子任务
+        </div>
+  </template>
   <template v-slot:[`item.state`]="{ item }">
       <div>{{ transform(item.state) }}</div>
     </template>
@@ -680,7 +707,7 @@ export default {
     sonContribute: 0,
     myName: "罗本",
     tempItem: '',
-    showPencil: [],
+    showPencil: {},
     options: ['删除任务', "编辑任务", "详细信息", "完成任务"],
     picker:
     (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
@@ -786,16 +813,18 @@ export default {
   }),
   methods: {
     mouseenter(task) {
+      console.log("mouseenter");
+      console.log(task.taskId);
       this.showPencil[task.taskId] = true;
       console.log(this.showPencil);
-      console.log(task.taskId);
     },
     mouseleave(task) {
+      console.log("mouseleave");
+      console.log(task.taskId);
       this.showPencil[task.taskId] = false;
+      console.log(this.showPencil);
     },
     getPersonList() {
-      console.log("getPersonList");
-      console.log(this.selectedProj);
       showPersonList({projectId:this.selectedProj.projectId, userId: this.user.id}).then(
         res => {
           console.log(res);
@@ -808,8 +837,6 @@ export default {
       )
     },
     getTaskList() {
-      console.log(this.user.id);
-      console.log(this.selectedProj);
       showTaskList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
          res => {
           console.log("showTaskList");
@@ -841,7 +868,8 @@ export default {
         return;
         }
       }
-      modifyTaskContent({userId: this.user.id, taskId: this.changeNameForm.id, deadline:"2023-4-23", contribute: 0, taskName:this.changeNameForm.name, 
+      modifyTaskContent({userId: this.user.id, taskId: this.changeNameForm.id, 
+        start_time: "2023-4-23", deadline:"2023-4-23", contribute: 0, taskName:this.changeNameForm.name, 
       managerId: 1}).then(
         res => {
           console.log(res);
@@ -873,9 +901,6 @@ export default {
         }
       }
       this.setupFather = false;
-      console.log(this.user.id);
-      console.log(this.newFatherForm.name);
-      console.log(this.selectedProj);
       addTask({userId: this.user.id, taskName: this.newFatherForm.name, projectId: this.selectedProj.projectId}).then(
         res => {
           console.log(res);
@@ -954,6 +979,17 @@ export default {
       this.newSonForm.managerName = '';
       this.newSonForm.name = '';
     },
+    filterOnlyCapsText(value, search, item) {
+      console.log(value);
+      var s = item["subTaskName"];
+      return (
+        s != null &&
+        search != null &&
+        typeof s === "string" &&
+        s.toString().toLocaleUpperCase().indexOf(search.toLocaleUpperCase()) !==
+          -1
+      );
+    },
     newSon() {
       if (this.newSonForm.name.trim() === "") {
         this.$message({
@@ -1013,7 +1049,6 @@ export default {
         )
         return;
       }
-      console.log(this.newSonForm.endTime);
       let managerId = this.personIdList[this.personNameList.indexOf(this.newSonForm.managerName)];
       addSubTask({userId: this.user.id, start_time: this.newSonForm.startTime, deadline: this.newSonForm.endTime, contribute: this.newSonForm.contribute, 
         managerId: managerId, fatherTaskId: this.newSonForm.fatherTaskId, projectId: this.selectedProj.projectId, 
@@ -1023,7 +1058,6 @@ export default {
             this.getTaskList();
           }
         );
-      console.log(this.newSonForm);
       this.setupSon = false;
       this.newSonForm.contribute = 0;
       this.newSonForm.fatherTaskId = '';
