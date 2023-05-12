@@ -11,6 +11,8 @@ import './assets/main.css'
 import vuetify from './plugins/vuetify'
 import '@babel/polyfill'
 
+// import allTask from "@/views/user/projectPlanning/allTask"
+
 Vue.use(ElementUI, axios, VueAxios)
 
 new Vue({
@@ -18,3 +20,4 @@ new Vue({
   vuetify,
   render: (h) => h(App)
 }).$mount('#app')
+// Vue.component('allTask', allTask);

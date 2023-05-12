@@ -672,6 +672,7 @@
 import {showTaskList, addTask, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask, removeTask, showPersonList} from '@/api/user.js'
 
 export default {
+  name: "allTask",
   created() {
     if (this.selectedProj == null){
       this.$message({

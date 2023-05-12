@@ -206,6 +206,15 @@
 
         <v-list-item-content>
           <v-list-item-title>代码诊断</v-list-item-title>
+          <v-dialog
+          v-model="dialog"
+          fullscreen
+          hide-overlay
+          transition="dialog-bottom-transition">
+          </v-dialog>
+          <template v-slot:activator="{on, attrs}">
+          <v-list-item-title v-bind="attrs" v-on="on">共享文档</v-list-item-title>
+        </template>
         </v-list-item-content>
       </v-list-item>
       <v-subheader>extra</v-subheader>
@@ -269,6 +278,7 @@
 
     <v-main>
       <router-view v-if="showRouterView" />
+      <!-- <allTask></allTask> -->
     </v-main>
   </v-app>
 </template>
@@ -279,6 +289,7 @@ import { computed } from "vue";
 import { newProject, showTaskList, watchAllProject, getEmail} from "@/api/user";
 import axios from "axios";
 import AllProject from "./views/user/projectPlanning/allProject.vue";
+// import allTask from "@/views/user/projectPlanning/allTask"
 
 let user = Cookies.get("user");
 console.log(user);
