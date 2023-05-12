@@ -485,6 +485,10 @@ export default {
         this.get_project();
         this.updateUserProj();
       });
+      this.form = {
+        name: "",
+        intro: "",
+      };
     },
     transform(state) {
       if (state === "A") {
