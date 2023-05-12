@@ -291,7 +291,10 @@ if (user === undefined) {
 } else {
   console.log("logged in");
   user = JSON.parse(user);
-  // window.location.href = '/allProject'
+  console.log(window.location.pathname);
+  if (window.location.pathname === "/") {
+  window.location.href = "/allProject/";
+  }
 }
 
 export default {
@@ -338,6 +341,7 @@ export default {
   beforeUpdate() {
     // this.drawer = user && proj && showLabel();
     console.log("beforeUpdate");
+    console.log(window.location.pathname);
     this.showLabel();
     let proj = undefined;
     if (user !== undefined) {
@@ -350,8 +354,8 @@ export default {
         window.location.pathname === "/register" ||  window.location.pathname === "/user/profile" ||
         window.location.pathname === "/login" || window.location.pathname === "/manager"
          ) {
-         } else if (window.location.pathname !== "/allProject/") {
-            window.location.pathname = "/allProject/";
+         } else if (window.location.pathname !== "/allProject/") { 
+          window.location.href = "/allProject/";
         }
       } else {
       proj = JSON.parse(proj);

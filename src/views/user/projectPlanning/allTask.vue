@@ -123,8 +123,8 @@
           没有找到对应子任务
         </div>
   </template>
-  <template v-slot:[`item.state`]="{ item }">
-      <div>{{ transform(item.state) }}</div>
+  <template v-slot:[`item.status`]="{ item }">
+      <div>{{ transform(item.status) }}</div>
     </template>
     <template v-slot:[`item.managerId`]="{ item }">
       <div>{{ getName(item.managerId) }}</div>
@@ -141,12 +141,12 @@
     <template v-slot:[`item.complete_time`]="{ item }">
       <div>{{ item.complete_time.slice(0, 10) === "2050-12-31" ? "---" : item.complete_time.slice(0, 10)}}</div>
     </template>
-    <template v-slot:[`item.state`]="{ item }">
+    <template v-slot:[`item.status`]="{ item }">
       <v-chip
-        :color="getColor(item.state)"
+        :color="getColor(item.status)"
         dark
       >
-        {{ transform(item.state) }}
+        {{ transform(item.status) }}
       </v-chip>
     </template> 
     <template v-slot:[`item.managerId`] ="{ item }">
@@ -755,7 +755,7 @@ export default {
         { text: '预计完成时间', value: 'deadline' },
         { text: '实际完成时间', value: 'complete_time' },
         { text: "贡献程度", value: "contribute"},
-        { text: '状态', value: 'state'},
+        { text: '状态', value: 'status'},
         { text: '负责人', value: 'managerId'},
         { text: '', value: "alarm", sortable: false},
         { text: '', value: 'action', sortable: false}
@@ -765,14 +765,14 @@ export default {
       //   name: '任务一',
       //   time: "2022-3-1 to 2022-3-4",
       //   contribute: "30%",
-      //   state: "进行中",
+      //   status: "进行中",
       //   sons: [
       //       {
       //           name: '子任务一',
       //           startTime: "2022-3-1",
       //           endTime: "2022-3-4",
       //           contribute: "10%",
-      //           state: "进行中",
+      //           status: "进行中",
       //           man: "罗本"
       //       },
       //       {
@@ -780,7 +780,7 @@ export default {
       //           startTime: "2022-3-1",
       //           endTime: "2022-3-25",
       //           contribute: "10%",
-      //           state: "进行中",
+      //           status: "进行中",
       //           man: "里贝里"
       //       },
       //   ]
@@ -789,14 +789,14 @@ export default {
       //   name: '任务二',
       //   time: "2022-4-1 to 2022-4-4",
       //   contribute: "30%",
-      //   state: "进行中",
+      //   status: "进行中",
       //   sons: [
       //   {
       //           name: '子任务一',
       //           startTime: "2022-3-1",
       //           endTime: "2022-3-4",
       //           contribute: "10%",
-      //           state: "进行中",
+      //           status: "进行中",
       //           man: "罗本"
       //       },
       //       {
@@ -804,7 +804,7 @@ export default {
       //           startTime: "2022-3-5",
       //           endTime: "2022-3-8",
       //           contribute: "10%",
-      //           state: "进行中",
+      //           status: "进行中",
       //           man: "里贝里"
       //       },
       //   ]
@@ -926,7 +926,7 @@ export default {
           workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
           expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
           actualDates.push(this.tasks[i].subTaskList[j].complete_time.slice(0, 10));
-          projectState.push(this.tasks[i].subTaskList[j].state);
+          projectState.push(this.tasks[i].subTaskList[j].status);
         }
       }
       console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
@@ -1222,26 +1222,33 @@ export default {
       )
       this.editTask = false;
     },
-    transform(state) {
-      if (state === 'A') {
+    transform(status) {
+  //     COMPLETED = 'A'
+  // INPROGRESS = 'B'
+  // NOTSTART = 'C' 延期已完成D 延期未完成E
+      if (status === 'A') {
         return '已完成';
-      } else if (state === 'B') {
+      } else if (status === 'B') {
         return '进行中';
-      } else if (state === 'C') {
+      } else if (status === 'C') {
         return '未开始';
-      } else if (state === 'D') {
-        return '不合法';
-      }
+      } else if (status === 'D') {
+        return '延期已完成';
+      }  else if (status === 'E') {
+        return '延期未完成';
+      } 
   },
-  getColor(state) {
-    if (state === 'A') {
+  getColor(status) {
+    if (status === 'A') {
         return 'green';
-      } else if (state === 'B') {
+      } else if (status === 'B') {
         return 'orange';
-      } else if (state === 'C') {
+      } else if (status === 'C') {
         return 'blue';
-      } else if (state === 'D') {
+      } else if (status === 'D') {
         return 'red';
+      } else if (status === 'E') {
+        return 'yellow';
       }
   },
   getName(id) {
