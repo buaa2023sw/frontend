@@ -67,6 +67,19 @@
                         </v-col>
                     </v-row>
                 </v-container>
+
+                <v-container fluid>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-card>
+                                <v-card-title>文件列表</v-card-title>
+                                <v-card-text>
+                                    <FileView></FileView>
+                                </v-card-text>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
             </v-col>
         </v-row>
     </v-container>
@@ -76,8 +89,14 @@
 import axios from "axios";
 import * as echarts from 'echarts';
 
+import FileView from './File.vue'
+import {computed} from "vue";
+
 export default {
     name: "Branch",
+    components: {
+        FileView
+    },
     data() {
         return {
             projId: this.$route.params.projid,
@@ -110,6 +129,12 @@ export default {
                 data: []
             },
             perUser: []
+        }
+    },
+    provide() {
+        return {
+            repo: computed(() => this.repo),
+            branchName: computed(() => this.branchName)
         }
     },
     created() {
