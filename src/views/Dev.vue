@@ -31,7 +31,13 @@ export default {
     },
     provide() {
         return {
-            proj: computed(() => this.selectedProj),
+            proj: computed(() => {
+                return {
+                    id: this.selectedProj.projectId,
+                    name: this.selectedProj.projectName,
+                    intro: this.selectedProj.projectIntro
+                }
+            }),
             bindRepos: computed(() => this.bindRepos),
             bindReposBusy: computed (() => this.bindReposBusy),
             updateBindRepos: this.updateBindRepos,
@@ -93,7 +99,7 @@ export default {
 <!--                <p>bindRepos = {{bindRepos}}</p>-->
 <!--            </v-row>-->
             <v-row>
-                <h1>开发 - {{ selectedProj.projectName }}</h1>
+                <h1>开发 - {{ selectedProj }}</h1>
             </v-row>
 
             <v-row>

@@ -113,7 +113,7 @@ export default {
         }
     },
     created() {
-        this.proj = this.user.projects.reduce((acc, cur) => cur.id == this.projId ? cur : acc, null)
+        this.proj = this.user.projects.reduce((acc, cur) => cur.projectId == this.projId ? cur : acc, null)
         if (this.proj === null) {
             alert('proj not found')
             // window.location.pathname = '/dev'
