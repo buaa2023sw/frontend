@@ -278,6 +278,7 @@ if (user === undefined) {
   console.log("not logged in");
   if (window.location.pathname === "/register") {
   } else if (window.location.pathname !== "/login") {
+    window.location.href = '/login'
   }
 } else {
   console.log("logged in");
@@ -360,6 +361,7 @@ export default {
       selectedProj: computed(() => this.proj),
       changeSelectedProj: this.changeSelectedProj,
       updateUserProj: this.updateUserProj,
+      // reload:this.reload
     };
   },
   methods: {
