@@ -100,6 +100,11 @@ const router = new VueRouter({
       path: '/user/chatRoom',
       name: 'chatRoom',
       component: () => import('../views/chat/ChatPage.vue')
+    },
+    {
+      path: '/user/ai/diagnosis',
+      name: 'diagnosis',
+      component: () => import('../views/user/AI/Diagnosis.vue')
     }
   ]
 })

@@ -191,6 +191,25 @@
           <v-list-item-title>代码</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item link :to="'/user/ai/diagnosis'">
+        <v-list-item-avatar>
+          <v-icon>mdi-palette-outline</v-icon>
+        </v-list-item-avatar>
+
+        <v-list-item-content>
+          <v-list-item-title>代码诊断</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-subheader>extra</v-subheader>
+      <v-list-item link :to="'/user/todo'">
+        <v-list-item-avatar>
+          <v-icon>mdi-account-group-outline</v-icon>
+        </v-list-item-avatar>
+
+        <v-list-item-content>
+          <v-list-item-title>讨论室</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
 
         <v-list>

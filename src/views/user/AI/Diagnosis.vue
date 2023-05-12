@@ -1,0 +1,129 @@
+<template>
+  <v-container>
+    <v-row>
+      <v-col cols="6">
+        <v-container>
+          <v-card class="fill-height">
+            <v-card-title class="white">请输入待诊断的代码</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="d-flex flex-column" style="width: 100%; height: 100%">
+              <!--<div ref="myChart" style="height: 300px"></div>-->
+              <v-textarea
+                  outlined
+                  label="Code"
+                  v-model="code"
+                  auto-grow
+                  color="blue"
+                  rows="5">
+<!--                  outlined-->
+<!--                  name="input-7-4"-->
+<!--                  label="Code"-->
+<!--                  v-model="code"-->
+<!--                  height="350px"-->
+              </v-textarea>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue" text @click="startDiagnosis()">确定</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-container>
+      </v-col>
+      <v-col cols="6">
+        <v-container>
+          <v-card class="fill-height">
+            <v-card-title class="white">代码诊断结果</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text class="d-flex flex-column" style="width: 100%; height: 100%">
+              <!--<div ref="myChart" style="height: 300px"></div>-->
+              <v-textarea
+                  outlined
+                  label="Result"
+                  v-model="result"
+                  auto-grow
+                  color="blue"
+                  rows="5"
+              ></v-textarea>
+            </v-card-text>
+          </v-card>
+        </v-container>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+<!--<template>-->
+<!--  <v-container fluid>-->
+<!--    <v-row align="center" justify="center" style="min-height: calc(100vh - 64px);">-->
+<!--      <v-col cols="12" sm="8" md="6" lg="4" class="d-flex justify-center">-->
+<!--        <v-card class="elevation-12">-->
+<!--          <v-card-text class="mt-4 mb-4">-->
+<!--            <v-form>-->
+<!--              <v-row>-->
+<!--                <v-col cols="12" class="mb-3">-->
+<!--                  <v-text-field label="请输入要诊断的代码" v-model="userNameOrEmail" outlined></v-text-field>-->
+<!--                </v-col>-->
+<!--                <v-col cols="12" class="mb-3">-->
+<!--                  <v-btn color="blue darken-2" class="white&#45;&#45;text" block @click="login">确定</v-btn>-->
+<!--                </v-col>-->
+<!--              </v-row>-->
+<!--            </v-form>-->
+<!--          </v-card-text>-->
+<!--        </v-card>-->
+<!--        <v-card class="elevation-12" style="max-width: 500px;">-->
+<!--          <v-card-text class="mt-4 mb-4">-->
+<!--            <v-form>-->
+<!--              <v-row>-->
+<!--                <v-col cols="12" class="mb-3">-->
+<!--                  <v-text-field label="请输入要诊断的代码" v-model="userNameOrEmail" outlined></v-text-field>-->
+<!--                </v-col>-->
+<!--                <v-col cols="12" class="mb-3">-->
+<!--                  <v-btn color="blue darken-2" class="white&#45;&#45;text" block @click="login">确定</v-btn>-->
+<!--                </v-col>-->
+<!--              </v-row>-->
+<!--            </v-form>-->
+<!--          </v-card-text>-->
+<!--        </v-card>-->
+<!--      </v-col>-->
+<!--    </v-row>-->
+<!--  </v-container>-->
+<!--</template>-->
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "Diagnosis",
+  data () {
+    return {
+      code: "saffafafasf",
+      result: null,
+    }
+  },
+  methods: {
+    // 代码诊断
+    startDiagnosis() {
+      console.log(this.code)
+      axios.post("/api/ai/CodeReview", {code: this.code})
+          .then((response) => {
+            console.log(response)
+            if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "未知错误"
+              });
+            } else {
+              this.result = response.data
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            this.result = null
+          })
+    },
+  },
+}
+</script>
+
+<style scoped>
+
+</style>
