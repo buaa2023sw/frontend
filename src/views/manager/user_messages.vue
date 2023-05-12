@@ -16,15 +16,18 @@
           :search="search"
       >
         <template #item.status="{item}">
-          <v-text v-if="item.status==='A'"> 正常 </v-text>
-          <v-text v-if="item.status==='B'"> 禁用 </v-text>
+          <v-chip :color="getColor(item.status)" dark @click="openChangeUserStatusDialog(item)">
+            {{ transform(item.status) }}
+<!--            <v-text v-if="item.status==='A'"> 正常 </v-text>-->
+<!--            <v-text v-if="item.status==='B'"> 禁用 </v-text>-->
+          </v-chip>
         </template>
         <template #item.resetPassword="{item}">
           <v-btn class="ml-1" small outlined @click="openResetPasswordDialog(item)">重置用户密码</v-btn>
         </template>
-        <template #item.changeStatus="{item}">
-          <v-btn class="ml-1" small outlined @click="openChangeUserStatusDialog(item)">修改用户状态</v-btn>
-        </template>
+<!--        <template #item.changeStatus="{item}">-->
+<!--          <v-btn class="ml-1" small outlined @click="openChangeUserStatusDialog(item)">修改用户状态</v-btn>-->
+<!--        </template>-->
         <!--
         <template #item.userProfile="{item}">
           <v-btn class="ml-1" small outlined @click="openUserProfileDialog(item)">用户个人信息</v-btn>
@@ -322,7 +325,21 @@ export default {
     // 跳转到用户所在项目页面
     gotoUserProjectPage(item) {
 
-    }
+    },
+    getColor(status) {
+      if (status === "A") {
+        return "green";
+      } else if (status === "B") {
+        return "red";
+      }
+    },
+    transform(status) {
+      if (status === "A") {
+        return "正常";
+      } else if (status === "B") {
+        return "禁用";
+      }
+    },
   },
 }
 </script>

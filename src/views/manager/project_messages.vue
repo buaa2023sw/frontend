@@ -16,15 +16,19 @@
           :search="search"
       >
         <template #item.access="{item}">
-          <v-text v-if="item.access==='A'"> 正常 </v-text>
-          <v-text v-if="item.access==='B'"> 禁用 </v-text>
+          <v-chip :color="getColor(item.access)" dark @click="openChangeProjectAccessDialog(item)">
+            {{ transform(item.access) }}
+<!--            <v-text v-if="item.access==='A'"> 正常 </v-text>-->
+<!--            <v-text v-if="item.access==='B'"> 禁用 </v-text>-->
+          </v-chip>
         </template>
+
         <template #item.progress="{item}">
           {{ item.progress }} %
         </template>
-        <template #item.changeAccess="{item}">
-          <v-btn class="ml-1" small outlined @click="openChangeProjectAccessDialog(item)">修改项目状态</v-btn>
-        </template>
+<!--        <template #item.changeAccess="{item}">-->
+<!--          <v-btn class="ml-1" small outlined @click="openChangeProjectAccessDialog(item)">修改项目状态</v-btn>-->
+<!--        </template>-->
         <template #item.projectDetail="{item}">
           <v-btn class="ml-1" small outlined @click="gotoProjectDetailPage(item)">项目详细信息</v-btn>
         </template>
@@ -226,7 +230,21 @@ export default {
     // 跳转到项目详情页面
     gotoProjectDetailPage(item) {
 
-    }
+    },
+    getColor(access) {
+      if (access === "A") {
+        return "green";
+      } else if (access === "B") {
+        return "red";
+      }
+    },
+    transform(access) {
+      if (access === "A") {
+        return "正常";
+      } else if (access === "B") {
+        return "禁用";
+      }
+    },
   },
 }
 </script>
