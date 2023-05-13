@@ -99,7 +99,7 @@ export default {
 <!--                <p>bindRepos = {{bindRepos}}</p>-->
 <!--            </v-row>-->
             <v-row>
-                <h1>开发 - {{ selectedProj }}</h1>
+                <h1>开发 - {{ selectedProj.projectName }}</h1>
             </v-row>
 
             <v-row>
