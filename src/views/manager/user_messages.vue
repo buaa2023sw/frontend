@@ -34,7 +34,7 @@
         </template>
         -->
         <template #item.userProject="{item}">
-          <v-btn class="ml-1" small outlined @click="gotoUserProjectPage(item)">用户所在项目</v-btn>
+          <v-btn class="ml-1" small outlined @click="gotoUserPage(item)">用户所在项目</v-btn>
         </template>
       </v-data-table>
     </v-card>
@@ -93,6 +93,7 @@
 
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
 export default {
   inject: {
     user: { default: null }
@@ -175,6 +176,8 @@ export default {
       // 用户个人信息dialog相关信息
       showUserProfile: false,
       userProfileDialogMessage: '',
+      // 跳转到用户端的相关信息
+      gotoUserProjectPageMessage: '',
     }
   },
   created() {
@@ -322,9 +325,44 @@ export default {
     saveProfile() { // TODO
       this.showUserProfile = false
     },
-    // 跳转到用户所在项目页面
-    gotoUserProjectPage(item) {
-
+    // 跳转到用户端页面
+    gotoUserPage(item) {
+      console.log("232534")
+      Cookies.set('manager', Cookies.get('user'))
+      console.log(Cookies.get('manager'))
+      axios.post("/api/login", {
+        userNameOrEmail: "user2",
+        password: "20373642"
+      })
+          .then((response) => {
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "用户不存在"
+              });
+            } else if (response.data.errcode === 2) {
+              this.$message({
+                type: 'error',
+                message: "密码错误"
+              });
+            } else if (response.data.errcode === 3) {
+              this.$message({
+                type: 'error',
+                message: "您的账户目前已被禁用"
+              });
+            } else {
+              Cookies.set('user', JSON.stringify(response.data.data))
+              this.$message({
+                type: 'success',
+                message: "跳转成功"
+              });
+              window.location.href = '/allProject'
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          })
     },
     getColor(status) {
       if (status === "A") {

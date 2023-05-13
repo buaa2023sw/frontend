@@ -6,6 +6,14 @@
       <v-spacer></v-spacer>
 
       <v-icon v-if="user" style="right: 1%">mdi-bell</v-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-if="existManager()" icon color="white" v-bind="attrs" v-on="on" @click="gotoManagerPage">
+            <v-icon>mdi-link-variant</v-icon>
+          </v-btn>
+        </template>
+        <span>回到管理端</span>
+      </v-tooltip>
 
       <v-menu offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
@@ -283,6 +291,7 @@ if (user === undefined) {
 } else {
   console.log("logged in");
   user = JSON.parse(user);
+  // window.location.href = '/allProject'
 }
 
 export default {
@@ -438,6 +447,18 @@ export default {
       window.location.href = '/allTask';
       this.proj = Cookies.get(proj);
     },
+    existManager() {
+      return Cookies.get("manager");
+    },
+    gotoManagerPage() {
+      Cookies.set("user", Cookies.get("manager"))
+      Cookies.remove("manager");
+      console.log("user")
+      console.log(Cookies.get("user"))
+      console.log("manager")
+      console.log(Cookies.get("manager"))
+      window.location.href = '/manager'
+    },
     showLabel() {
       if (this.user === undefined|| this.user.status === 'C') {
         return false;
@@ -471,6 +492,7 @@ export default {
     // },
     logoff() {
       Cookies.remove("user");
+      Cookies.remove("manager");
       window.location.href = "/login";
     },
     handleClose(done) {
