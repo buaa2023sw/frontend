@@ -68,11 +68,13 @@
 <script>
 import axios from "axios";
 import util from "@/views/util";
+import Cookies from "js-cookie";
 
 export default {
   name: "profile",
   inject: {
-    user: { default: null }
+    user: { default: null },
+    reload: {default: null},
   },
   data() {
     return {
@@ -144,6 +146,11 @@ export default {
                 message: "保存成功"
               });
               this.showProfile();
+              console.log(response.data.data)
+              Cookies.set('user', JSON.stringify(response.data.data))
+              console.log("1241442342")
+              console.log(Cookies.get('user'))
+              this.reload()
             } else if (response.data.errcode === 1) {
               this.$message({
                 type: 'error',

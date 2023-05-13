@@ -34,7 +34,7 @@ import Cookies from 'js-cookie'
 import axios from "axios"
 
 if (Cookies.get('user') !== undefined) {
-  alert('您已处于登录状态');
+  // alert('您已处于登录状态');
   window.location.href = '/allProject';
 }
 
@@ -90,7 +90,6 @@ export default {
               });
               if (response.data.data.status === 'C') {
                 window.location.href = '/manager'
-                
               } else {
                 window.location.href = '/allProject'
               }

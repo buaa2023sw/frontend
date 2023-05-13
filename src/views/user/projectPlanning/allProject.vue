@@ -41,7 +41,7 @@
           <div style="width: 100%; height: 100%; position: relative">
             <v-text-field
               v-model="search"
-              label="输入名称"
+              label="请输入项目名称进行查询"
               class="mx-4"
               style="width: 30%; display: inline-block"
             ></v-text-field>
@@ -485,6 +485,10 @@ export default {
         this.get_project();
         this.updateUserProj();
       });
+      this.form = {
+        name: "",
+        intro: "",
+      };
     },
     transform(state) {
       if (state === "A") {
