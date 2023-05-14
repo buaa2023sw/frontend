@@ -199,28 +199,32 @@
         </v-list-item-content>
       </v-list-item>
       <v-list-item link :to="'/user/ai/diagnosis'">
-      <v-subheader>沟通</v-subheader>
-      <v-list-item>
->>>>>>> document
         <v-list-item-avatar>
           <v-icon>mdi-palette-outline</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>代码诊断</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-subheader>沟通</v-subheader>
           <v-dialog
           width="1300"
           v-model="dialog"
           hide-overlay
           transition="dialog-bottom-transition">
           <template v-slot:activator="{on, attrs}">
+          <v-list-item>
+            <v-list-item-avatar>
+          <v-icon>mdi-file-document-outline</v-icon>
+        </v-list-item-avatar>
+        <v-list-item-content>
           <v-list-item-title v-bind="attrs" v-on="on">共享文档</v-list-item-title>
+        </v-list-item-content>
+        </v-list-item>
         </template>
         <AllFile @close="closeDocument"></AllFile>
           </v-dialog>
-        </v-list-item-content>
-      </v-list-item>
-      <v-subheader>extra</v-subheader>
       <v-list-item link :to="'/user/todo'">
         <v-list-item-avatar>
           <v-icon>mdi-account-group-outline</v-icon>
