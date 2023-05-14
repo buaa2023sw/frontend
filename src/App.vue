@@ -25,7 +25,6 @@
         </template>
         <v-card v-if="user" min-width="200px">
           <v-card-title>欢迎, {{ user.name }}</v-card-title>
-          <v-card-subtitle>{{ user.email }}</v-card-subtitle>
           <v-list>
             <v-list-item link to="/user/profile">
               <v-list-item-title>个人信息</v-list-item-title>
@@ -200,6 +199,9 @@
         </v-list-item-content>
       </v-list-item>
       <v-list-item link :to="'/user/ai/diagnosis'">
+      <v-subheader>沟通</v-subheader>
+      <v-list-item>
+>>>>>>> document
         <v-list-item-avatar>
           <v-icon>mdi-palette-outline</v-icon>
         </v-list-item-avatar>
@@ -207,14 +209,15 @@
         <v-list-item-content>
           <v-list-item-title>代码诊断</v-list-item-title>
           <v-dialog
+          width="1300"
           v-model="dialog"
-          fullscreen
           hide-overlay
           transition="dialog-bottom-transition">
-          </v-dialog>
           <template v-slot:activator="{on, attrs}">
           <v-list-item-title v-bind="attrs" v-on="on">共享文档</v-list-item-title>
         </template>
+        <AllFile @close="closeDocument"></AllFile>
+          </v-dialog>
         </v-list-item-content>
       </v-list-item>
       <v-subheader>extra</v-subheader>
@@ -277,18 +280,18 @@
       </el-dialog> 
 
     <v-main>
-      <router-view v-if="showRouterView" />
-      <!-- <allTask></allTask> -->
+      <router-view v-if="showRouterView"/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Cookies from "js-cookie";
-import { computed } from "vue";
-import { newProject, showTaskList, watchAllProject, getEmail} from "@/api/user";
-import axios from "axios";
-import AllProject from "./views/user/projectPlanning/allProject.vue";
+import Cookies from "js-cookie"
+import { computed } from "vue"
+import { newProject, showTaskList, watchAllProject, getEmail} from "@/api/user"
+import axios from "axios"
+import AllTask from "@/views/user/projectPlanning/allTask.vue"
+import AllFile from "@/views/user/document/allFile.vue"
 // import allTask from "@/views/user/projectPlanning/allTask"
 
 let user = Cookies.get("user");
@@ -320,6 +323,10 @@ export default {
   created() {
     this.updateUserProj();
   },
+  components:{
+    AllTask, 
+    AllFile,
+  },
   watch: {
     selectedProj(n, o) {
       console.log("selectedProj change! from " + o + " to " + n);
@@ -340,6 +347,7 @@ export default {
       selectedProj: null,
       setupDialog: false,
       selectedItem: null,
+      dialog: false,
       form: {
         name: "",
         intro: "",
@@ -389,6 +397,9 @@ export default {
     };
   },
   methods: {
+    closeDocument() {
+      this.dialog = false;
+    },
     getEmail(id) {
       getEmail({id: id}).then(
         res => {
