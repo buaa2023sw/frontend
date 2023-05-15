@@ -39,7 +39,7 @@
       color="primary"
       style="position:absolute;top:1%;right:1%;height:4%;width:10%;"
       @click="setupFather = true"
-      >创建冲刺</v-btn>
+      >创建任务</v-btn>
     <v-container fluid style="position:relative">
       <v-data-iterator
         style="width:100%;position: absolute;"

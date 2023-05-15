@@ -211,8 +211,9 @@
           <v-dialog
           width="1300"
           v-model="dialog"
-          hide-overlay
-          transition="dialog-bottom-transition">
+          fullscreen
+          transition="dialog-bottom-transition"
+          hide-overlay>
           <template v-slot:activator="{on, attrs}">
           <v-list-item>
             <v-list-item-avatar>
@@ -444,6 +445,7 @@ export default {
       let workloads = [];
       let expectedDates = [];
       let actualDates = [];
+      let projectState = [];
       console.log(this.tasks);
       for(let i=0;i < this.tasks.length;i++) {
         for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
@@ -453,6 +455,7 @@ export default {
           workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
           expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
           actualDates.push(this.tasks[i].subTaskList[j].complete_time.slice(0, 10));
+          projectState.push(this.tasks[i].subTaskList[j].status);
         }
       }
       console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
@@ -465,7 +468,7 @@ export default {
       this.$router.push({path:'/picture'
       , query: {
         projectItem: projectItem, projectItemStart: projectItemStart, projectItemEnd: projectItemEnd,
-        workloads: workloads, expectedDates: expectedDates, actualDates: actualDates
+        workloads: workloads, expectedDates: expectedDates, actualDates: actualDates, projectState: projectState
       }});
     }
     },
