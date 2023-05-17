@@ -59,7 +59,7 @@ export default {
         axios.post('/api/develop/getFileTree', {
             userId: this.user.id,
             projectId: this.proj.projectId,
-            repoId: this.repo.id,
+            repoId: this.$route.params.repoid,
             branch: this.branchName
         }).then((res) => {
             if (res.data.errcode === 0) {
@@ -83,7 +83,7 @@ export default {
                 axios.post('/api/develop/getContent', {
                     userId: this.user.id,
                     projectId: this.proj.projectId,
-                    repoId: this.repo.id,
+                    repoId: this.$route.params.repoid,
                     branch: this.branchName,
                     path: this.tree[0]['path']
                 }).then((res) => {
