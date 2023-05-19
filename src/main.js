@@ -14,7 +14,23 @@ import '@babel/polyfill'
 import AllTask from "@/views/user/projectPlanning/allTask.vue"
 import AllFile from "@/views/user/document/allFile.vue"
 
+import mavonEditor from "mavon-editor"
+import VueMarkdownEditor from '@kangc/v-md-editor'
+import '@kangc/v-md-editor/lib/style/base-editor.css';
+import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
+import Prism from 'prismjs';
+
+VueMarkdownEditor.use(vuepressTheme);
+Vue.use(VueMarkdownEditor);
+VueMarkdownEditor.use(vuepressTheme, {
+  Prism,
+  extend(md) {
+    // md为 markdown-it 实例，可以在此处进行修改配置,并使用 plugin 进行语法扩展
+    // md.set(option).use(plugin);
+  },
+});
 Vue.use(ElementUI, axios, VueAxios)
+Vue.use(mavonEditor);
 Vue.config.productionTip = false
 Vue.component('AllTask', AllTask);
 Vue.component('AllFile', AllFile);

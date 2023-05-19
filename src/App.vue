@@ -372,7 +372,7 @@ export default {
       if (user.status !== 'C') {
       proj = Cookies.get("proj");
       console.log(proj);
-      if (proj === undefined) {
+      if (proj === undefined && window.location.pathname !== '/allFile') {
         console.log("not choose project");
         if (
         window.location.pathname === "/register" ||  window.location.pathname === "/user/profile" ||

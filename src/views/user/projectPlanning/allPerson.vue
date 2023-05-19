@@ -91,7 +91,7 @@
       style="position:relative">
       <el-form :label-position="labelPosition" label-width="120px">
 <el-form-item label="用户名称/邮箱">
-  <el-input v-model="newPersonForm.nameOrEmail" style="width: 400px;"></el-input>
+  <el-input v-model="newPersonForm.nameOrEmail" ></el-input>
 </el-form-item>
 </el-form>
 <span slot="footer" class="dialog-footer">
