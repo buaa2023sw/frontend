@@ -338,9 +338,9 @@ export default {
       console.log("232534")
       Cookies.set('manager', Cookies.get('user'))
       console.log(Cookies.get('manager'))
-      axios.post("/api/login", {
-        userNameOrEmail: "user2",
-        password: "20373642"
+      axios.post("/api/getUserInfo", {
+        managerId: this.user.id,
+        userId: item.id,
       })
           .then((response) => {
             console.log(response.data)
@@ -348,16 +348,6 @@ export default {
               this.$message({
                 type: 'error',
                 message: "用户不存在"
-              });
-            } else if (response.data.errcode === 2) {
-              this.$message({
-                type: 'error',
-                message: "密码错误"
-              });
-            } else if (response.data.errcode === 3) {
-              this.$message({
-                type: 'error',
-                message: "您的账户目前已被禁用"
               });
             } else {
               Cookies.set('user', JSON.stringify(response.data.data))
