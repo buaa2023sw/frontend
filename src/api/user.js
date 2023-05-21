@@ -127,3 +127,12 @@ export const modifyProjectStatus  = (data) => {
 export const getEmail = (data) => {
   return request.post("/api/plan/getEmail", data);
 }
+
+
+export const showNoticeList = (data) => {
+  return request.post("/api/plan/showNoticeList", data);
+}
+
+export const removeNotice = (data) => {
+  return request.post("/api/plan/removeNotice", data);
+}

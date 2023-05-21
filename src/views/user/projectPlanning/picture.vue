@@ -14,7 +14,7 @@
     </div>
     <v-btn class="ma-2" color="primary" dark @click="back">
       <v-icon dark left> mdi-arrow-left </v-icon>
-      Back
+      返回
     </v-btn>
   </div>
 </template>
@@ -81,11 +81,18 @@ export default {
       let projectItemStartValue = projectItemStart.map((item) => {
         return new Date(item).valueOf();
       });
-
+      console.log(projectItemStartValue);
       let projectItemDuringValue = projectItemEnd.map((item, i) => {
         return new Date(item).valueOf() - projectItemStartValue[i];
       });
-      let dateMin = projectItemStartValue.sort()[0];
+      console.log(projectItemDuringValue);
+      let dateMin = projectItemStartValue[0];
+      for (let i=0;i < projectItemStartValue.length;i++) {
+        if (projectItemStartValue[i] < dateMin) {
+          dateMin = projectItemStartValue[i];
+        }
+      }
+      console.log(dateMin);
       var option = {
         title: {
           text: "任务进度显示图",
@@ -94,11 +101,9 @@ export default {
           trigger: "axis",
           formatter: function (params) {
             var tar = params[1];
-            console.log(params);
             let state = projectState[tar.dataIndex];
             let startTime = projectItemStartValue[tar.dataIndex];
             let endTime = projectItemStartValue[tar.dataIndex] + projectItemDuringValue[tar.dataIndex];
-            console.log(state);
             var s;
             if (state === 'A') {
                 s = '已完成';
@@ -113,8 +118,8 @@ export default {
               tar.name +
               "<br/>" +
               tar.seriesName +
-              " : " + new Date(startTime) + "-->" + new Date(endTime) +
-              "天" + 
+              " : " + new Date(startTime).getFullYear() + "-"+ (new Date(startTime).getMonth() + 1) + "-" + new Date(startTime).getDate()
+              + "-->" + new Date(endTime).getFullYear() + "-"+ (new Date(startTime).getMonth() + 1) + "-" + new Date(endTime).getDate() + 
               "<br/>" + "状态：" + s
             );
           },
@@ -173,9 +178,6 @@ export default {
             itemStyle: {
               normal: {
                 color: function (params) {
-                  console.log("color-----");
-                  console.log(params);
-                  console.log(params.dataIndex);
                   let state = projectState[params.dataIndex];
                   if (state === "A") {
                         return "green";

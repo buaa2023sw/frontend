@@ -41,7 +41,7 @@
         style="position:absolute;left:3%;width:94%;height: 70%;top:14%"
       >
       <template v-slot:[`item.documentName`] = "{item}" >
-         <i @click="dialog3=true">{{ item.documentName }}</i>
+         <a @click="dialog3=true">{{ item.documentName }}</a>
       </template>
       <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length">

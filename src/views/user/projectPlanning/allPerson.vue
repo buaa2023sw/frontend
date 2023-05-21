@@ -42,6 +42,18 @@
         style="width:30%;display: inline-block"
       ></v-text-field>
       <v-btn
+      style="top:20%;right:14%;height:60%;width:13%;position: absolute"
+    depressed
+    color="primary"
+    @click="gotoWork"
+    >查看工作量分配
+    <v-icon
+          dark
+          right
+        >
+          mdi-account-details
+        </v-icon></v-btn>
+      <v-btn
       style="top:20%;right:2%;height:60%;width:10%;position: absolute"
     depressed
     color="primary"
@@ -192,6 +204,9 @@ export default {
     }
   },
   methods: {
+    gotoWork() {
+      this.$router.push({path:'/workDetail'});
+    },
     getPersonList() {
       showPersonList({projectId: this.selectedProj.projectId, userId: this.user.id}).then(
         res => {
