@@ -12,7 +12,7 @@
             <v-icon>mdi-home</v-icon>
           </v-btn>
         </template>
-        <span>回到主页</span>
+        <span>主页</span>
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -20,7 +20,7 @@
             <v-icon>mdi-link-variant</v-icon>
           </v-btn>
         </template>
-        <span>回到管理端</span>
+        <span>管理端</span>
       </v-tooltip>
 
       <v-menu offset-y :close-on-content-click="false">
