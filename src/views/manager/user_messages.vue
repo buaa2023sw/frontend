@@ -34,7 +34,15 @@
         </template>
         -->
         <template #item.userProject="{item}">
-          <v-btn class="ml-1" small outlined @click="gotoUserPage(item)">用户所在项目</v-btn>
+<!--          <v-btn class="ml-1" small outlined @click="gotoUserPage(item)">用户所在项目</v-btn>-->
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon color="blue" v-bind="attrs" v-on="on" @click="gotoUserPage(item)">
+                <v-icon>mdi-link-variant</v-icon>
+              </v-btn>
+            </template>
+            <span>用户端</span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </v-card>
@@ -117,11 +125,11 @@ export default {
           sortable: false,
           value: 'resetPassword'
         },
-        {
-          text: '',
-          sortable: false,
-          value: 'changeStatus'
-        },
+        // {
+        //   text: '',
+        //   sortable: false,
+        //   value: 'changeStatus'
+        // },
         {
           text: '',
           sortable: false,
@@ -134,27 +142,27 @@ export default {
         },
       ],
       userMessages: [
-        {
-          name: 'user1',
-          id: '1',
-          email: '123@qq.com',
-          registerTime: '2023.1.1',
-          status: 'A',
-        },
-        {
-          name: 'faskfl',
-          id: '2',
-          email: 'gers@qq.com',
-          registerTime: '2023.2.1',
-          status: 'B',
-        },
-        {
-          name: 'saga',
-          id: '3',
-          email: '53@qq.com',
-          registerTime: '2023.3.1',
-          status: 'A',
-        },
+        // {
+        //   name: 'user1',
+        //   id: '1',
+        //   email: '123@qq.com',
+        //   registerTime: '2023.1.1',
+        //   status: 'A',
+        // },
+        // {
+        //   name: 'faskfl',
+        //   id: '2',
+        //   email: 'gers@qq.com',
+        //   registerTime: '2023.2.1',
+        //   status: 'B',
+        // },
+        // {
+        //   name: 'saga',
+        //   id: '3',
+        //   email: '53@qq.com',
+        //   registerTime: '2023.3.1',
+        //   status: 'A',
+        // },
       ],
       // 重置用户密码dialog相关信息
       showResetPassword: false,

@@ -76,7 +76,7 @@ const router = new VueRouter({
       component: () => import('../views/user/profile.vue')
     },
     {
-      path: '/manager',
+      path: '/manager/home',
       name: 'managerHome',
       component: () => import('../views/manager/manager_home.vue')
     },

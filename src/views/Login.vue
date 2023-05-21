@@ -89,7 +89,7 @@ export default {
                 message: "登录成功"
               });
               if (response.data.data.status === 'C') {
-                window.location.href = '/manager'
+                window.location.href = '/manager/home'
               } else {
                 window.location.href = '/allProject'
               }

@@ -1,18 +1,26 @@
 <template>
   <v-app id="main_page">
     <v-app-bar app clipped-left color="blue" dark extension-height="36" :absolute="true">
-      <v-toolbar-title>BUAA 2023 SW</v-toolbar-title>
+      <v-toolbar-title>JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-icon v-if="user" style="right: 1%">mdi-bell</v-icon>
+      <v-icon v-if="false" style="right: 1%">mdi-bell</v-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-if="existManager()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
+            <v-icon>mdi-home</v-icon>
+          </v-btn>
+        </template>
+        <span>主页</span>
+      </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-if="existManager()" icon color="white" v-bind="attrs" v-on="on" @click="gotoManagerPage">
             <v-icon>mdi-link-variant</v-icon>
           </v-btn>
         </template>
-        <span>回到管理端</span>
+        <span>管理端</span>
       </v-tooltip>
 
       <v-menu offset-y :close-on-content-click="false">
@@ -136,29 +144,28 @@
 
       </div> -->
       <v-list v-if="user.status !== 'C'">
-          <v-list-item class="px-2">
-            <v-avatar size="40" color="indigo" >
-                <span class="white--text text-h5">{{ this.proj.projectName[0] }}</span>
-           </v-avatar>
-            <v-list-item-avatar>
+        <v-list-item class="px-2">
+          <v-avatar size="40" color="indigo" >
+            <span class="white--text text-h5">{{ this.proj.projectName[0] }}</span>
+          </v-avatar>
+          <v-list-item-avatar>
               <!-- <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img> -->
-              <v-list-item-title class="text-h7">
-                {{this.proj.projectName}}
-              </v-list-item-title>
-            </v-list-item-avatar>
-          </v-list-item>
+            <v-list-item-title class="text-h7">
+              {{this.proj.projectName}}
+            </v-list-item-title>
+          </v-list-item-avatar>
+        </v-list-item>
 
-          <v-list-item link>
-            <v-list-item-content>
-              <v-list-item-title class="text-h6">
-                {{this.proj.managerName }}
-              </v-list-item-title>
-              <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-
-        <v-list subheader  v-if="user.status !== 'C'">
+        <v-list-item link>
+          <v-list-item-content>
+            <v-list-item-title class="text-h6">
+              {{this.proj.managerName }}
+            </v-list-item-title>
+            <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      <v-list subheader v-if="user.status !== 'C'">
       <v-subheader>规划</v-subheader>
       <v-list-item  link :to="'/allTask'">
         <v-list-item-avatar>
@@ -237,32 +244,54 @@
       </v-list-item>
     </v-list>
 
-        <v-list>
-        <v-list-item-group v-if="user.status === 'C'">
-          <v-list-item link to="/manager">
-            <v-list-item-icon
-              ><v-icon>mdi-home-outline</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>主页</v-list-item-title>
-          </v-list-item>
-          <v-list-item link to="/manager/userMessages">
-            <v-list-item-icon
-              ><v-icon>mdi-account-multiple</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>用户信息</v-list-item-title>
-          </v-list-item>
-          <v-list-item link to="/manager/loginMessages">
-            <v-list-item-icon><v-icon>mdi-history</v-icon></v-list-item-icon>
-            <v-list-item-title>用户登录信息</v-list-item-title>
-          </v-list-item>
-          <v-list-item link to="/manager/projectMessages">
-            <v-list-item-icon
-              ><v-icon>mdi-book-edit-outline</v-icon></v-list-item-icon
-            >
-            <v-list-item-title>项目信息</v-list-item-title>
-          </v-list-item>
-        </v-list-item-group>
+      <v-list subheader v-if="user.status === 'C'">
+        <v-list-item link to="/manager/home">
+          <v-list-item-icon><v-icon>mdi-home-outline</v-icon></v-list-item-icon>
+          <v-list-item-title>主页</v-list-item-title>
+        </v-list-item>
+        <v-list-item link to="/manager/userMessages">
+          <v-list-item-icon
+          ><v-icon>mdi-account-multiple</v-icon></v-list-item-icon
+          >
+          <v-list-item-title>用户信息</v-list-item-title>
+        </v-list-item>
+        <v-list-item link to="/manager/loginMessages">
+          <v-list-item-icon><v-icon>mdi-history</v-icon></v-list-item-icon>
+          <v-list-item-title>用户登录信息</v-list-item-title>
+        </v-list-item>
+        <v-list-item link to="/manager/projectMessages">
+          <v-list-item-icon
+          ><v-icon>mdi-book-edit-outline</v-icon></v-list-item-icon
+          >
+          <v-list-item-title>项目信息</v-list-item-title>
+        </v-list-item>
       </v-list>
+<!--        <v-list>-->
+<!--        <v-list-item-group v-if="user.status === 'C'">-->
+<!--          <v-list-item link to="/manager">-->
+<!--            <v-list-item-icon-->
+<!--              ><v-icon>mdi-home-outline</v-icon></v-list-item-icon-->
+<!--            >-->
+<!--            <v-list-item-title>主页</v-list-item-title>-->
+<!--          </v-list-item>-->
+<!--          <v-list-item link to="/manager/userMessages">-->
+<!--            <v-list-item-icon-->
+<!--              ><v-icon>mdi-account-multiple</v-icon></v-list-item-icon-->
+<!--            >-->
+<!--            <v-list-item-title>用户信息</v-list-item-title>-->
+<!--          </v-list-item>-->
+<!--          <v-list-item link to="/manager/loginMessages">-->
+<!--            <v-list-item-icon><v-icon>mdi-history</v-icon></v-list-item-icon>-->
+<!--            <v-list-item-title>用户登录信息</v-list-item-title>-->
+<!--          </v-list-item>-->
+<!--          <v-list-item link to="/manager/projectMessages">-->
+<!--            <v-list-item-icon-->
+<!--              ><v-icon>mdi-book-edit-outline</v-icon></v-list-item-icon-->
+<!--            >-->
+<!--            <v-list-item-title>项目信息</v-list-item-title>-->
+<!--          </v-list-item>-->
+<!--        </v-list-item-group>-->
+<!--      </v-list>-->
     </v-navigation-drawer>
 
     <el-dialog
@@ -483,6 +512,9 @@ export default {
     existManager() {
       return Cookies.get("manager");
     },
+    gotoHomePage() {
+      window.location.href = '/allProject'
+    },
     gotoManagerPage() {
       Cookies.set("user", Cookies.get("manager"))
       Cookies.remove("manager");
@@ -490,7 +522,7 @@ export default {
       console.log(Cookies.get("user"))
       console.log("manager")
       console.log(Cookies.get("manager"))
-      window.location.href = '/manager'
+      window.location.href = '/manager/userMessages'
     },
     showLabel() {
       if (this.user === undefined|| this.user.status === 'C') {
