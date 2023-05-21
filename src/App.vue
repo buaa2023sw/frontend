@@ -8,7 +8,7 @@
       <v-icon v-if="false" style="right: 1%">mdi-bell</v-icon>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-if="existManager()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
+          <v-btn v-if="existUser()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
             <v-icon>mdi-home</v-icon>
           </v-btn>
         </template>
@@ -427,10 +427,17 @@ export default {
       selectedProj: computed(() => this.proj),
       changeSelectedProj: this.changeSelectedProj,
       updateUserProj: this.updateUserProj,
+      updateUser: this.updateUser
       // reload:this.reload
     };
   },
   methods: {
+    updateUser() {
+      var userCookie = Cookies.get("user")
+      if (userCookie !== undefined) {
+        this.user = JSON.parse(userCookie)
+      }
+    },
     closeDocument() {
       this.dialog = false;
     },
@@ -512,6 +519,12 @@ export default {
     existManager() {
       return Cookies.get("manager");
     },
+    existUser() {
+      console.log("111111")
+      console.log(Cookies.get("user"))
+      let tmp = JSON.parse(Cookies.get("user"))
+      return tmp.status === 'A'
+    },
     gotoHomePage() {
       window.location.href = '/allProject'
     },
@@ -525,7 +538,7 @@ export default {
       window.location.href = '/manager/userMessages'
     },
     showLabel() {
-      if (this.user === undefined|| this.user.status === 'C') {
+      if (this.user === undefined || this.user.status === 'C') {
         return false;
       }
       console.log("showLabel");
