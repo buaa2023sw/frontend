@@ -34,7 +34,15 @@
         </template>
         -->
         <template #item.userProject="{item}">
-          <v-btn class="ml-1" small outlined @click="gotoUserPage(item)">用户所在项目</v-btn>
+<!--          <v-btn class="ml-1" small outlined @click="gotoUserPage(item)">用户所在项目</v-btn>-->
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon color="blue" v-bind="attrs" v-on="on" @click="gotoUserPage(item)">
+                <v-icon>mdi-link-variant</v-icon>
+              </v-btn>
+            </template>
+            <span>用户端</span>
+          </v-tooltip>
         </template>
       </v-data-table>
     </v-card>
