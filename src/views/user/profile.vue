@@ -75,6 +75,7 @@ export default {
   inject: {
     user: { default: null },
     reload: {default: null},
+    updateUser: {default: null},
   },
   data() {
     return {
@@ -148,9 +149,10 @@ export default {
               this.showProfile();
               console.log(response.data.data)
               Cookies.set('user', JSON.stringify(response.data.data))
+              this.updateUser()
               console.log("1241442342")
               console.log(Cookies.get('user'))
-              this.reload()
+              console.log(this.user)
             } else if (response.data.errcode === 1) {
               this.$message({
                 type: 'error',
