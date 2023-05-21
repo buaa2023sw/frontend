@@ -8,6 +8,14 @@
       <v-icon v-if="user" style="right: 1%">mdi-bell</v-icon>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
+          <v-btn v-if="existManager()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
+            <v-icon>mdi-home</v-icon>
+          </v-btn>
+        </template>
+        <span>回到主页</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
           <v-btn v-if="existManager()" icon color="white" v-bind="attrs" v-on="on" @click="gotoManagerPage">
             <v-icon>mdi-link-variant</v-icon>
           </v-btn>
@@ -482,6 +490,9 @@ export default {
     },
     existManager() {
       return Cookies.get("manager");
+    },
+    gotoHomePage() {
+      window.location.href = '/allProject'
     },
     gotoManagerPage() {
       Cookies.set("user", Cookies.get("manager"))
