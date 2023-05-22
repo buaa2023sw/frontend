@@ -16,7 +16,7 @@
                   <v-checkbox label="不以加密形式传输密码（适用于以前注册的帐户）" v-model="noEncrypt" hide-details></v-checkbox>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-btn color="blue darken-2" class="white--text" block @click="login">登录</v-btn>
+                  <v-btn color="blue darken-2" class="white--text" :disabled="!valid()" block @click="login">登录</v-btn>
                 </v-col>
                 <v-col cols="12" class="text-center">
                   <span class="caption grey--text text--darken-1">没有账号？</span>
@@ -52,6 +52,9 @@ export default {
     }
   },
   methods: {
+    valid() {
+      return this.userNameOrEmail !== '' && this.password !== ''
+    },
     async login() {
       if(!util.trim(this.userNameOrEmail) || !util.trim(this.password)){
         this.$message({

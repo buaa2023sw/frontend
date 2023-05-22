@@ -7,19 +7,19 @@
             <v-form @submit.prevent="register">
               <v-row>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="用户名" v-model="username" outlined dense></v-text-field>
+                  <v-text-field label="用户名" v-model="username" :rules="registerRules.user_name" outlined dense></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="邮箱" v-model="email" outlined dense></v-text-field>
+                  <v-text-field label="邮箱" v-model="email" :rules="registerRules.user_email" outlined dense></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
+                  <v-text-field label="密码" v-model="password" :rules="registerRules.user_password" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="确认密码" v-model="confirmPassword" outlined dense type="password"></v-text-field>
+                  <v-text-field label="确认密码" v-model="confirmPassword" :rules="registerRules.user_confirmPassword" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-btn color="blue darken-2" class="white--text" block @click="register">注册账号</v-btn>
+                  <v-btn color="blue darken-2" class="white--text" :disabled="!valid()" block @click="register">注册账号</v-btn>
                 </v-col>
                 <v-col cols="12" class="text-center">
                   <span class="caption grey--text text--darken-1">已有账号？</span>
@@ -47,9 +47,37 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
+      registerRules: {
+        user_name: [
+          function (v) {
+            return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(v) || `用户名只能包含中文、英文或数字，且不能为空`;
+          },
+        ],
+        user_email: [
+          function (v) {
+            return /[\w]+@[A-Za-z]+(\.[A-Za-z0-9]+){1,2}/.test(v) || `非法的邮箱格式`;
+          },
+        ],
+        user_password: [
+          function (v) {
+            return /^.{6,}$/.test(v) || `密码长度至少为6位`;
+          },
+        ],
+        user_confirmPassword: [
+          function (v) {
+            return /^.{6,}$/.test(v) || `确认密码长度至少为6位`;
+          },
+        ],
+      },
     }
   },
   methods: {
+    valid() {
+      return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(this.username)
+        && /[\w]+@[A-Za-z]+(\.[A-Za-z0-9]+){1,2}/.test(this.email)
+        && /^.{6,}$/.test(this.password)
+        && /^.{6,}$/.test(this.confirmPassword)
+    },
     register() {
       if(!util.trim(this.username) || !util.trim(this.email)
           || !util.trim(this.password) || !util.trim(this.confirmPassword)){
