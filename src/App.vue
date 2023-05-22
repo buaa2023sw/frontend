@@ -57,7 +57,7 @@
         <v-tab link to="/allProject/">
           <v-icon middle>mdi-home-outline</v-icon>
           主页
-        </v-tab> 
+        </v-tab>
         <v-menu
             v-if="user.projects.length"
             offset-y
@@ -104,7 +104,7 @@
                 color="primary"
               >
               <v-list-item>
-                <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">  
+                <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">
                   <button @click="navigate" @keypress.enter="navigate" role="link">查看所有项目</button>
                 </router-link>
               </v-list-item>
@@ -303,7 +303,7 @@
       <el-form-item label="项目名称">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="活动概述">  
+      <el-form-item label="活动概述">
         <el-input type="textarea" v-model="form.intro"  :autosize="{ minRows: 5, maxRows: 10}"></el-input>
       </el-form-item>
       </el-form>
@@ -311,7 +311,7 @@
         <el-button @click="cancelSetupProject">取 消</el-button>
         <el-button type="primary" @click="setupProject">确 定</el-button>
       </span>
-      </el-dialog> 
+      </el-dialog>
 
     <v-main>
       <router-view v-if="showRouterView"/>
@@ -358,7 +358,7 @@ export default {
     this.updateUserProj();
   },
   components:{
-    AllTask, 
+    AllTask,
     AllFile,
   },
   watch: {
@@ -407,7 +407,7 @@ export default {
         window.location.pathname === "/register" ||  window.location.pathname === "/user/profile" ||
         window.location.pathname === "/login" || window.location.pathname === "/manager"
          ) {
-         } else if (window.location.pathname !== "/allProject/") { 
+         } else if (window.location.pathname !== "/allProject/") {
           window.location.href = "/allProject/";
         }
       } else {
@@ -531,6 +531,7 @@ export default {
     gotoManagerPage() {
       Cookies.set("user", Cookies.get("manager"))
       Cookies.remove("manager");
+      Cookies.remove("proj");
       console.log("user")
       console.log(Cookies.get("user"))
       console.log("manager")
@@ -546,14 +547,14 @@ export default {
       console.log(this.user);
       console.log(this.$route.path);
 
-      console.log(   this.user !== null && this.proj !== undefined && 
+      console.log(   this.user !== null && this.proj !== undefined &&
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
         !window.location.pathname.startsWith("/register"));
 
       return (
-        this.user !== null && this.proj !== undefined && 
+        this.user !== null && this.proj !== undefined &&
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
@@ -600,7 +601,7 @@ export default {
         this.$message({
           type: 'error',
           message:'项目名不能为空！'
-        });    
+        });
         return;
       }
       for (let i=0;i<this.projectData.length;i++) {
@@ -608,7 +609,7 @@ export default {
           this.$message({
           type: 'error',
           message:'已存在同名项目'
-        });    
+        });
         return;
         }
       }
