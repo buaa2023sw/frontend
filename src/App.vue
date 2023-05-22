@@ -144,16 +144,19 @@
 
       </div> -->
       <v-list v-if="user.status !== 'C'">
-        <v-list-item class="px-2">
+        <v-list-item two-line class="px-2">
           <v-avatar size="40" color="indigo" >
             <span class="white--text text-h5">{{ this.proj.projectName[0] }}</span>
           </v-avatar>
-          <v-list-item-avatar>
+          <v-list-item-content class="px-3">
               <!-- <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img> -->
-            <v-list-item-title class="text-h7">
+            <v-list-item-title class="text-h5" style="font-weight: bold">
               {{this.proj.projectName}}
             </v-list-item-title>
-          </v-list-item-avatar>
+            <v-list-item-subtitle>
+              {{this.proj.projectIntro == '' ? '暂无简介' : this.proj.projectIntro}}
+            </v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
 
         <v-list-item link>
