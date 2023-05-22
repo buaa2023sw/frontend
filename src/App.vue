@@ -1,7 +1,7 @@
 <template>
   <v-app id="main_page">
     <v-app-bar app clipped-left color="blue" dark extension-height="36" :absolute="true">
-      <v-toolbar-title>JiHub</v-toolbar-title>
+      <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -59,6 +59,7 @@
           主页
         </v-tab>
         <v-menu
+            transition="scroll-y-transition"
             v-if="user.projects.length"
             offset-y
           >
@@ -69,50 +70,55 @@
                 v-on="on"
               >
                 项目
-                <v-icon right>
+                <v-icon v-if="attrs['aria-expanded'] === 'false'" right>
                   mdi-menu-down
+                </v-icon>
+                <v-icon v-else>
+                  mdi-menu-up
                 </v-icon>
               </v-btn>
             </template>
 
-            <v-list class="grey lighten-3">
-              <v-subheader>最近项目</v-subheader>
-              <v-list-item-group
-        color="primary"
-      >
-              <v-list-item
-                v-for="item in user.projects.slice(0, 5)"
-                :key="item.id"
-                @click="getProj(item)"
-              >
-              <v-list-item-avatar>
-                <v-avatar size="50" color="indigo" >
-          <span class="white--text text-h5">{{ item.projectName[0] }}</span>
-    </v-avatar>
-        </v-list-item-avatar>
-        <v-list-item-content >
-                {{ item.projectName }}
-        </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-            </v-list>
+            <v-card min-width="200px">
+              <v-list nav rounded class="grey lighten-3">
+                <v-subheader>最近项目</v-subheader>
+                <v-list-item-group color="primary">
+                  <v-list-item
+                      two-line
+                      v-for="item in user.projects.slice(0, 5)"
+                      :key="item.id"
+                      @click="getProj(item)"
+                  >
+                    <v-list-item-avatar>
+                      <v-avatar size="40" color="indigo" >
+                        <span class="white--text text-h5">{{ item.projectName[0] }}</span>
+                      </v-avatar>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title style="font-weight: bold">{{ item.projectName }}</v-list-item-title>
+                      <v-list-item-subtitle> {{item.projectIntro === '' ? '暂无简介' : item.projectIntro }} </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
 
-            <v-divider></v-divider>
+              <v-divider></v-divider>
 
-            <v-list class="grey lighten-3">
-              <v-list-item-group
-                color="primary"
-              >
-              <v-list-item>
-                <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">
-                  <button @click="navigate" @keypress.enter="navigate" role="link">查看所有项目</button>
-                </router-link>
-              </v-list-item>
-              <v-list-item>
-                <button @click="setupDialog = true">新建项目</button>
-              </v-list-item>
-            </v-list-item-group>
-            </v-list>
+              <v-list class="grey lighten-3">
+                <v-list-item-group
+                    color="primary"
+                >
+                  <v-list-item>
+                    <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">
+                      <button @click="navigate" @keypress.enter="navigate" role="link">查看所有项目</button>
+                    </router-link>
+                  </v-list-item>
+                  <v-list-item @click.stop="setupDialog = true" link>
+                    新建项目
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </v-card>
 
           </v-menu>
         <!-- <v-tabs v-model="routeSelect"> -->
