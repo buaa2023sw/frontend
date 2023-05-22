@@ -30,6 +30,7 @@ export default {
                         }
                     }
                 })
+                this.sortBranches()
                 this.branchBusy = false
             } else {
                 console.log(res);
@@ -40,6 +41,13 @@ export default {
             alert('/api/develop/getBindRepos error' + err)
             this.branchBusy = false
         })
+    },
+    sortBranches() {
+      // 按照时间排序
+      this.branches.sort((a, b) => {
+        return a.lastCommit.commitDate > b.lastCommit.commitDate ? -1 : 1
+      })
+      console.log(this.branches)
     }
   },
   data() {
@@ -75,10 +83,16 @@ export default {
     <div v-if="branchBusy">
         <v-card-title><v-progress-circular indeterminate></v-progress-circular>正在与服务器同步分支</v-card-title>
     </div>
-    <v-list v-if="!branchBusy" class="overflow-y-auto">
+    <v-list outlined shaped v-if="!branchBusy" class="overflow-y-auto">
       <v-list-item-group v-model="selectedBranchIndex" mandatory>
-        <v-list-item v-for="branch in branches" :key="branch.id">
-          {{ branch.name }}
+        <v-list-item v-for="branch in branches" :key="branch.id" two-line>
+          <v-list-item-content>
+            <v-list-item-title>
+              <div style="display: inline-block;" class="need-mono">{{ branch.name }}</div>
+              <div class="subtitle-2" style="display: inline-block; float: right">更新于{{new Date(branch.lastCommit.commitDate).toLocaleString() }}</div>
+            </v-list-item-title>
+            <v-list-item-subtitle>{{ branch.lastCommit.commitMessage }}</v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -99,5 +113,7 @@ export default {
 
 
 <style scoped>
-
+.need-mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
 </style>

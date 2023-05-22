@@ -86,9 +86,9 @@ export default {
 
 <template>
 <div>
-<h2>分支“{{ selectedBranch.name }}”上的提交记录</h2>
+<h2>分支<span class="need-mono"> “{{ selectedBranch.name }}” </span>上的提交记录</h2>
 
-  <p v-if="!commitHistoryBusy">分支“{{selectedBranch.name}}”中有 {{ commitHistory.length }} 条提交记录。最新的提交记录：</p>
+  <p v-if="!commitHistoryBusy">分支<span class="need-mono"> “{{selectedBranch.name}}” </span>中有 {{ commitHistory.length }} 条提交记录。最新的提交记录：</p>
   <p v-else>正在与服务器同步分支{{selectedBranch.name}}上的最新提交记录...</p>
   <div v-if="!commitHistoryBusy">
       <v-simple-table dense>
@@ -102,9 +102,9 @@ export default {
           </thead>
           <tbody>
           <tr v-for="commit in commitHistory.slice(0, 5)" :key="commit.id">
-              <td>{{commit.committer}}</td>
+              <td class="need-mono">{{commit.committer}}</td>
               <td>{{commit.message}}</td>
-              <td>
+              <td class="need-mono">
                   <v-tooltip bottom>
                       <template v-slot:activator="{on, attrs}">
                           <span v-bind="attrs" v-on="on">{{commit.hash.slice(0,6)}}</span>
@@ -147,5 +147,7 @@ export default {
 
 
 <style scoped>
-
+.need-mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
 </style>
