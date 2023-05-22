@@ -144,7 +144,7 @@
       app
       clipped
       permanent
-      v-if="((user && proj && showLabel()) || (user && user.status === 'C')) && (this.$refs.appBar === undefined || this.$refs.appBar.isScrollingUp)"
+      v-if="((user && proj && showLabel()) || (user && user.status === 'C')) && this.scrollUp"
     >
       <!-- <div style="background-color: aqua;width: 100%;">
 
@@ -364,6 +364,9 @@ export default {
   //     })
   // }
   created() {
+    window.addEventListener('scroll', () => {
+      this.scrollUp = this.isScrollTop()
+    })
     this.updateUserProj();
   },
   components:{
@@ -397,7 +400,8 @@ export default {
         id: "",
       },
       projectData: [],
-      tasks: []
+      tasks: [],
+      scrollUp: true
     };
   },
   beforeUpdate() {
@@ -661,6 +665,12 @@ export default {
           alert("updateUserProj failure! with error " + err);
         });
     }},
+    isScrollTop() {
+      if (document.body.scrollHeight > (window.innerHeight || document.documentElement.clientHeight)) {
+        let scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        return scrollTop === 0
+      }
+    }
   },
 };
 </script>

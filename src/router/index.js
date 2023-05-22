@@ -101,9 +101,9 @@ const router = new VueRouter({
       component: () => import('../views/dev/hidden_corner.vue')
     },
     {
-      path: '/user/chatRoom',
-      name: 'chatRoom',
-      component: () => import('../views/chat/ChatPage.vue')
+      path: '/user/chat',
+      name: 'chat',
+      component: () => import('../views/chat/Chat.vue')
     },
     {
       path: '/user/ai/diagnosis',
