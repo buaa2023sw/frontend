@@ -1,6 +1,6 @@
 <template>
   <v-app id="main_page">
-    <v-app-bar app clipped-left color="blue" dark extension-height="36" :absolute="true">
+    <v-app-bar app clipped-left ref="appBar" color="blue" dark extension-height="36" :absolute="true">
       <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -144,7 +144,7 @@
       app
       clipped
       permanent
-      v-if="(user && proj && showLabel()) || (user && user.status === 'C')"
+      v-if="((user && proj && showLabel()) || (user && user.status === 'C')) && (this.$refs.appBar === undefined || this.$refs.appBar.isScrollingUp)"
     >
       <!-- <div style="background-color: aqua;width: 100%;">
 
