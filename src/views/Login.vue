@@ -13,6 +13,9 @@
                   <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
+                  <v-checkbox label="不以加密形式传输密码（适用于以前注册的帐户）" v-model="noEncrypt" hide-details></v-checkbox>
+                </v-col>
+                <v-col cols="12" class="mb-3">
                   <v-btn color="blue darken-2" class="white--text" block @click="login">登录</v-btn>
                 </v-col>
                 <v-col cols="12" class="text-center">
@@ -45,6 +48,7 @@ export default {
     return {
       userNameOrEmail: '',
       password: '',
+      noEncrypt: false
     }
   },
   methods: {
@@ -62,11 +66,11 @@ export default {
       //   userNameOrEmail: this.userNameOrEmail,
       //   password: this.password
       // })
-      let secretpassword = sha256(this.password)
-      console.log(secretpassword)
+      let secretPassword = this.noEncrypt ? this.password : sha256(this.password)
+      console.log(secretPassword)
       axios.post("/api/login", {
         userNameOrEmail: this.userNameOrEmail,
-        password: secretpassword
+        password: secretPassword
       })
           .then((response) => {
             console.log(response.data)
@@ -78,7 +82,7 @@ export default {
             } else if (response.data.errcode === 2) {
               this.$message({
                 type: 'error',
-                message: "密码错误"
+                message: "密码错误，如果你是早些时候注册的账户，试试不以加密形式传输密码"
               });
             } else if (response.data.errcode === 3) {
               this.$message({

@@ -66,12 +66,12 @@ export default {
         });
         return
       }
-      let secretpassword = sha256(this.password)
-      console.log(secretpassword)
+      let secretPassword = sha256(this.password)
+      console.log(secretPassword)
       axios.post("/api/register", {
         username: this.username,
         email: this.email,
-        password: secretpassword
+        password: secretPassword
       })
           .then((response) => {
             console.log(response.data)
