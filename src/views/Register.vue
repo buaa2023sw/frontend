@@ -37,6 +37,7 @@
 <script>
 import axios from "axios";
 import util from "@/views/util";
+import { sha256 } from 'js-sha256'
 
 export default {
   name: "Register",
@@ -65,10 +66,12 @@ export default {
         });
         return
       }
+      let secretpassword = sha256(this.password)
+      console.log(secretpassword)
       axios.post("/api/register", {
         username: this.username,
         email: this.email,
-        password: this.password
+        password: secretpassword
       })
           .then((response) => {
             console.log(response.data)

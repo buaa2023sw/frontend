@@ -32,6 +32,7 @@
 import util from './util'
 import Cookies from 'js-cookie'
 import axios from "axios"
+import { sha256 } from 'js-sha256'
 
 if (Cookies.get('user') !== undefined) {
   // alert('您已处于登录状态');
@@ -55,15 +56,17 @@ export default {
         });
         return;
       }
-      console.log(this.userNameOrEmail)
-      console.log(this.password)
-      console.log({
-        userNameOrEmail: this.userNameOrEmail,
-        password: this.password
-      })
+      // console.log(this.userNameOrEmail)
+      // console.log(this.password)
+      // console.log({
+      //   userNameOrEmail: this.userNameOrEmail,
+      //   password: this.password
+      // })
+      let secretpassword = sha256(this.password)
+      console.log(secretpassword)
       axios.post("/api/login", {
         userNameOrEmail: this.userNameOrEmail,
-        password: this.password
+        password: secretpassword
       })
           .then((response) => {
             console.log(response.data)
