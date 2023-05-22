@@ -1,8 +1,13 @@
 <script>
 import axios from "axios";
+import {codemirror} from "vue-codemirror"
+import "@/utils/cm-settings.js"
 
 export default {
     name: "FileView",
+    components: {
+        codemirror
+    },
     data() {
         return {
             tree: [],
@@ -53,6 +58,34 @@ export default {
                     this.getFileExt(obj['children'][i], path + '/' + obj['name'])
                 }
             }
+        },
+        file2style() {
+          if (this.tree.length === 0) {
+            return 'null'
+          }
+
+          let file = this.tree[0]['file']
+          if (file === 'html') {
+            return 'htmlmixed'
+          } else if (file === 'js') {
+            return 'javascript'
+          } else if (file === 'json') {
+            return 'javascript'
+          } else if (file === 'md') {
+            return 'markdown'
+          } else if (file === 'vue') {
+            return 'vue'
+          } else if (file === 'css') {
+            return 'css'
+          } else if (file === 'xml') {
+            return 'xml'
+          } else if (file === 'c' || file === 'cpp' || file === 'h') {
+            return 'clike'
+          } else if (file === 'py') {
+            return 'python'
+          } else {
+            return 'null'
+          }
         }
     },
     created() {
@@ -114,37 +147,54 @@ export default {
       <v-row>
           <v-col cols="3">
 <!--              <div class="blue"> LEFT </div>-->
-              <v-treeview
-                :items="items"
-                activatable
-                :active.sync="tree"
-                item-key="name"
-                open-on-click
-                dense
-                return-object
-              >
+              <v-card min-height="500px" max-height="500px" class="overflow-y-auto">
+                <v-treeview
+                    :items="items"
+                    activatable
+                    :active.sync="tree"
+                    item-key="name"
+                    open-on-click
+                    dense
+                    return-object
+                >
                   <template v-slot:prepend="{ item, open }">
-                      <v-icon v-if="!item.file">
-                          {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-                      </v-icon>
-                      <v-icon v-else>
-                          {{ files[item.file] }}
-                      </v-icon>
+                    <v-icon v-if="!item.file">
+                      {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                    </v-icon>
+                    <v-icon v-else>
+                      {{ files[item.file] }}
+                    </v-icon>
                   </template>
-              </v-treeview>
+                </v-treeview>
+              </v-card>
           </v-col>
           <v-col cols="9">
 <!--              <div class="red"> RIGHT </div>-->
 <!--              <div>{{ tree }}</div>-->
-              <v-card>
-                  <v-card-text>
-                      <v-textarea
-                        v-model="fileContent"
-                        outlined
-                        readonly
-                        rows="30"
-                      ></v-textarea>
-                  </v-card-text>
+<!--              <v-card>-->
+<!--                  <v-card-text>-->
+<!--                      <v-textarea-->
+<!--                        v-model="fileContent"-->
+<!--                        outlined-->
+<!--                        readonly-->
+<!--                        rows="30"-->
+<!--                      ></v-textarea>-->
+<!--                  </v-card-text>-->
+<!--              </v-card>-->
+              <v-card max-height="700px" min-height="500px">
+<!--                <p>{{tree}} {{file2style()}}</p>-->
+                  <codemirror
+                    v-model="fileContent"
+                    style="height: 500px"
+                    :options="{
+                        mode: file2style(),
+                        theme: 'darcula',
+                        lineNumbers: true,
+                        line: true,
+                        readOnly: 'nocursor',
+                        showCursorWhenSelecting: true,
+                        lineWrapping: true,
+                    }"></codemirror>
               </v-card>
           </v-col>
       </v-row>
@@ -152,6 +202,8 @@ export default {
 
 </template>
 
-<style scoped>
-
+<style>
+.CodeMirror {
+  height: 500px;
+}
 </style>
