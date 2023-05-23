@@ -152,7 +152,7 @@
           <v-list-item link>
             <v-list-item-content>
               <v-list-item-title class="text-h6">
-                {{this.proj.managerName }}
+                {{this.user.name}}
               </v-list-item-title>
               <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
             </v-list-item-content>
@@ -214,7 +214,8 @@
           v-model="dialog"
           fullscreen
           transition="dialog-bottom-transition"
-          hide-overlay>
+          hide-overlay
+>
           <template v-slot:activator="{on, attrs}">
           <v-list-item>
             <v-list-item-avatar>
@@ -225,7 +226,7 @@
         </v-list-item-content>
         </v-list-item>
         </template>
-        <AllFile @close="closeDocument"></AllFile>
+        <AllFile @close="closeDocument" @open="openDocument"></AllFile>
           </v-dialog>
       <v-list-item link :to="'/user/todo'">
         <v-list-item-avatar>
@@ -448,6 +449,9 @@ export default {
     },
     closeDocument() {
       this.dialog = false;
+    },
+    openDocument() {
+      this.dialog = true;
     },
     getEmail(id) {
       getEmail({id: id}).then(

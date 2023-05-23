@@ -245,15 +245,14 @@ export default {
         removeMember({projectId: this.selectedProj.projectId, personId: row.peopleId, userId: this.user.id}).then(
           res => {
             console.log(res);
-            this.getPersonList();
-          }
-        );
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-       // deletePerson(row.name);
-      }).catch(() => {
+            let errcode = res['data']['errcode'];
+            if (errcode == 3) {
+              this.$message({
+                type: 'error',
+                message: '您没有权限！'
+              })
+            }
+          })}).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
@@ -268,7 +267,7 @@ export default {
           console.log(errorCode);
           if (errorCode === 3) {
             this.$message({
-              type: 'info',
+              type: 'error',
               message: '您没有权限邀请成员'});
           } else if (errorCode === 1) {
             this.$message({

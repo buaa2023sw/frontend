@@ -20,10 +20,10 @@
           color="primary"
           align-with-title
         >
-        <v-tab>
+        <v-tab @click="gotoAll">
           我的文档
         </v-tab>
-        <v-tab>
+        <v-tab @click="gotoCollect">
           收藏夹
         </v-tab>
           <v-tabs-slider color="primary"></v-tabs-slider>
@@ -35,17 +35,19 @@
         class="elevation-1"
         :expanded.sync="expanded"
         show-expand
-        item-key="documentId"
+        item-key="id"
         :search="search"
         :custom-filter="filterOnlyCapsText"
         style="position:absolute;left:3%;width:94%;height: 70%;top:14%"
       >
-      <template v-slot:[`item.documentName`] = "{item}" >
-         <a @click="dialog3=true">{{ item.documentName }}</a>
+      <template v-slot:[`item.name`] = "{item}" >
+         <a @click="dialog3 = true">{{ item.name }}</a>
+      </template>
+      <template v-slot:[`item.updateTime`] = "{item}" >
+        {{ item.updateTime.slice(0, 10) + "-" + item.updateTime.slice(11, 19) }}
       </template>
       <template v-slot:expanded-item="{ headers, item }">
-      <td :colspan="headers.length">
-        {{ item.intro }}
+        {{ item.outline}}
       </td>
     </template>
       <template v-slot:no-data>
@@ -86,14 +88,14 @@
               "
               depressed
               color="primary"
-              @click="dialog1 = true"
+              @click="newDocumentForm.name = '';newDocumentForm.intro = '';dialog1 = true;"
               >创建文档</v-btn
             >
           </div>
         </template>
         <template v-slot:[`item.collect`]="{item}">
-          <v-icon @click="item.collect = true" v-if="!item.collect">mdi-star-outline</v-icon>
-          <v-icon @click="item.collect = false" v-else>mdi-star</v-icon>
+          <v-icon @click="addCollect(item)" v-if="isCollectArr[item.id]">mdi-star-outline</v-icon>
+          <v-icon @click="cancelCollect(item)" v-else>mdi-star</v-icon>
           <v-icon @click="editStart(item)">mdi-pencil-outline</v-icon>
           <v-icon @click="handleDelete(item)">mdi-delete-outline</v-icon>
         </template>
@@ -138,7 +140,7 @@
          text
          color="primary"
          width="70px"
-         @click="dialog1 = false;dialog2 = true"
+         @click="initPeople();checkNameIntro()"
          >
         下一步
       </v-btn>
@@ -174,7 +176,7 @@
         md="2"
         style="position: relative;"
       >
-      <v-icon style="position: absolute;right:15.5%;">mdi-minus-box-outline</v-icon>
+      <v-icon style="position: absolute;right:15.5%;" @click="delPerson">mdi-minus-box-outline</v-icon>
       </v-col>
     </v-row>
         <v-list  shaped >
@@ -191,15 +193,15 @@
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
-             <span class="white--text text-h5">{{ people.name[0] }}</span>
+             <span class="white--text text-h5">{{ people.peopleName[0] }}</span>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
-              {{ people.name }}
+              {{ people.peopleName }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              {{ people.email }}
+              {{ people.peopleEmail }}
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
@@ -233,7 +235,7 @@
         md="2"
         style="position: relative;"
       >
-      <v-icon style="position: absolute;right:15.5%;">mdi-plus-box-outline</v-icon>
+      <v-icon style="position: absolute;right:15.5%;" @click="addPerson">mdi-plus-box-outline</v-icon>
       </v-col>
     </v-row>
         <!-- <p class="ml-s" style="font-size: medium;">添加具有权限修改的用户</p> -->
@@ -249,15 +251,15 @@
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
-             <span class="white--text text-h5">{{ people.name[0] }}</span>
+             <span class="white--text text-h5">{{ people.peopleName[0] }}</span>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
-              {{ people.name }}
+              {{ people.peopleName }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              {{ people.email }}
+              {{ people.peopleEmail }}
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
@@ -284,7 +286,7 @@
                 color="primary"
                 width="70px"
                 style="float: right"
-                @click="dialog2 = false;dialog1 = false;"
+                @click="dialog2 = false;dialog1 = false;addDoc()"
               >确认</v-btn>
             </v-card-actions>
         </v-card>
@@ -326,7 +328,7 @@
          text
          color="primary"
          width="70px"
-         @click="editDialog1 = false;editDialog2 = true"
+         @click="initEditPeople()"
          >
         下一步
       </v-btn>
@@ -373,7 +375,7 @@
           >
           <v-list-item
           v-for="people in filter(peopleCanWrite, search)"
-          :key="people.id"
+          :key="people.peopleId"
           active-class="deep-purple--text text--accent-4"
           >
           <template v-slot:default="{ active }">
@@ -450,6 +452,7 @@
           </v-list-item-content>
           <v-list-item-action>
           <v-checkbox
+                  v-if="people.peopleId !== this.user.id"
                   :input-value="active"
                   color="deep-purple accent-4"
                 ></v-checkbox>
@@ -486,7 +489,13 @@
 </template>
 
 <script>
+import {showPersonList, userDocList, userCollectDocList, addDocToCollect, delDocFromCollect, userCreateDoc, 
+       userEditDoc, userDelDoc, docTimeUpdate} from "@/api/user"
+
   export default {
+    inject: {'user': {defualt: null},
+               'selectedProj': {defualt: null},
+         },
     data() {
       return {
       text: '',
@@ -504,17 +513,16 @@
       tab: '',
       search: '',
       searchNot: '',
+      isCollectArr: [],
       headers: [
         {
           text: "名称",
           align: "start",
           sortable: false,
-          value: "documentName",
+          value: "name",
         },
-        { text: "格式", value: "format", sortable:false},
-        { text: "所有者", value: "owner", sortable:false},
-        { text: "权限", value: "limit", sortable:false},
-        { text: "最近更改时间", value: "changeTime"},
+        { text: "所有者", value: "ownerName", sortable:false},
+        { text: "最近更改时间", value: "updateTime"},
         { text: "", value: "collect", sortable:false},
         { text: "", value: "data-table-expand"}
       ],
@@ -578,17 +586,8 @@
           'id': 4,
           'email': '123'
         },
-        {
-          'name':'zhy',
-          'id': 5,
-          'email': '123'
-        },
-        {
-          'name':'zhy',
-          'id': 6,
-          'email': '123'
-        },
       ],
+      allPeople:[],
       newDocumentForm: {
         name:'',
         intro: '',
@@ -633,13 +632,189 @@
         /* 2.2.1 */
         subfield: true, // 单双栏模式
         preview: true, // 预览
+        collectDocList: []
       },
       }
     },
+    created() {
+      this.getDocumentData();
+      showPersonList({projectId: this.selectedProj.projectId, userId: this.user.id}).then(
+        res => {
+          console.log(res);
+          this.allPeople = res['data']['data'];
+        }
+      );
+      userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
+          res => {
+             console.log("userCollectDocLis");
+             console.log(res);
+             this.collectDocList = res['data']['data'];
+           }
+      )
+      
+    },
     methods:{
+      gotoCollect() {
+        this.getCollectList();
+      },
+      gotoAll() {
+        this.getDocumentData();
+      },
+      checkNameIntro() {
+        console.log("check");
+        if (this.newDocumentForm.name.trim() === "") {
+          this.$message({
+              type: "error",
+              message: "共享文档名称不能为空！",
+            });
+        } else {
+          this.dialog1 = false;this.dialog2 = true;
+        }
+      },
+      initEditPeople(item) {
+        this.deleteGroup = [];
+        this.addGroup = [];
+        this.peopleCanWrite = [];
+        this.peopleCanNotWrite = [];
+        console.log("initEditPeople");
+        console.log(this.allPeople);
+        for (let i=0;i < this.allPeople.length;i++) {
+          if (this.allPeople[i].peopleId !== this.user.id) {
+            this.peopleCanNotWrite.push(this.allPeople[i]);
+          } else {
+            this.peopleCanWrite.push(this.allPeople[i]);
+          }
+        }
+        console.log(this.peopleCanNotWrite);
+        console.log(this.peopleCanWrite);
+      },
+      initPeople() {
+        this.deleteGroup = [];
+        this.addGroup = [];
+        this.peopleCanWrite = [];
+        this.peopleCanNotWrite = [];
+        console.log("initPeople");
+        console.log(this.allPeople);
+        for (let i=0;i < this.allPeople.length;i++) {
+          if (this.allPeople[i].peopleId !== this.user.id) {
+            this.peopleCanNotWrite.push(this.allPeople[i]);
+          } else {
+            this.peopleCanWrite.push(this.allPeople[i]);
+          }
+        }
+        console.log(this.peopleCanNotWrite);
+        console.log(this.peopleCanWrite);
+      },
+      getCollectList () {
+        userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
+          res => {
+             console.log("userCollectDocLis");
+             console.log(res);
+             this.collectDocList = res['data']['data'];
+             console.log(this.collectDocList);
+             console.log("finishGetCollectList");
+            console.log(this.collectDocList);
+            this.documentData = this.collectDocList;
+           }
+      )
+      },
+      isInCollect(item) {
+        if (this.collectDocList === undefined) {
+          return false;
+        }
+        for (let i=0;i < this.collectDocList.length;i++) {
+          if (this.collectDocList[i].id === item.id) {
+            return true;
+          }
+        }
+        return false;
+      },
+      delPerson() {
+        console.log(this.deleteGroup);
+        for (let i=0;i < this.deleteGroup.length;i++) {
+          this.peopleCanNotWrite.push(this.peopleCanWrite[this.deleteGroup[i]]);
+        }
+        let arr = [];
+        for (let i=0;i < this.peopleCanWrite.length;i++) {
+          if (this.deleteGroup.indexOf(i) == -1) {
+            arr.push(this.peopleCanWrite[i]);
+          }
+        }
+        this.peopleCanWrite = arr;
+      },
+      addDoc() {
+        let accessUserId = [];
+        console.log(this.peopleCanWrite);
+        for (let i=0;i < this.peopleCanWrite.length;i++) {
+          accessUserId.push(this.peopleCanWrite[i].peopleId);
+        }
+        userCreateDoc({userId: this.user.id, projectId: this.selectedProj.projectId, name:this.newDocumentForm.name, 
+          outline: this.newDocumentForm.intro, content: "", accessUserId: accessUserId}).then(
+            res => {
+              console.log(res);
+              this.getDocumentData();
+            }
+          )
+        },
+        addCollect(item) {
+          this.isCollectArr[item.id] = !this.isCollectArr[item.id];
+          console.log(this.isColectArr);
+          addDocToCollect({userId: this.user.id, projectId: this.selectedProj.projectId, docId: item.id}).then(
+            res => {
+              console.log("addDocToCollect");
+              console.log(res);
+            }
+          )
+          userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
+            res => {
+              console.log("userCollectDocList");
+              console.log(res);
+              this.collectDocList = res['data']['data'];
+            }
+         )
+        },
+        cancelCollect(item) {
+          this.isCollectArr[item.id] = !this.isCollectArr[item.id];
+          delDocFromCollect({userId: this.user.id, projectId: this.selectedProj.projectId, docId: item.id}).then(
+            res => {
+              console.log(res);
+            }
+          )
+          userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
+            res => {
+              console.log("userCollectDocList");
+              console.log(res);
+              this.collectDocList = res['data']['data'];
+            }
+         )
+        },
+      addPerson() {
+        console.log(this.addGroup);
+        for (let i=0;i < this.addGroup.length;i++) {
+          this.peopleCanWrite.push(this.peopleCanNotWrite[this.addGroup[i]]);
+        }
+        let arr = [];
+        for (let i=0;i < this.peopleCanNotWrite.length;i++) {
+          if (this.addGroup.indexOf(i) == -1) {
+            arr.push(this.peopleCanNotWrite[i]);
+          }
+        }
+        this.peopleCanNotWrite = arr;
+      },
+      getDocumentData() {
+        userDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
+          res => {
+            console.log("getDocumentData");
+            console.log(res);
+            this.documentData = res['data']['data'];
+            console.log(this.documentData);
+          }
+        )
+      },
       editStart(item) {
         this.editDocumentForm.name = item.name;
         this.editDocumentForm.intro = item.intro;
+        this.editDocumentForm.people = item.
         this.dialog3 = false;
         this.editDialog1 = true;
       },
@@ -650,6 +825,13 @@
           type: "warning",
         })
           .then(() => {
+            userDelDoc({userId: this.user.id, projectId: this.selectedProj.projectId, docId: row.id}).then(
+              res => {
+                console.log(res);
+                this.getDocumentData();
+              }
+            )
+            this.open();
             this.$message({
               type: "success",
               message: "删除成功!",
@@ -668,7 +850,7 @@
         }
         let res = [];
         for(let i=0;i < arr.length;i++) {
-          if (arr[i].name.indexOf(search) != -1) {
+          if (arr[i].peopleName.indexOf(search) != -1) {
             res.push(arr[i]);
           }
         }
@@ -676,6 +858,9 @@
       },
       close() {
         this.$emit('close');
+      },
+      open() {
+        this.$emit('open');
       },
       closeDialog() {
         console.log("closeDialog");
@@ -713,6 +898,6 @@
   handleEditorImgDel(){
     console.log('handleEditorImgDel');    //我这里没做什么操作，后续我要写上接口，从七牛云CDN删除相应的图片
   }
-    }
+}
   }
 </script>

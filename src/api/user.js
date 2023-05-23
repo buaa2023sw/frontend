@@ -136,3 +136,35 @@ export const showNoticeList = (data) => {
 export const removeNotice = (data) => {
   return request.post("/api/plan/removeNotice", data);
 }
+
+export const userDocList = (data) => {
+  return request.post("/api/doc/userDocList", data);
+}
+
+export const userCollectDocList = (data) => {
+  return request.post("/api/doc/userCollectDocList", data);
+}
+
+export const addDocToCollect = (data) => {
+  return request.post("/api/doc/addDocToCollect", data);
+}
+
+export const delDocFromCollect = (data) => {
+  return request.post("/api/doc/delDocFromCollect", data);
+}
+
+export const userCreateDoc = (data) => {
+  return request.post("/api/doc/userCreateDoc", data);
+}
+
+export const userEditDoc = (data) => {
+  return request.post("/api/doc/userEditDoc", data);
+}
+
+export const userDelDoc = (data) => {
+  return request.post("/api/doc/userDelDoc", data);
+}
+
+export const docTimeUpdate = (data) => {
+  return request.post("/api/doc/docTimeUpdate", data);
+}
