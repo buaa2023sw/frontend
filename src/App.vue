@@ -495,13 +495,6 @@ export default {
         this.user = JSON.parse(userCookie)
       }
     },
-    handleClose(done) {
-        this.$confirm('确认关闭？')
-          .then(_ => {
-            done();
-          })
-          .catch(_ => {});
-    },
     checkClock() {
       this.clockDialog = true;  
       showNoticeList({projectId: this.proj.projectId}).then(

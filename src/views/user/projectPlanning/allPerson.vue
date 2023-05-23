@@ -68,19 +68,33 @@
   </div>
 </template>
     <template v-slot:[`item.icon`] ="{item}">
-      <div style="height: 70px;position: relative;width:900px;">
-    <v-avatar size="60" style="inline-block;position: absolute;top:10%" color="indigo" >
-      <span class="white--text text-h5">{{ item.peopleName}}</span>
-    </v-avatar>
-    <p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.peopleName }}</p>
-    <v-chip
-        :color="getColor(item.peopleJob)"
-        dark
-        style="position:absolute;top: 50%;left: 9%"
-      >
-        {{ classify(item.peopleJob) }}
-      </v-chip>
-    </div>
+<!--    <div style="height: 70px;position: relative;width:900px;">-->
+<!--      <v-avatar size="60" style="position: absolute;top:10%" color="indigo" >-->
+<!--        <span class="white&#45;&#45;text text-h5">{{ item.peopleName}}</span>-->
+<!--      </v-avatar>-->
+<!--      <p style="position:absolute;top: 5%;left: 10%;font-size: large;font-weight: 500;">{{ item.peopleName }}</p>-->
+<!--      <v-chip-->
+<!--          :color="getColor(item.peopleJob)"-->
+<!--          dark-->
+<!--          style="position:absolute;top: 50%;left: 9%"-->
+<!--        >-->
+<!--          {{ classify(item.peopleJob) }}-->
+<!--      </v-chip>-->
+<!--    </div>-->
+      <v-list-item two-line>
+        <v-list-item-avatar size="60" color="indigo">
+            <span class="white--text text-h5">{{ item.peopleName}}</span>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title class="text-h5"> {{ item.peopleName }} </v-list-item-title>
+          <v-list-item-subtitle> <v-chip
+              :color="getColor(item.peopleJob)"
+              dark
+          >
+            {{ classify(item.peopleJob) }}
+          </v-chip> </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
   </template>
   <template v-slot:[`item.remove`] ="{item}">
      <v-btn v-if="item.peopleJob != 'C'" depressed @click="handleDelete(item)">
