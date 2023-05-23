@@ -41,7 +41,7 @@
         style="position:absolute;left:3%;width:94%;height: 70%;top:14%"
       >
       <template v-slot:[`item.name`] = "{item}" >
-         <a @click="dialog3 = true">{{ item.name }}</a>
+         <a @click="openMd(item)">{{ item.name }}</a>
       </template>
       <template v-slot:[`item.updateTime`] = "{item}" >
         {{ item.updateTime.slice(0, 10) + "-" + item.updateTime.slice(11, 19) }}
@@ -486,8 +486,8 @@
       </v-dialog>
 
       <v-dialog v-model="dialog3">
-        <v-md-editor v-model="text" height="400px" left-toolbar="undo redo | image"
-        :disabled-menus="[]"></v-md-editor>
+        <v-md-editor v-model="textList[docId]" height="400px" left-toolbar="undo redo | image"
+        :disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
       </v-dialog>
       </v-card>
 </template>
@@ -503,7 +503,8 @@ import getIdenticon from "@/utils/identicon";
          },
     data() {
       return {
-      text: '',
+      docId: '',
+      textList: {},
       expanded: [],
       addGroup: [1],
       deleteGroup: [1],
@@ -637,8 +638,8 @@ import getIdenticon from "@/utils/identicon";
         /* 2.2.1 */
         subfield: true, // 单双栏模式
         preview: true, // 预览
-        collectDocList: []
       },
+      collectDocList: []
       }
     },
     created() {
@@ -660,6 +661,13 @@ import getIdenticon from "@/utils/identicon";
     },
     methods:{
       getIdenticon,
+      openMd(item) {
+        this.dialog3 = true;
+        this.docId = item.id;
+        if (this.textList[item.id] === null) {
+          this.textList[item.id] = '';
+        }
+      },
       gotoCollect() {
         this.getCollectList();
       },
@@ -674,6 +682,15 @@ import getIdenticon from "@/utils/identicon";
               message: "共享文档名称不能为空！",
             });
         } else {
+          for (let i=0;i < this.documentData.length;i++) {
+            if (this.documentData[i].name.trim() === this.newDocumentForm.name.trim()) {
+              this.$message({
+                type: 'error',
+                message: '已存在同名文档！'
+              })
+              return;
+            }
+        }
           this.dialog1 = false;this.dialog2 = true;
         }
       },
@@ -891,16 +908,23 @@ import getIdenticon from "@/utils/identicon";
     this.blogInfo.blogContent = render;
   },
   //上传图片接口pos 表示第几个图片 
-  handleEditorImgAdd(pos , $file){
-    var formdata = new FormData();
-    formdata.append('file' , $file);
-     this.$axios
-    .post("http://localhost:8000/blogs/image/upload/", formdata)
-    .then(res => {
-      var url = res.data.data;
-       this.$refs.md.$img2Url(pos, url);  //这里就是引用ref = md 然后调用$img2Url方法即可替换地址
-    });
-  },
+   handleUploadImage(event,insertImage,files){
+    for(let i in files){
+        const formData = new FormData();
+        formData.append('file', files[i]);
+        proxy.$axios.post(`${proxy.PATH}/uploadImg`,formData).then(
+            response => {
+                insertImage({
+                    url:response.data,
+                    desc: 'DESC',
+                })
+            },
+            error => {
+                console.log('请求失败了',error.message)
+            }
+        )
+    }
+},
   handleEditorImgDel(){
     console.log('handleEditorImgDel');    //我这里没做什么操作，后续我要写上接口，从七牛云CDN删除相应的图片
   }
