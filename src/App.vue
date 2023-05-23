@@ -5,7 +5,9 @@
 
       <v-spacer></v-spacer>
 
+
       <v-icon v-if="false" style="right: 1%">mdi-bell</v-icon>
+      <v-icon v-if="user" style="right: 0%" @click="checkClock">mdi-clock-outline</v-icon>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-if="existUser()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
@@ -165,14 +167,14 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link>
-          <v-list-item-content>
-            <v-list-item-title class="text-h6">
-              {{this.proj.managerName }}
-            </v-list-item-title>
-            <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
+          <v-list-item link>
+            <v-list-item-content>
+              <v-list-item-title class="text-h6">
+                {{this.user.name}}
+              </v-list-item-title>
+              <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
       </v-list>
       <v-list subheader v-if="user.status !== 'C'">
       <v-subheader>规划</v-subheader>
@@ -229,7 +231,8 @@
           v-model="dialog"
           fullscreen
           transition="dialog-bottom-transition"
-          hide-overlay>
+          hide-overlay
+>
           <template v-slot:activator="{on, attrs}">
           <v-list-item>
             <v-list-item-avatar>
@@ -240,7 +243,7 @@
         </v-list-item-content>
         </v-list-item>
         </template>
-        <AllFile @close="closeDocument"></AllFile>
+        <AllFile @close="closeDocument" @open="openDocument"></AllFile>
           </v-dialog>
       <v-list-item link :to="'/user/todo'">
         <v-list-item-avatar>
@@ -302,12 +305,7 @@
 <!--        </v-list-item-group>-->
 <!--      </v-list>-->
     </v-navigation-drawer>
-
-    <el-dialog
-      title="创建项目"
-      :visible.sync="setupDialog"
-       width="50%"
-      :before-close="handleClose">
+    <el-dialog v-model="setupDialog">
       <el-form :label-position="labelPosition" label-width="80px" :model="form" ref="form">
       <el-form-item label="项目名称">
         <el-input v-model="form.name"></el-input>
@@ -320,18 +318,59 @@
         <el-button @click="cancelSetupProject">取 消</el-button>
         <el-button type="primary" @click="setupProject">确 定</el-button>
       </span>
-      </el-dialog>
+    </el-dialog>
+
+    <el-dialog
+      title="我的提醒"
+      :visible.sync="clockDialog"
+       width="50%"
+      :before-close="handleClose">
+      <v-simple-table>
+        <thead>
+          <tr>
+            <th class="text-left">
+                任务
+            </th>
+            <th class="text-left">
+                时间
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="notice in noticeList" :key="notice.noticeId" @mouseenter="arr[notice.taskId] = true" @mouseleave="arr[notice.taskId] = false">
+            <td>{{ getTaskName(notice.taskId) }}</td>
+            <td>{{ notice.deadline }}</td>
+            <td>
+              <v-icon v-if="arr[notice.taskId]" @click="handleDeleteNotice(notice.noticeId)">mdi-delete</v-icon>
+            </td>
+          </tr>
+        </tbody>
+      </v-simple-table>
+      </el-dialog> 
 
     <v-main>
       <router-view v-if="showRouterView"/>
     </v-main>
+
+    
+<el-dialog
+  title="提醒列表"
+  width="30%"
+  :before-close="handleClose">
+  <span>这是一段信息</span>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+</el-dialog>
+
   </v-app>
 </template>
 
 <script>
 import Cookies from "js-cookie"
 import { computed } from "vue"
-import { newProject, showTaskList, watchAllProject, getEmail} from "@/api/user"
+import { newProject, showTaskList, watchAllProject, getEmail, showNoticeList, removeNotice} from "@/api/user"
 import axios from "axios"
 import AllTask from "@/views/user/projectPlanning/allTask.vue"
 import AllFile from "@/views/user/document/allFile.vue"
@@ -394,6 +433,8 @@ export default {
       setupDialog: false,
       selectedItem: null,
       dialog: false,
+      clockDialog: false,
+      editClockDialog: false, 
       form: {
         name: "",
         intro: "",
@@ -401,7 +442,10 @@ export default {
       },
       projectData: [],
       tasks: [],
-      scrollUp: true
+      scrollUp: true,
+      clockList: [],
+      noticeList: [],
+      arr: []
     };
   },
   beforeUpdate() {
@@ -451,8 +495,27 @@ export default {
         this.user = JSON.parse(userCookie)
       }
     },
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+    },
+    checkClock() {
+      this.clockDialog = true;  
+      showNoticeList({projectId: this.proj.projectId}).then(
+        res => {
+          this.noticeList = res['data']['data'];
+          console.log(this.noticeList);
+        }
+      )
+    },
     closeDocument() {
       this.dialog = false;
+    },
+    openDocument() {
+      this.dialog = true;
     },
     getEmail(id) {
       getEmail({id: id}).then(
@@ -640,6 +703,22 @@ export default {
         intro: ''
       }
     },
+    handleDeleteNotice(noticeId) {
+      this.$confirm("确认删除提醒？")
+        .then(() => {
+          removeNotice({noticeId: noticeId}).then(
+            res => {
+              showNoticeList({projectId: this.proj.projectId}).then(
+              res => {
+                this.noticeList = res['data']['data'];
+                console.log(this.noticeList);
+              }
+            )
+            }
+          )
+        })
+        .catch(() => {});
+    },
     changeSelectedProj(proj) {
       this.selectedProj = proj;
     },
@@ -669,6 +748,17 @@ export default {
       if (document.body.scrollHeight > (window.innerHeight || document.documentElement.clientHeight)) {
         let scrollTop = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
         return scrollTop === 0
+}},
+    getTaskName(taskId) {
+      this.getTaskList();
+      console.log("getTaskName");
+      console.log(this.tasks);
+      for(let i=0;i < this.tasks.length;i++) {
+        for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
+         if (this.tasks[i].subTaskList[j].subTaskId === taskId) {
+          return this.tasks[i].subTaskList[j].subTaskName;
+         }
+        }
       }
     }
   },

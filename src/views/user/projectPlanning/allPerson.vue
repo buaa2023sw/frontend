@@ -42,6 +42,18 @@
         style="width:30%;display: inline-block"
       ></v-text-field>
       <v-btn
+      style="top:20%;right:14%;height:60%;width:13%;position: absolute"
+    depressed
+    color="primary"
+    @click="gotoWork"
+    >查看工作量分配
+    <v-icon
+          dark
+          right
+        >
+          mdi-account-details
+        </v-icon></v-btn>
+      <v-btn
       style="top:20%;right:2%;height:60%;width:10%;position: absolute"
     depressed
     color="primary"
@@ -192,6 +204,9 @@ export default {
     }
   },
   methods: {
+    gotoWork() {
+      this.$router.push({path:'/workDetail'});
+    },
     getPersonList() {
       showPersonList({projectId: this.selectedProj.projectId, userId: this.user.id}).then(
         res => {
@@ -230,15 +245,14 @@ export default {
         removeMember({projectId: this.selectedProj.projectId, personId: row.peopleId, userId: this.user.id}).then(
           res => {
             console.log(res);
-            this.getPersonList();
-          }
-        );
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
-       // deletePerson(row.name);
-      }).catch(() => {
+            let errcode = res['data']['errcode'];
+            if (errcode == 3) {
+              this.$message({
+                type: 'error',
+                message: '您没有权限！'
+              })
+            }
+          })}).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
@@ -253,7 +267,7 @@ export default {
           console.log(errorCode);
           if (errorCode === 3) {
             this.$message({
-              type: 'info',
+              type: 'error',
               message: '您没有权限邀请成员'});
           } else if (errorCode === 1) {
             this.$message({
