@@ -61,6 +61,9 @@
           主页
         </v-tab>
         <v-menu
+            :open-on-hover="true"
+            :close-on-click="false"
+            :close-on-content-click="false"
             transition="scroll-y-transition"
             v-if="user.projects.length"
             offset-y
@@ -93,7 +96,8 @@
                   >
                     <v-list-item-avatar>
                       <v-avatar size="40" color="indigo" >
-                        <span class="white--text text-h5">{{ item.projectName[0] }}</span>
+<!--                        <span class="white&#45;&#45;text text-h5">{{ item.projectName[0] }}</span>-->
+                        <v-img :src="getIdenticon(item.projectName, 40, 'proj')"></v-img>
                       </v-avatar>
                     </v-list-item-avatar>
                     <v-list-item-content>
@@ -109,14 +113,16 @@
               <v-list class="grey lighten-3">
                 <v-list-item-group
                     color="primary"
+                    v-model="whatisclicked"
                 >
-                  <v-list-item>
-                    <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">
-                      <button @click="navigate" @keypress.enter="navigate" role="link">查看所有项目</button>
-                    </router-link>
-                  </v-list-item>
-                  <v-list-item @click.stop="setupDialog = true" link>
-                    新建项目
+
+                  <router-link :to="{path: '/allProject/'}" custom v-slot="{ navigate }">
+                    <v-list-item @click="navigate" @keypress.enter="navigate" link>
+                      查看所有项目
+                    </v-list-item>
+                  </router-link>
+                  <v-list-item @click="setupDialog = true; whatisclicked = null" link>
+                    新建项目 {{ setupDialog }}
                   </v-list-item>
                 </v-list-item-group>
               </v-list>
@@ -154,7 +160,8 @@
       <v-list v-if="user.status !== 'C'">
         <v-list-item two-line class="px-2">
           <v-avatar size="40" color="indigo" >
-            <span class="white--text text-h5">{{ this.proj.projectName[0] }}</span>
+<!--            <span class="white&#45;&#45;text text-h5">{{ this.proj.projectName[0] }}</span>-->
+            <v-img :src="getIdenticon(this.proj.projectName, 40, 'proj')"></v-img>
           </v-avatar>
           <v-list-item-content class="px-3">
               <!-- <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img> -->
@@ -305,7 +312,10 @@
 <!--        </v-list-item-group>-->
 <!--      </v-list>-->
     </v-navigation-drawer>
-    <el-dialog v-model="setupDialog">
+    <el-dialog title="创建项目"
+               :visible.sync="setupDialog"
+               width="50%"
+               :before-close="handleClose">
       <el-form :label-position="labelPosition" label-width="80px" :model="form" ref="form">
       <el-form-item label="项目名称">
         <el-input v-model="form.name"></el-input>
@@ -374,6 +384,7 @@ import { newProject, showTaskList, watchAllProject, getEmail, showNoticeList, re
 import axios from "axios"
 import AllTask from "@/views/user/projectPlanning/allTask.vue"
 import AllFile from "@/views/user/document/allFile.vue"
+import getIdenticon from "@/utils/identicon";
 // import allTask from "@/views/user/projectPlanning/allTask"
 
 let user = Cookies.get("user");
@@ -445,7 +456,8 @@ export default {
       scrollUp: true,
       clockList: [],
       noticeList: [],
-      arr: []
+      arr: [],
+      whatisclicked: null,
     };
   },
   beforeUpdate() {
@@ -489,6 +501,7 @@ export default {
     };
   },
   methods: {
+    getIdenticon,
     updateUser() {
       var userCookie = Cookies.get("user")
       if (userCookie !== undefined) {
@@ -649,6 +662,7 @@ export default {
           done();
         })
         .catch(() => {});
+      this.whatisclicked = null
     },
     cancelSetupProject() {
       this.setupDialog = false;
@@ -656,10 +670,12 @@ export default {
         name: '',
         intro: ''
       }
+      this.whatisclicked = null
     },
     setupProject() {
       // console.log(this.search);
       // console.log("submit");
+      this.whatisclicked = null
       watchAllProject({userId: this.user.id}).then(
         res => {
           this.projectData = res['data']['data'];

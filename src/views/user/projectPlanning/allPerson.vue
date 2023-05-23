@@ -83,7 +83,8 @@
 <!--    </div>-->
       <v-list-item two-line>
         <v-list-item-avatar size="60" color="indigo">
-            <span class="white--text text-h5">{{ item.peopleName}}</span>
+<!--            <span class="white&#45;&#45;text text-h5">{{ item.peopleName}}</span>-->
+          <v-img :src="getIdenticon(item.peopleName, 60, 'user')"></v-img>
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title class="text-h5"> {{ item.peopleName }} </v-list-item-title>
@@ -158,6 +159,7 @@
 <script>
 import { showPersonList, removeMember, modifyRole, addMember } from '@/api/user'
 import project_messagesVue from '@/views/manager/project_messages.vue'
+import getIdenticon from "@/utils/identicon";
 export default {
   name: 'AllProject',
   // inject: {user: {default: null},
@@ -218,6 +220,7 @@ export default {
     }
   },
   methods: {
+    getIdenticon,
     gotoWork() {
       this.$router.push({path:'/workDetail'});
     },

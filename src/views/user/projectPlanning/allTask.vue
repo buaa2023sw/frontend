@@ -152,7 +152,8 @@
     <template v-slot:[`item.managerId`] ="{ item }">
     <div style="position:relative;">
     <v-avatar size="25"  color="indigo" >
-      <span class="white--text text-h6">{{getName(item.managerId)[0]}}</span>
+<!--      <span class="white&#45;&#45;text text-h6">{{getName(item.managerId)[0]}}</span>-->
+      <v-img :src="getIdenticon(getName(item.managerId), 25, 'user')"></v-img>
     </v-avatar>
     <div style="position: absolute;left:40%;bottom: 5%;">{{ getName(item.managerId) }}</div>
   </div>
@@ -670,6 +671,7 @@
 
 <script>
 import {showTaskList, addTask, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask, removeTask, showPersonList} from '@/api/user.js'
+import getIdenticon from "@/utils/identicon";
 
 export default {
   name: "allTask",
@@ -813,6 +815,7 @@ export default {
     ]
   }),
   methods: {
+    getIdenticon,
     mouseenter(task) {
       console.log("mouseenter");
       console.log(task.taskId);

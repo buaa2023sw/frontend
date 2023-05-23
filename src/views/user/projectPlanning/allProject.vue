@@ -68,7 +68,8 @@
         <template v-slot:[`item.managerName`]="{ item }">
           <div style="position: relative">
             <v-avatar size="25" color="indigo">
-              <span class="white--text text-h6">{{ item.managerName[0] }}</span>
+<!--              <span class="white&#45;&#45;text text-h6">{{ item.managerName[0] }}</span>-->
+              <v-img :src="getIdenticon(item.managerName, 25, 'user')"></v-img>
             </v-avatar>
             <div style="position: absolute; left: 20%; bottom: 3%">
               {{ item.managerName }}
@@ -232,6 +233,7 @@ import {
   modifyProjectStatus,
 } from "@/api/user";
 import Cookies from "js-cookie";
+import getIdenticon from "@/utils/identicon";
 
 export default {
   // inject: ['user', 'selectedProj'],
@@ -288,6 +290,7 @@ export default {
     };
   },
   methods: {
+    getIdenticon,
     getProj(project) {
       console.log("getProj");
       console.log(JSON.stringify(project));

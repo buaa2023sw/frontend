@@ -11,7 +11,8 @@
                   color="indigo"
                   size="100"
               >
-                <span class="white--text text-h5"> {{ showedUserName }} </span>
+<!--                <span class="white&#45;&#45;text text-h5"> {{ showedUserName }} </span>-->
+                <v-img :src="getIdenticon(showedUserName, 100, 'user')"></v-img>
               </v-avatar>
               <!--
               <v-avatar size="100">
@@ -69,6 +70,7 @@
 import axios from "axios";
 import util from "@/views/util";
 import Cookies from "js-cookie";
+import getIdenticon from "@/utils/identicon";
 
 export default {
   name: "profile",
@@ -98,6 +100,7 @@ export default {
     this.showProfile()
   },
   methods: {
+    getIdenticon,
     showProfile() {
       // 调用后端接口获取用户信息
       axios.post("/api/showProfile", {userId: this.user.id})

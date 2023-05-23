@@ -193,7 +193,8 @@
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
-             <span class="white--text text-h5">{{ people.peopleName[0] }}</span>
+<!--             <span class="white&#45;&#45;text text-h5">{{ people.peopleName[0] }}</span>-->
+              <v-img :src="getIdenticon(people.peopleName, 48, 'user')"></v-img>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
@@ -251,7 +252,8 @@
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
-             <span class="white--text text-h5">{{ people.peopleName[0] }}</span>
+<!--             <span class="white&#45;&#45;text text-h5">{{ people.peopleName[0] }}</span>-->
+              <v-img :src="getIdenticon(people.peopleName, 48, 'user')"></v-img>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
@@ -381,7 +383,8 @@
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
-             <span class="white--text text-h5">{{ people.name[0] }}</span>
+<!--             <span class="white&#45;&#45;text text-h5">{{ people.name[0] }}</span>-->
+              <v-img :src="getIdenticon(people.peopleName, 48, 'user')"></v-img>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
@@ -439,7 +442,8 @@
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
-             <span class="white--text text-h5">{{ people.name[0] }}</span>
+<!--             <span class="white&#45;&#45;text text-h5">{{ people.name[0] }}</span>-->
+              <v-img :src="getIdenticon(people.peopleName, 48, 'user')"></v-img>
             </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
@@ -491,6 +495,7 @@
 <script>
 import {showPersonList, userDocList, userCollectDocList, addDocToCollect, delDocFromCollect, userCreateDoc, 
        userEditDoc, userDelDoc, docTimeUpdate} from "@/api/user"
+import getIdenticon from "@/utils/identicon";
 
   export default {
     inject: {'user': {defualt: null},
@@ -654,6 +659,7 @@ import {showPersonList, userDocList, userCollectDocList, addDocToCollect, delDoc
       
     },
     methods:{
+      getIdenticon,
       gotoCollect() {
         this.getCollectList();
       },
