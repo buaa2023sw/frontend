@@ -13,7 +13,7 @@
                   <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-checkbox label="不以加密形式传输密码（适用于以前注册的帐户）" v-model="noEncrypt" hide-details></v-checkbox>
+                  <v-checkbox label="不以加密形式传输密码（适用于前后端测试）" v-model="noEncrypt" hide-details></v-checkbox>
                 </v-col>
                 <v-col cols="12" class="mb-3">
                   <v-btn color="blue darken-2" class="white--text" :disabled="!valid()" block @click="login">登录</v-btn>
