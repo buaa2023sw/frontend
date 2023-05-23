@@ -188,7 +188,7 @@ export default {
                     style="height: 500px"
                     :options="{
                         mode: file2style(),
-                        theme: 'darcula',
+                        theme: 'idea',
                         lineNumbers: true,
                         line: true,
                         readOnly: 'nocursor',

@@ -7,7 +7,8 @@ import "codemirror/lib/codemirror.css";
 // import "codemirror/theme/monokai.css";
 // import 'codemirror/theme/rubyblue.css'
 // import 'codemirror/theme/material.css'
-import 'codemirror/theme/darcula.css'
+import 'codemirror/theme/idea.css'
+// import 'codemirror/theme/darcula.css'
 // html代码高亮
 import "codemirror/mode/htmlmixed/htmlmixed.js";
 // 语言模式
