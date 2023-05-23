@@ -33,14 +33,20 @@
           <v-icon v-if="user" v-bind="attrs" v-on="on">mdi-account</v-icon>
           <v-icon v-else v-bind="attrs" v-on="on">mdi-account-remove</v-icon>
         </template>
-        <v-card v-if="user" min-width="200px">
-          <v-card-title>欢迎, {{ user.name }}</v-card-title>
+        <v-card v-if="user" min-width="300px">
+          <v-img
+              :src="getIdenticon(user.name, 300, 'user')"
+              class="shades--text black--text align-end"
+          >
+            <v-card-title style="font-weight: bold; font-size: xx-large; background: linear-gradient(transparent 0%, rgba(255, 255, 255, 80%) 50%, white 100%); ">欢迎, {{ user.name }}</v-card-title>
+          </v-img>
+
           <v-list>
             <v-list-item link to="/user/profile">
               <v-list-item-title>个人信息</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="logoff()">
-              <v-list-item-title>退出</v-list-item-title>
+              <v-list-item-title>退出登录</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
@@ -779,4 +785,5 @@ export default {
   font-size: 1.2em;
   line-height: 1.2em;
 }
+
 </style>
