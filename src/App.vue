@@ -128,7 +128,7 @@
                     </v-list-item>
                   </router-link>
                   <v-list-item @click="setupDialog = true; whatisclicked = null" link>
-                    新建项目 {{ setupDialog }}
+                    新建项目
                   </v-list-item>
                 </v-list-item-group>
               </v-list>
