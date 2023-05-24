@@ -71,6 +71,7 @@ import axios from "axios";
 import util from "@/views/util";
 import Cookies from "js-cookie";
 import getIdenticon from "@/utils/identicon";
+import {sha256} from "js-sha256";
 
 export default {
   name: "profile",
@@ -200,10 +201,14 @@ export default {
         });
         return;
       }
+      let secretOldPassword = sha256(this.oldPassword)
+      let secretNewPassword = sha256(this.newPassword)
+      console.log(secretOldPassword)
+      console.log(secretNewPassword)
       axios.post('/api/user/information/password', {
         userId: this.user.id,
-        oldPassword: this.oldPassword,
-        newPassword: this.newPassword,
+        oldPassword: secretOldPassword,
+        newPassword: secretNewPassword,
       })
           .then((response) => {
             if (response.data.errcode === 1) { // TODO

@@ -37,6 +37,17 @@ import Cookies from 'js-cookie'
 import axios from "axios"
 import { sha256 } from 'js-sha256'
 
+// if (Cookies.get('manager') !== undefined) { // 此时管理员在用户端
+//   window.location.href = '/allProject';
+// } else if (Cookies.get('user') !== undefined) {
+//   // alert('您已处于登录状态');
+//   let user = Cookies.get('user')
+//   if (user.status === 'C') { // 当前用户为管理员
+//     window.location.href = '/manager/home'
+//   } else { // 当前用户为普通用户
+//     window.location.href = '/allProject';
+//   }
+// }
 if (Cookies.get('user') !== undefined) {
   // alert('您已处于登录状态');
   window.location.href = '/allProject';

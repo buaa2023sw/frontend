@@ -396,18 +396,31 @@ import getIdenticon from "@/utils/identicon";
 
 let user = Cookies.get("user");
 console.log(user);
-if (user === undefined) {
+if (user === undefined) { // 用户未登录
   console.log("not logged in");
   if (window.location.pathname === "/register") {
+
   } else if (window.location.pathname !== "/login") {
     window.location.href = '/login'
   }
-} else {
+} else { // 用户已登录
+  console.log("????????")
+  // user = JSON.parse(user);
+  // if (Cookies.get("manager") !== undefined) { // 此时管理员在用户端
+     //window.location.href = '/allProject';
+  //} else {
+  //  let tmpuser = Cookies.get('user')
+  //  if (tmpuser.status === 'C') { // 当前用户为管理员
+  //    window.location.href = '/manager/home'
+  //  } else { // 当前用户为普通用户
+  //    window.location.href = '/allProject';
+  //  }
+  // }
   console.log("logged in");
-  user = JSON.parse(user);
+  user = JSON.parse(user)
   console.log(window.location.pathname);
   if (window.location.pathname === "/") {
-  window.location.href = "/allProject/";
+     window.location.href = "/allProject/";
   }
 }
 
