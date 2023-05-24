@@ -35,10 +35,11 @@
         </template>
         <v-card v-if="user" min-width="300px">
           <v-img
+              gradient="transparent 0%, rgba(255, 255, 255, 80%) 80%, white 100%"
               :src="getIdenticon(user.name, 300, 'user')"
               class="shades--text black--text align-end"
           >
-            <v-card-title style="font-weight: bold; font-size: xx-large; background: linear-gradient(transparent 0%, rgba(255, 255, 255, 80%) 50%, white 100%); ">欢迎, {{ user.name }}</v-card-title>
+            <v-card-title style="font-weight: bold; font-size: xx-large;">欢迎, {{ user.name }}</v-card-title>
           </v-img>
 
           <v-list>
