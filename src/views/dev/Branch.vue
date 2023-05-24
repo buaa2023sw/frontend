@@ -8,80 +8,100 @@
     <v-container fluid>
         <h1>分支详情 - {{branchName}}</h1>
         <v-row>
-            <v-col cols="3" class="px-3">
+          <v-col cols="12">
+            <v-tabs v-model="tabs">
+              <v-tab>提交记录&统计</v-tab>
+              <v-tab>查看仓库文件</v-tab>
+            </v-tabs>
+          </v-col>
+        </v-row>
+
+        <v-tabs-items v-model="tabs">
+          <v-tab-item :value="0">
+            <v-row>
+              <v-col cols="3" class="px-3">
                 <h2>提交记录</h2>
                 <v-list class="overflow-y-auto" max-height="1200px">
-                    <v-list-item v-for="commit in commitHistory" :key="commit.id">
-                        <v-list-item-content>
-                            <v-list-item-title>{{commit.commitMessage}}</v-list-item-title>
-                            <v-list-item-subtitle>{{new Date(commit.commitTime).toLocaleString()}} - {{commit.commithash.slice(0, 6)}} - {{commit.author}}</v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
+                  <v-list-item v-for="commit in commitHistory" :key="commit.id">
+                    <v-list-item-content>
+                      <v-list-item-title>{{commit.commitMessage}}</v-list-item-title>
+                      <v-list-item-subtitle>{{new Date(commit.commitTime).toLocaleString()}} - {{commit.commithash.slice(0, 6)}} - {{commit.author}}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
                 </v-list>
-            </v-col>
-            <v-divider vertical></v-divider>
-            <v-col cols="9" class="">
+              </v-col>
+              <v-divider vertical></v-divider>
+              <v-col cols="9" class="">
                 <v-container fluid>
-                    <v-row dense>
-                        <v-col v-for="(entry, index) in [daily, monthly, yearly]" :key="index" :cols="entry.col">
-                            <v-card :color="entry.color" class="text-center align-center">
-                                <v-sparkline
-                                    :labels="entry.label"
-                                    :value="entry.data"
-                                    auto-line-width
-                                    smooth
-                                    padding="20"
-                                    stroke-linecap="round"
-                                    show-labels
-                                    auto-draw
-                                ></v-sparkline>
-                                <v-card-title>从 {{entry.label[0]}} 到 {{entry.label[entry.label.length-1]}} 的提交</v-card-title>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                    <br>
-                    <v-divider></v-divider>
-                    <br>
-                    <v-row dense>
-                        <v-col cols="12">
-                            <v-card>
-                                <v-container fluid>
-                                    <v-row>
-                                        <v-col cols="8">
-                                            <div ref="user_specific_pie_chart" style="height: 20em" class="lime"></div>
-                                        </v-col>
-                                        <v-col cols="4">
-                                            <v-list dense max-height="20em" class="overflow-y-auto">
-                                                <v-list-item v-for="user in perUser" :key="user.key">
-                                                    <v-list-item-content>
-                                                        <v-list-item-title>{{user.key}}</v-list-item-title>
-                                                        <v-list-item-subtitle>{{user.value}} 次提交</v-list-item-subtitle>
-                                                    </v-list-item-content>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                                <v-card-title>用户提交数量</v-card-title>
-                            </v-card>
-                        </v-col>
-                    </v-row>
+                  <v-row dense>
+                    <v-col v-for="(entry, index) in [daily, monthly, yearly]" :key="index" :cols="entry.col">
+                      <v-card :color="entry.color" class="text-center align-center">
+                        <v-sparkline
+                            :labels="entry.label"
+                            :value="entry.data"
+                            auto-line-width
+                            smooth
+                            padding="20"
+                            stroke-linecap="round"
+                            show-labels
+                            auto-draw
+                        ></v-sparkline>
+                        <v-card-title>从 {{entry.label[0]}} 到 {{entry.label[entry.label.length-1]}} 的提交</v-card-title>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                  <br>
+                  <v-divider></v-divider>
+                  <br>
+                  <v-row dense>
+                    <v-col cols="12">
+                      <v-card>
+                        <v-container fluid>
+                          <v-row>
+                            <v-col cols="8">
+                              <div ref="user_specific_pie_chart" style="height: 20em" class="lime"></div>
+                            </v-col>
+                            <v-col cols="4">
+                              <v-list dense max-height="20em" class="overflow-y-auto">
+                                <v-list-item v-for="user in perUser" :key="user.key">
+                                  <v-list-item-content>
+                                    <v-list-item-title>{{user.key}}</v-list-item-title>
+                                    <v-list-item-subtitle>{{user.value}} 次提交</v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                        <v-card-title>用户提交数量</v-card-title>
+                      </v-card>
+                    </v-col>
+                  </v-row>
                 </v-container>
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          <v-tab-item :value="1">
 
-                <v-container fluid>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-card>
-                                <v-card-title>文件列表</v-card-title>
-                                <v-card-text>
-                                    <FileView></FileView>
-                                </v-card-text>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-col>
-        </v-row>
+<!--            <v-container fluid>-->
+<!--              <v-row>-->
+<!--                <v-col cols="12">-->
+<!--                  <v-card min-height="1000px">-->
+<!--                    <v-card-title>文件列表</v-card-title>-->
+<!--                    <v-card-text>-->
+                      <FileView></FileView>
+<!--                    </v-card-text>-->
+<!--                  </v-card>-->
+<!--                </v-col>-->
+<!--              </v-row>-->
+<!--            </v-container>-->
+
+          </v-tab-item>
+        </v-tabs-items>
+
+
+
+
     </v-container>
 </template>
 
@@ -99,6 +119,7 @@ export default {
     },
     data() {
         return {
+            tabs: null,
             projId: this.$route.params.projid,
             repoId: this.$route.params.repoid,
             branchName: this.$route.params.branchname,

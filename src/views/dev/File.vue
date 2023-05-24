@@ -1,13 +1,10 @@
 <script>
 import axios from "axios";
-import {codemirror} from "vue-codemirror"
+import * as CodeMirror from 'codemirror/lib/codemirror.js'
 import "@/utils/cm-settings.js"
 
 export default {
     name: "FileView",
-    components: {
-        codemirror
-    },
     data() {
         return {
             tree: [],
@@ -36,7 +33,10 @@ export default {
                     ]
                 }
             ],
-            fileContent: 'Select a file to view its content.'
+            cmEditor: null,
+            sheet: false,
+            fileContent: 'Select a file to view its content.',
+            selectedText: ''
         }
     },
     inject: {
@@ -86,6 +86,9 @@ export default {
           } else {
             return 'null'
           }
+        },
+        onCursorActivity() {
+          this.selectedText = this.cmEditor.getSelection()
         }
     },
     created() {
@@ -123,6 +126,8 @@ export default {
                     if (res.data.errcode === 0) {
                         console.log(res.data.data)
                         this.fileContent = res.data.data
+                        this.cmEditor.setValue(this.fileContent)
+                        this.cmEditor.setOption('mode', this.file2style())
                     } else {
                         alert('/api/develop/getFileContent errcode not 0: ' + res.data.message)
                     }
@@ -132,6 +137,17 @@ export default {
                 })
             }
         }
+    },
+    mounted() {
+      this.cmEditor = CodeMirror.fromTextArea(this.$refs.cm1, {
+        theme: 'idea',
+        lineNumbers: true,
+        line: true,
+        readOnly: true,
+        lineWrapping: true
+      });
+
+      this.cmEditor.on('cursorActivity', this.onCursorActivity)
     }
 }
 
@@ -139,15 +155,10 @@ export default {
 
 <template>
   <v-container>
-<!--      <h1>文件视图</h1>-->
-<!--      <p>{{this.user}}</p>-->
-<!--      <p>{{this.proj}}</p>-->
-<!--      <p>{{this.repo}}</p>-->
-<!--      <p>{{this.branchName}}</p>-->
       <v-row>
           <v-col cols="3">
-<!--              <div class="blue"> LEFT </div>-->
-              <v-card min-height="500px" max-height="500px" class="overflow-y-auto">
+              <h2>文件树</h2>
+              <v-card min-height="80rem" max-height="80rem" class="overflow-y-auto">
                 <v-treeview
                     :items="items"
                     activatable
@@ -169,41 +180,52 @@ export default {
               </v-card>
           </v-col>
           <v-col cols="9">
-<!--              <div class="red"> RIGHT </div>-->
-<!--              <div>{{ tree }}</div>-->
-<!--              <v-card>-->
-<!--                  <v-card-text>-->
-<!--                      <v-textarea-->
-<!--                        v-model="fileContent"-->
-<!--                        outlined-->
-<!--                        readonly-->
-<!--                        rows="30"-->
-<!--                      ></v-textarea>-->
-<!--                  </v-card-text>-->
-<!--              </v-card>-->
-              <v-card max-height="700px" min-height="500px">
-<!--                <p>{{tree}} {{file2style()}}</p>-->
-                  <codemirror
-                    v-model="fileContent"
-                    style="height: 500px"
-                    :options="{
-                        mode: file2style(),
-                        theme: 'idea',
-                        lineNumbers: true,
-                        line: true,
-                        readOnly: 'nocursor',
-                        showCursorWhenSelecting: true,
-                        lineWrapping: true,
-                    }"></codemirror>
+            <h2>
+              {{ tree.length === 0 ? '请选择一个文件' : tree[0]['path'] }}
+              <a v-if="selectedText !== ''" style="float: right" @click="sheet = !sheet" class="text--accent-2" v-ripple>代码诊断助手</a>
+            </h2>
+
+              <v-card max-height="80rem" min-height="80rem">
+                <textarea ref="cm1" v-model='fileContent' style="height: 450px; width: 100%"></textarea>
               </v-card>
           </v-col>
       </v-row>
+
+    <v-bottom-sheet inset v-model="sheet">
+      <v-card class="text-center">
+        <v-card-title>代码诊断助手</v-card-title>
+        <v-container>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-col cols="6">
+              <v-textarea label="选择的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>
+            </v-col>
+            <v-spacer></v-spacer>
+          </v-row>
+          <v-row>
+            <v-spacer></v-spacer>
+            <v-col cols="3">
+              <v-btn>让JiHub诊断选中的代码</v-btn>
+            </v-col>
+            <v-col cols="3">
+              <v-btn>让JiHub诊断整个文件</v-btn>
+            </v-col>
+            <v-spacer></v-spacer>
+          </v-row>
+          <v-row style="height: 5rem"></v-row>
+        </v-container>
+      </v-card>
+    </v-bottom-sheet>
   </v-container>
 
 </template>
 
 <style>
 .CodeMirror {
-  height: 500px;
+  height: 80rem;
+}
+
+.need-mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 </style>
