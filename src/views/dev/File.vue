@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import Cookies from 'js-cookie'
 import * as CodeMirror from 'codemirror/lib/codemirror.js'
 import "@/utils/cm-settings.js"
 
@@ -89,7 +90,16 @@ export default {
         },
         onCursorActivity() {
           this.selectedText = this.cmEditor.getSelection()
-        }
+        },
+        diagSelected() {
+          Cookies.set('diag', this.selectedText)
+          window.open('/user/ai/diagnosis', '_blank')
+        },
+        diagWholeFile() {
+          Cookies.set('diag', this.fileContent)
+          window.open('/user/ai/diagnosis', '_blank')
+        },
+
     },
     created() {
         axios.post('/api/develop/getFileTree', {
@@ -205,10 +215,10 @@ export default {
           <v-row>
             <v-spacer></v-spacer>
             <v-col cols="3">
-              <v-btn>让JiHub诊断选中的代码</v-btn>
+              <v-btn @click="diagSelected">让JiHub诊断选中的代码</v-btn>
             </v-col>
             <v-col cols="3">
-              <v-btn>让JiHub诊断整个文件</v-btn>
+              <v-btn @click="diagWholeFile">让JiHub诊断整个文件</v-btn>
             </v-col>
             <v-spacer></v-spacer>
           </v-row>
