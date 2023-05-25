@@ -20,10 +20,6 @@ const router = new VueRouter({
       component: () => import('../views/user/document/allFile.vue')
     },
     {
-      path:'/chatPage',
-      component: () => import('../views/chat/ChatPage.vue')
-    },
-    {
       path:'/allPerson',
       component: () => import('../views/user/projectPlanning/allPerson.vue')
     },

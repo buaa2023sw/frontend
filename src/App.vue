@@ -417,6 +417,15 @@ if (user === undefined) { // 用户未登录
     window.location.href = '/login'
   }
 } else { // 用户已登录
+  let userpath = (window.location.pathname !== "/workDetail" && window.location.pathname !== "/allFile" &&
+      window.location.pathname !== "/allPerson" && window.location.pathname !== "/allTask" &&
+      window.location.pathname !== "/picture" && !window.location.pathname.startsWith("/plan") &&
+      !window.location.pathname.startsWith("/allProject") && window.location.pathname !== "/home" &&
+      !window.location.pathname.startsWith("/dev") && window.location.pathname !== "/profile" &&
+      window.location.pathname !== "topic" &&
+      !window.location.pathname.startsWith("/user")) // 合法的普通用户路径
+  let managerpath = (window.location.pathname !== "/profile" &&
+      window.location.pathname !== "topic" && !window.location.pathname.startsWith("/manager")) // 合法的纯管理员路径（位于管理端）
   user = JSON.parse(user)
   let proj = undefined;
   if (user !== undefined) {
@@ -424,18 +433,27 @@ if (user === undefined) { // 用户未登录
       proj = Cookies.get("proj");
       console.log(proj)
       if (proj !== undefined) {
-        if (window.location.pathname !== "/allTask") {
+        if (userpath) {
           window.location.href = "/allTask"
         }
+        // if (window.location.pathname !== "/allTask") {
+        //   window.location.href = "/allTask"
+        // }
       } else {
-        if (window.location.pathname !== "/allProject") {
+        if (userpath) {
           window.location.href = "/allProject"
         }
+        // if (window.location.pathname !== "/allProject") {
+        //   window.location.href = "/allProject"
+        // }
       }
     } else { // 管理员
-      if (window.location.pathname !== "/manager/home") {
+      if (managerpath) {
         window.location.href = "/manager/home"
       }
+      // if (window.location.pathname !== "/manager/home") {
+      //   window.location.href = "/manager/home"
+      // }
     }
   }
 }
