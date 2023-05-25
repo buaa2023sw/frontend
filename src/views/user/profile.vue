@@ -43,21 +43,21 @@
             <v-card-text>
               <v-row>
                 <v-col cols="4"><div class="input-label">原密码：</div></v-col>
-                <v-col cols="8"><div class="input-field"><v-text-field v-model="oldPassword" outlined dense type="password"></v-text-field></div></v-col>
+                <v-col cols="8"><div class="input-field"><v-text-field v-model="oldPassword" :rules="registerRules.user_oldPassword" outlined dense type="password"></v-text-field></div></v-col>
               </v-row>
               <v-row>
                 <v-col cols="4"><div class="input-label">新密码：</div></v-col>
-                <v-col cols="8"><div class="input-field"><v-text-field v-model="newPassword" outlined dense type="password"></v-text-field></div></v-col>
+                <v-col cols="8"><div class="input-field"><v-text-field v-model="newPassword" :rules="registerRules.user_newPassword" outlined dense type="password"></v-text-field></div></v-col>
               </v-row>
               <v-row>
                 <v-col cols="4"><div class="input-label">确认新密码：</div></v-col>
-                <v-col cols="8"><div class="input-field"><v-text-field v-model="confirmNewPassword" outlined dense type="password"></v-text-field></div></v-col>
+                <v-col cols="8"><div class="input-field"><v-text-field v-model="confirmNewPassword" :rules="registerRules.user_confirmNewPassword" outlined dense type="password"></v-text-field></div></v-col>
               </v-row>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red" text @click="closeChangePasswordDialog">取消</v-btn>
-              <v-btn color="blue" text @click="changePassword">确认修改</v-btn>
+              <v-btn color="blue" text :disabled="!valid()" @click="changePassword">确认修改</v-btn>
             </v-card-actions>
           </v-card>
         </v-container>
@@ -92,9 +92,26 @@ export default {
       // 修改密码对话框的显示
       showChangePassword: false,
       // 修改密码相关变量
-      oldPassword: "",
-      newPassword: "",
-      confirmNewPassword: "",
+      oldPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
+      registerRules: {
+        user_oldPassword: [
+          function (v) {
+            return /^.+$/.test(v) || `旧密码不能为空`;
+          },
+        ],
+        user_newPassword: [
+          function (v) {
+            return /^.{6,}$/.test(v) || `新密码长度至少为6位`;
+          },
+        ],
+        user_confirmNewPassword: [
+          function (v) {
+            return /^.{6,}$/.test(v) || `确认密码长度至少为6位`;
+          },
+        ],
+      },
     };
   },
   created() {
@@ -102,6 +119,11 @@ export default {
   },
   methods: {
     getIdenticon,
+    valid() {
+      return /^.+$/.test(this.oldPassword)
+          && /^.{6,}$/.test(this.newPassword)
+          && /^.{6,}$/.test(this.confirmNewPassword)
+    },
     showProfile() {
       // 调用后端接口获取用户信息
       axios.post("/api/showProfile", {userId: this.user.id})
@@ -180,14 +202,14 @@ export default {
     },
     // 修改密码
     async changePassword() {
-      if (this.oldPassword === "") {
+      if (!util.trim(this.oldPassword)) {
         this.$message({
           type: 'error',
           message: "原密码不能为空"
         });
         return;
       }
-      if (this.newPassword === "") {
+      if (!util.trim(this.newPassword)) {
         this.$message({
           type: 'error',
           message: "新密码不能为空"
@@ -232,10 +254,16 @@ export default {
           })
     },
     openChangePasswordDialog() {
+      this.oldPassword = ''
+      this.newPassword = ''
+      this.confirmNewPassword = ''
       this.showChangePassword = true;
     },
     closeChangePasswordDialog() {
       this.showChangePassword = false;
+      this.oldPassword = ''
+      this.newPassword = ''
+      this.confirmNewPassword = ''
     }
   },
 };
