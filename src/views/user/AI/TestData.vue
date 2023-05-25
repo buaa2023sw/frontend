@@ -108,7 +108,7 @@ export default {
     // 生成测试数据
     startTestData() {
       console.log(this.code)
-      axios.post("/api/ai/CodeReview", {code: this.code}) // TODO
+      axios.post("/api/ai/UnitTest", {code: this.code}) // TODO
           .then((response) => {
             console.log(response)
             if (response.data.errcode === 1) {
