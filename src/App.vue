@@ -661,6 +661,9 @@ export default {
     existUser() {
       console.log("111111")
       console.log(Cookies.get("user"))
+      if (Cookies.get("user") === undefined) {
+        return false;
+      }
       let tmp = JSON.parse(Cookies.get("user"))
       return tmp.status === 'A'
     },
