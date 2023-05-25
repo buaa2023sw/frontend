@@ -25,6 +25,9 @@
         <template #item.resetPassword="{item}">
           <v-btn class="ml-1" small outlined @click="openResetPasswordDialog(item)">重置用户密码</v-btn>
         </template>
+        <template #item.registerTime="{item}">
+          {{ pro(item.registerTime) }}
+        </template>
 <!--        <template #item.changeStatus="{item}">-->
 <!--          <v-btn class="ml-1" small outlined @click="openChangeUserStatusDialog(item)">修改用户状态</v-btn>-->
 <!--        </template>-->
@@ -102,6 +105,7 @@
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
+import util from "@/views/util";
 export default {
   inject: {
     user: { default: null }
@@ -193,6 +197,9 @@ export default {
   },
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
+    pro(registerTime) {
+      return util.processTime(registerTime);
+    },
     // 显示用户信息
     showUserMessages() {
       console.log(this.user.id)

@@ -32,6 +32,9 @@
         <template #item.projectDetail="{item}">
           <v-btn class="ml-1" small outlined @click="gotoProjectDetailPage(item)">项目详细信息</v-btn>
         </template>
+        <template #item.createTime="{item}">
+          {{ pro(item.createTime) }}
+        </template>
       </v-data-table>
     </v-card>
     <v-dialog v-model="showChangeProjectAccess" width="300">
@@ -60,6 +63,7 @@
 
 <script>
 import axios from "axios";
+import util from "@/views/util";
 
 export default {
   inject: {
@@ -146,6 +150,9 @@ export default {
   },
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
+    pro(createTime) {
+      return util.processTime(createTime);
+    },
     // 显示项目信息
     showProjectMessages() {
       console.log(this.user.id)

@@ -7,5 +7,10 @@ export default {
     getFilterArray(array){
         const set = new Set(array);
         return [...set];
-    }
+    },
+    processTime(str){
+        str = str.replace('T', ' ');
+        str = str.substr(0, str.length - 4);
+        return str;
+    },
 }

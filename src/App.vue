@@ -233,13 +233,22 @@
       </v-list-item>
       <v-list-item link :to="'/user/ai/diagnosis'">
         <v-list-item-avatar>
-          <v-icon>mdi-palette-outline</v-icon>
+          <v-icon>mdi-atom-variant</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>代码诊断</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+        <v-list-item link :to="'/user/ai/testdata'">
+          <v-list-item-avatar>
+            <v-icon>mdi-palette-outline</v-icon>
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title>生成测试数据</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       <v-subheader>沟通</v-subheader>
           <v-dialog
           width="1300"

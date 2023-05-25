@@ -14,13 +14,18 @@
           :headers="headers"
           :items="loginMessages"
           :search="search"
-      ></v-data-table>
+      >
+        <template #item.loginTime="{item}">
+          {{ pro(item.loginTime) }}
+        </template>
+      </v-data-table>
     </v-card>
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import util from "@/views/util";
 export default {
   inject: {
     user: { default: null }
@@ -38,7 +43,7 @@ export default {
           value: 'name',
         },
         { text: '邮箱', value: 'email' },
-        { text: '登录时间', value: 'loginTime' },
+        { text: '最近一次登录时间', value: 'loginTime' },
       ],
       loginMessages: [
         // {
@@ -74,6 +79,9 @@ export default {
   },
   // TODO：传给后端管理员id，如果报错，不显示信息而显示弹窗
   methods: {
+    pro(loginTime) {
+      return util.processTime(loginTime);
+    },
     showLoginMessages() {
       axios.post("/api/management/showUsersLogin", {managerId: this.user.id})
           .then((response) => {
