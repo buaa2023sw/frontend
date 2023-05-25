@@ -1,13 +1,17 @@
 <template>
   <v-container fluid>
-    <v-row align="center" justify="center" class="blue lighten-5" style="min-height: calc(100vh - 64px);">
-      <v-col cols="6">
-        <iframe src="../../login.html" ref="iframe" width="100%" height="500px" scrolling="no" frameborder="null"></iframe>
-      </v-col>
-      <v-col cols="6">
-        <v-card class="elevation-12" style="max-width: 500px;">
-          <v-card-text class="mt-4 mb-4">
-            <v-form v-if="!flag" @submit.prevent="register" >
+    <v-row align="center" justify="center" class="lighten-5 login-background"
+           :style="'min-height: calc(100vh - 64px); background-image: url(' + bingPicOfTheDayUrl + ');'">
+      <v-col cols="12">
+        <v-container fluid class="no-blur" >
+          <v-row>
+            <v-col cols="6">
+              <iframe src="../../login.html" ref="iframe" width="100%" height="500px" scrolling="no" frameborder="null"></iframe>
+            </v-col>
+            <v-col cols="6">
+              <v-card class="elevation-12" style="max-width: 500px;">
+                <v-card-text class="mt-4 mb-4">
+                  <v-form v-if="!flag" @submit.prevent="register" >
               <v-row>
                 <v-col cols="12" class="mb-3">
                   <v-text-field label="用户名" v-model="registerData.username" :rules="registerData.registerRules.user_name" outlined dense></v-text-field>
@@ -31,27 +35,30 @@
               </v-row>
             </v-form>
             <v-form v-if= "flag" @submit.prevent="login">
-              <v-row>
-                <v-col cols="12" class="mb-3">
-                  <v-text-field label="用户名或邮箱" v-model="loginData.userNameOrEmail" outlined dense></v-text-field>
-                </v-col>
-                <v-col cols="12" class="mb-3">
-                  <v-text-field label="密码" v-model="loginData.password" outlined dense type="password"></v-text-field>
-                </v-col>
-                <v-col cols="12" class="mb-3">
-                  <v-checkbox label="不以加密形式传输密码（适用于前后端测试）" v-model="loginData.noEncrypt" hide-details></v-checkbox>
-                </v-col>
-                <v-col cols="12" class="mb-3">
-                  <v-btn color="blue darken-2" class="white--text" :disabled="!loginValid()" block @click="login">登录</v-btn>
-                </v-col>
-                <v-col cols="12" class="text-center">
-                  <span class="caption grey--text text--darken-1">没有账号？</span>
-                  <v-btn color="transparent" class="grey--text text--darken-1" text @click="gotoRegister">前往注册</v-btn>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-card-text>
-        </v-card>
+                    <v-row>
+                      <v-col cols="12" class="mb-3">
+                        <v-text-field label="用户名或邮箱" v-model="loginData.userNameOrEmail" outlined dense></v-text-field>
+                      </v-col>
+                      <v-col cols="12" class="mb-3">
+                        <v-text-field label="密码" v-model="loginData.password" outlined dense type="password"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" class="mb-3">
+                        <v-checkbox label="不以加密形式传输密码（适用于前后端测试）" v-model="loginData.noEncrypt" hide-details></v-checkbox>
+                      </v-col>
+                      <v-col cols="12" class="mb-3">
+                        <v-btn color="blue darken-2" class="white--text" :disabled="!loginValid()" block @click="login">登录</v-btn>
+                      </v-col>
+                      <v-col cols="12" class="text-center">
+                        <span class="caption grey--text text--darken-1">没有账号？</span>
+                        <v-btn color="transparent" class="grey--text text--darken-1" text @click="gotoRegister">前往注册</v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-col>
     </v-row>
   </v-container>
@@ -116,7 +123,8 @@ export default {
             },
           ],
         },
-      }
+      },
+      bingPicOfTheDayUrl: ''
     }
   },
   methods: {
@@ -262,10 +270,41 @@ export default {
             window.alert('发生未知错误，无法注册，请联系管理员')
           })
     }
+  },
+  created() {
+    axios.get('/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN')
+        .then((response) => {
+          console.log(response.data.images[0].url)
+          this.bingPicOfTheDayUrl = 'https://cn.bing.com' + response.data.images[0].url
+        })
+        .catch((err) => {
+          console.error(err);
+        })
   }
 }
 </script>
 
 <style scoped>
+.login-background {
+  //background-image: url('https://cn.bing.com//th?id=OHR.SaksunFaroe_ZH-CN7150180007_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
+}
+
+.login-background::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background: linear-gradient(rgba(70, 118, 184, 60%), rgba(128, 128, 128, .5));
+  background-size: cover;
+}
+
+.no-blur {
+  backdrop-filter: blur(5px);
+}
 </style>
