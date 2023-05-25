@@ -263,7 +263,14 @@ export default {
             }));
             this.messageInput = ''
         }
-    }
+    },
+    beforeRouteLeave(to, from, next) {
+      console.log('leaving chat room, closing all ws')
+      this.chatRooms.forEach((item, index) => {
+        item.ws.close()
+      })
+      next()
+    },
 }
 </script>
 
