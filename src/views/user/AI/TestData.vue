@@ -4,7 +4,7 @@
       <v-col cols="6">
         <v-container>
           <v-card class="fill-height">
-            <v-card-title class="white">请输入待诊断的代码</v-card-title>
+            <v-card-title class="white">请输入需要生成测试数据的代码</v-card-title>
             <v-divider></v-divider>
             <v-card-text class="d-flex flex-column" style="width: 100%; height: 100%">
               <!--<div ref="myChart" style="height: 300px"></div>-->
@@ -32,7 +32,7 @@
       <v-col cols="6">
         <v-container>
           <v-card class="fill-height">
-            <v-card-title class="white">代码诊断结果</v-card-title>
+            <v-card-title class="white">生成的测试数据</v-card-title>
             <v-divider></v-divider>
             <v-card-text class="d-flex flex-column" style="width: 100%; height: 100%">
 <!--              &lt;!&ndash;<div ref="myChart" style="height: 300px"></div>&ndash;&gt;-->
@@ -92,30 +92,21 @@
 
 <script>
 import axios from "axios";
-import Cookies from 'js-cookie'
 
 export default {
-  name: "Diagnosis",
+  name: "TestData",
   data () {
     return {
       code: '',
-      result: "暂无诊断结果。请在左侧输入代码并点击确认，以获取诊断结果。",
+      result: "暂无测试数据。请在左侧输入代码并点击确认，以获取测试数据。",
     }
   },
   methods: {
     valid() {
       return this.code !== ''
     },
-    getFromCookie() {
-      if (Cookies.get('diag') !== undefined) {
-        this.code = Cookies.get('diag')
-        Cookies.remove('diag')
-      } else {
-        this.code = ''
-      }
-    },
-    // 代码诊断
-    startDiagnosis() {
+    // 生成测试数据
+    startTestData() {
       console.log(this.code)
       axios.post("/api/ai/CodeReview", {code: this.code})
           .then((response) => {
@@ -134,9 +125,6 @@ export default {
             this.result = null
           })
     },
-  },
-  created() {
-    this.getFromCookie()
   },
 }
 </script>

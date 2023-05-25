@@ -11,7 +11,7 @@
       <v-icon v-if="user" style="right: 0%" @click="checkClock">mdi-clock-outline</v-icon>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn link to="/allProject/" v-if="existUser()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
+          <v-btn link to="/allProject/" v-if="existUser()" icon color="white" v-bind="attrs" v-on="on">
             <v-icon>mdi-home</v-icon>
           </v-btn>
         </template>
@@ -684,6 +684,7 @@ export default {
     logoff() {
       Cookies.remove("user");
       Cookies.remove("manager");
+      Cookies.remove("proj");
       window.location.href = "/login";
     },
     handleClose(done) {
