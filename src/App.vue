@@ -411,9 +411,7 @@ let user = Cookies.get("user");
 console.log(user);
 if (user === undefined) { // 用户未登录
   console.log("not logged in");
-  if (window.location.pathname === "/register") {
-
-  } else if (window.location.pathname !== "/login") {
+  if (window.location.pathname !== "/login") {
     window.location.href = '/login'
   }
 } else { // 用户已登录
@@ -490,6 +488,7 @@ export default {
   },
   data: () => {
     return {
+      // from: -1, // -1普通用户，0从用户页面跳转，1从项目页面跳转，存入Cookie
       topic: "https://fastly.picsum.photos/id/53/1280/1280.jpg?hmac=QP5opo-oENp5iFwsSiWH8azQuR0w0bwps6MT6yvhKwA",
       labelPosition: "left",
       drawer: true,
@@ -532,16 +531,24 @@ export default {
     return {
       user: computed(() => this.user),
       proj: computed(() => this.proj),
+      //from: computed(() => this.from),
       selectedProj: computed(() => this.proj),
       changeSelectedProj: this.changeSelectedProj,
       updateUserProj: this.updateUserProj,
       updateUser: this.updateUser,
-      updateTopic: this.updateTopic
+      updateTopic: this.updateTopic,
+      getProj: this.getProj,
+      //setFrom: this.setFrom,
       // reload:this.reload
     };
   },
   methods: {
     getIdenticon,
+    // setFrom(from) {
+    //   console.log("setFrom")
+    //   this.from = from
+    //   console.log(this.from)
+    // },
     updateTopic() {
       if (this.user.topic === 'A') { // 红色
         this.topic = "https://fastly.picsum.photos/id/859/1919/1919.jpg?hmac=24AoHo7Jc5TRRRaJfWO0B4z2wW5Jl14r56rVKeMfpZI"
@@ -673,6 +680,8 @@ export default {
       //window.location.href = '/allProject'
     //},
     gotoManagerPage() {
+      console.log("122343243242432525")
+      console.log(Cookies.get("from"))
       Cookies.set("user", Cookies.get("manager"))
       Cookies.remove("manager");
       Cookies.remove("proj");
@@ -680,7 +689,15 @@ export default {
       console.log(Cookies.get("user"))
       console.log("manager")
       console.log(Cookies.get("manager"))
-      window.location.href = '/manager/userMessages'
+      let from = Cookies.get("from")
+      if (from === "0") {
+        Cookies.remove("from");
+        window.location.href = '/manager/userMessages'
+      }
+      if (from === "1") {
+        Cookies.remove("from");
+        window.location.href = '/manager/projectMessages'
+      }
     },
     showLabel() {
       if (this.user === null || this.user === undefined || this.user.status === 'C') {
@@ -720,6 +737,7 @@ export default {
       Cookies.remove("user");
       Cookies.remove("manager");
       Cookies.remove("proj");
+      Cookies.remove("from")
       window.location.href = "/login";
     },
     handleClose(done) {
