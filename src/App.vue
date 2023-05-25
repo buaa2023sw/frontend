@@ -540,14 +540,14 @@ export default {
   },
   methods: {
     getIdenticon,
-    updateTopic(selectedTopic) {
-      if (selectedTopic === 'A') { // 红色
+    updateTopic() {
+      if (this.user.topic === 'A') { // 红色
         this.topic = "https://fastly.picsum.photos/id/859/1919/1919.jpg?hmac=24AoHo7Jc5TRRRaJfWO0B4z2wW5Jl14r56rVKeMfpZI"
-      } else if (selectedTopic === 'B') { // 橙色
+      } else if (this.user.topic === 'B') { // 橙色
         this.topic = "https://fastly.picsum.photos/id/360/1925/1280.jpg?hmac=vX9T-qgnqfOUqLnxlsxCZfkKn_wi-9vtPKdbq7H6EgU"
-      } else if (selectedTopic === 'C') { // 绿色
+      } else if (this.user.topic === 'C') { // 绿色
         this.topic = "https://fastly.picsum.photos/id/509/4608/3456.jpg?hmac=ZvNo59d3NP2XjQE75AaROWBTpW2BAzZgWb0-Jso0l9Y"
-      } else if (selectedTopic === 'D') { // 蓝色
+      } else if (this.user.topic === 'D') { // 蓝色
         this.topic = "https://fastly.picsum.photos/id/53/1280/1280.jpg?hmac=QP5opo-oENp5iFwsSiWH8azQuR0w0bwps6MT6yvhKwA"
       } else { // 紫色
         this.topic = "https://fastly.picsum.photos/id/723/5000/3333.jpg?hmac=Lq_OA9h0W8RDhE3xt44qzGv5PtQVLSnVCjoizkIiQNs"

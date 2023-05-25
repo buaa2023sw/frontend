@@ -40,15 +40,19 @@
 </template>
 
 <script>
+import axios from "axios";
+import Cookies from "js-cookie";
+
 export default {
   name: "topic",
   inject: {
     user: { default: null },
+    updateUser: {default: null},
     updateTopic: {default: null},
   },
   data () {
     return {
-      selectedTopic: 'D',
+      selectedTopic: this.user.topic,
       topicList: [
         {
           label: '红色系',
@@ -80,8 +84,32 @@ export default {
   },
   methods: {
     save() {
-      this.updateTopic(this.selectedTopic)
-    }
+      axios.post("/api/saveTopic", {userId: this.user.id, topic: this.selectedTopic})
+          .then((response) => {
+            console.log(response)
+
+          })
+          .catch((err) => {
+            console.error(err);
+            if (response.data.errcode === 0) {
+              this.$message({
+                type: 'success',
+                message: "主题保存成功"
+              });
+              console.log(response.data.data)
+              Cookies.set('user', JSON.stringify(response.data.data))
+              this.updateUser()
+              this.updateTopic()
+              console.log(Cookies.get('user'))
+              console.log(this.user)
+            } else {
+              this.$message({
+                type: 'error',
+                message: "主题保存失败"
+              });
+            }
+          })
+    },
   },
 }
 </script>
