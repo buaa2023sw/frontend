@@ -108,7 +108,8 @@ import Cookies from "js-cookie";
 import util from "@/views/util";
 export default {
   inject: {
-    user: { default: null }
+    user: { default: null },
+    //setFrom: { default: null}
   },
   data () {
     return {
@@ -362,6 +363,7 @@ export default {
                 type: 'success',
                 message: "跳转成功"
               });
+              Cookies.set("from", 0)
               window.location.href = '/allProject'
             }
           })

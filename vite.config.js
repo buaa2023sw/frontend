@@ -29,6 +29,11 @@ export default defineConfig({
         // target: 'http://127.0.0.1:8000/',
         changeOrigin: true,
         rewrite: path => path
+      },
+      '/HPImageArchive.aspx': {
+        target: 'https://cn.bing.com/',
+        changeOrigin: true,
+        rewrite: path => path
       }
     }
   }, 

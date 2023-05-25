@@ -30,8 +30,18 @@
 <!--          <v-btn class="ml-1" small outlined @click="openChangeProjectAccessDialog(item)">修改项目状态</v-btn>-->
 <!--        </template>-->
         <template #item.projectDetail="{item}">
-          <v-btn class="ml-1" small outlined @click="gotoProjectDetailPage(item)">项目详细信息</v-btn>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon color="blue" v-bind="attrs" v-on="on" @click="gotoProjectDetailPage(item)">
+                <v-icon>mdi-link-variant</v-icon>
+              </v-btn>
+            </template>
+            <span>以项目负责人身份进入用户端的项目界面</span>
+          </v-tooltip>
         </template>
+<!--        <template #item.projectDetail="{item}">-->
+<!--          <v-btn class="ml-1" small outlined @click="gotoProjectDetailPage(item)">项目详细信息</v-btn>-->
+<!--        </template>-->
         <template #item.createTime="{item}">
           {{ pro(item.createTime) }}
         </template>
@@ -64,10 +74,13 @@
 <script>
 import axios from "axios";
 import util from "@/views/util";
+import Cookies from "js-cookie";
 
 export default {
   inject: {
-    user: { default: null }
+    user: { default: null },
+    getProj: { default: null },
+    //setFrom: { default: null }
   },
   data () {
     return {
@@ -236,7 +249,58 @@ export default {
     },
     // 跳转到项目详情页面
     gotoProjectDetailPage(item) {
-
+      console.log("232534")
+      Cookies.set('manager', Cookies.get('user'))
+      console.log(Cookies.get('manager'))
+      console.log(item.projectId)
+      console.log(item.leaderId)
+      axios.post("/api/getUserInfo", {
+        managerId: this.user.id,
+        userId: item.leaderId,
+      })
+          .then((response) => {
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "用户不存在"
+              });
+            } else {
+              Cookies.set('user', JSON.stringify(response.data.data))
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          })
+      axios.post("/api/plan/ProjectInfo", {
+        projectId: item.projectId,
+      })
+          .then((response) => {
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "项目不存在"
+              });
+            } else if (response.data.errcode === 3) {
+              this.$message({
+                type: 'error',
+                message: "您不具有该权限"
+              });
+            } else {
+              console.log(response.data.data)
+              this.$message({
+                type: 'success',
+                message: "跳转成功"
+              });
+              Cookies.set("from", 1)
+              this.getProj(response.data.data)
+              // window.location.href = '/allProject'
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          })
     },
     getColor(access) {
       if (access === "A") {
