@@ -90,16 +90,25 @@
 
 <script>
 import axios from "axios";
+import Cookies from 'js-cookie'
 
 export default {
   name: "Diagnosis",
   data () {
     return {
-      code: "saffafafasf",
+      code: "",
       result: null,
     }
   },
   methods: {
+    getFromCookie() {
+      if (Cookies.get('diag') !== undefined) {
+        this.code = Cookies.get('diag')
+        Cookies.remove('diag')
+      } else {
+        this.code = ''
+      }
+    },
     // 代码诊断
     startDiagnosis() {
       console.log(this.code)
@@ -112,7 +121,7 @@ export default {
                 message: "未知错误"
               });
             } else {
-              this.result = response.data
+              this.result = response.data.data
             }
           })
           .catch((err) => {
@@ -120,6 +129,9 @@ export default {
             this.result = null
           })
     },
+  },
+  created() {
+    this.getFromCookie()
   },
 }
 </script>

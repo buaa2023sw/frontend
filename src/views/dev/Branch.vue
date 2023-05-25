@@ -11,7 +11,7 @@
           <v-col cols="12">
             <v-tabs v-model="tabs">
               <v-tab>提交记录&统计</v-tab>
-              <v-tab>查看仓库文件</v-tab>
+              <v-tab :disabled="!graphReady">查看仓库文件</v-tab>
             </v-tabs>
           </v-col>
         </v-row>
@@ -59,7 +59,7 @@
                         <v-container fluid>
                           <v-row>
                             <v-col cols="8">
-                              <div ref="user_specific_pie_chart" style="height: 20em" class="lime"></div>
+                              <div ref="user_specific_pie_chart" style="height: 20em" class="indigo lighten-4"></div>
                             </v-col>
                             <v-col cols="4">
                               <v-list dense max-height="20em" class="overflow-y-auto">
@@ -149,7 +149,8 @@ export default {
                 label: [],
                 data: []
             },
-            perUser: []
+            perUser: [],
+            graphReady: false
         }
     },
     provide() {
@@ -222,6 +223,7 @@ export default {
                 this.prep_data_in_time_scope()
                 this.prep_data_in_user_scope()
                 this.draw_pie_chart()
+                this.graphReady = true
             } else {
                 alert('/api/develop/getCommitHistory error with not 0 err code (' + res.data.errcode + ') ' + res.data.message)
             }
