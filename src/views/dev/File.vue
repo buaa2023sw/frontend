@@ -96,6 +96,14 @@ export default {
           window.open('/user/ai/diagnosis', '_blank')
         },
         diagWholeFile() {
+          //如果文件长度大于Cookie最长长度，就不诊断了
+          if (this.fileContent.length > 4096) {
+            this.$message({
+              type: 'error',
+              message: '文件太长了，AI会罢工的！'
+            })
+            return
+          }
           Cookies.set('diag', this.fileContent)
           window.open('/user/ai/diagnosis', '_blank')
         },
