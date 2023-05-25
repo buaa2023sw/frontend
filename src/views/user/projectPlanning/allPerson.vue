@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import { showPersonList, removeMember, modifyRole, addMember } from '@/api/user'
+import { showPersonList, removeMember, showContribute, modifyRole, addMember } from '@/api/user'
 import project_messagesVue from '@/views/manager/project_messages.vue'
 import getIdenticon from "@/utils/identicon";
 export default {
@@ -222,7 +222,29 @@ export default {
   methods: {
     getIdenticon,
     gotoWork() {
-      this.$router.push({path:'/workDetail'});
+      showContribute({projectId: this.selectedProj.projectId, userId: this.user.id}).then(
+        res => {
+          let errcode = res['data']['errcode'];
+          if (errcode === 1) {
+            this.$message({
+              type: 'error', 
+              message: "您没有权限查看！"
+            })
+          } else {
+            let dict = res['data']['data'];
+            let nameList = [];
+            let valueList = [];
+            for (let key in dict) {
+              nameList.push(key);
+              valueList.push(dict[key]);
+            }
+            this.$router.push({path:'/workDetail'
+              , query: {
+              nameList: nameList, valueList: valueList
+          }});
+          }
+        }
+      )
     },
     getPersonList() {
       showPersonList({projectId: this.selectedProj.projectId, userId: this.user.id}).then(

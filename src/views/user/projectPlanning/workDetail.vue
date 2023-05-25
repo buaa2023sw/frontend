@@ -21,9 +21,6 @@ export default {
     mounted() {
         this.drawP();
     },
-    data() {
-        
-    },
     methods: {
         back() {
             this.$router.go(-1);
@@ -34,8 +31,8 @@ export default {
                 chart1.resize();
             });
 
-            let personName = ['szx', 'zhy'];
-            let personWorkloads = [123, 234];
+            let personName = this.$route.query.nameList;
+            let personWorkloads = this.$route.query.valueList;
     //   let projectItem = this.$route.query.projectItem; //每个任务的名称
     //   let projectItemStart = this.$route.query.projectItemStart;//每个任务的启动时间
     //   let projectItemEnd = this.$route.query.projectItemEnd; //每个任务的结束时间

@@ -80,9 +80,9 @@
                   <h4 style="position:relative;left:3%;">{{task.taskName }}</h4>
                    <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
                    >mdi-pencil</v-icon>
-                   <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
+                   <v-icon size="small" @click="upTask(task)" style="position:relative;left:3%;"
                    >mdi-arrow-up-thin</v-icon>
-                   <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
+                   <v-icon size="small" @click="downTask(task)" style="position:relative;left:3%;"
                    >mdi-arrow-down-thin</v-icon>
                 <v-switch
                 style="position: absolute;right: 1%;"
@@ -163,7 +163,8 @@
       >
       mdi-bullseye-arrow
       </v-icon>
-      <span>{{  item.subTaskName }}</span>
+      <a v-bind:href="''+item.intro" v-if="item.intro !== ''">{{ item.subTaskName }}</a> 
+      <span v-else>{{  item.subTaskName }}</span>
   </template>
   <template v-slot:[`item.action`]="{item, index}">
     <v-menu offset-y>
@@ -625,7 +626,7 @@
   </template>
 
 <script>
-import {showTaskList, addTask, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask, removeTask, showPersonList} from '@/api/user.js'
+import {showTaskList,changeOrder, addTask, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask, removeTask, showPersonList} from '@/api/user.js'
 import getIdenticon from "@/utils/identicon";
 
 export default {
@@ -726,58 +727,48 @@ export default {
         { text: '', value: 'action', sortable: false}
       ],
     tasks: [
-      // {
-      //   name: '任务一',
-      //   time: "2022-3-1 to 2022-3-4",
-      //   contribute: "30%",
-      //   status: "进行中",
-      //   sons: [
-      //       {
-      //           name: '子任务一',
-      //           startTime: "2022-3-1",
-      //           endTime: "2022-3-4",
-      //           contribute: "10%",
-      //           status: "进行中",
-      //           man: "罗本"
-      //       },
-      //       {
-      //           name: '子任务二',
-      //           startTime: "2022-3-1",
-      //           endTime: "2022-3-25",
-      //           contribute: "10%",
-      //           status: "进行中",
-      //           man: "里贝里"
-      //       },
-      //   ]
-      // },
-      // {
-      //   name: '任务二',
-      //   time: "2022-4-1 to 2022-4-4",
-      //   contribute: "30%",
-      //   status: "进行中",
-      //   sons: [
-      //   {
-      //           name: '子任务一',
-      //           startTime: "2022-3-1",
-      //           endTime: "2022-3-4",
-      //           contribute: "10%",
-      //           status: "进行中",
-      //           man: "罗本"
-      //       },
-      //       {
-      //           name: '子任务二',
-      //           startTime: "2022-3-5",
-      //           endTime: "2022-3-8",
-      //           contribute: "10%",
-      //           status: "进行中",
-      //           man: "里贝里"
-      //       },
-      //   ]
-      // },
     ]
   }),
   methods: {
     getIdenticon,
+    upTask(item) {
+      let up = item.taskId, down = "";
+      for (let i=0;i < this.tasks.length;i++) {
+        if (this.tasks[i].taskId === item.taskId) {
+          if (i === 0) {
+            down = 0;
+          } else {
+            down = this.tasks[i-1].taskId;
+          }
+          break;
+        }
+      }
+      changeOrder({userId: this.user.userId, projectId: this.selectedProj.projectId, task1Id: up, task2Id: down}).then(
+        res => {
+          console.log(res);
+          this.getTaskList();
+        }
+      )
+    },
+    downTask(item) {
+      let up = item.taskId, down = "";
+      for (let i=0;i < this.tasks.length;i++) {
+        if (this.tasks[i].taskId === item.taskId) {
+          if (i === this.tasks[i].length) {
+            down = 0;
+          } else {
+            down = this.tasks[i+1].taskId;
+          }
+          break;
+        }
+      }
+      changeOrder({userId: this.user.userId, projectId: this.selectedProj.projectId, task1Id: up, task2Id: down}).then(
+        res => {
+          console.log(res);
+          this.getTaskList();
+        }
+      )
+    },
     mouseenter(task) {
       console.log("mouseenter");
       console.log(task.taskId);
@@ -849,7 +840,7 @@ export default {
       this.newFatherForm.name = '';
     },
     submit() {
-        completeTask({taskId: item.subTaskId, userId: this.user.id, url: this.completeForm.url}).then(
+        completeTask({taskId: this.item.subTaskId, userId: this.user.id, intro: this.completeForm.url}).then(
           res => {
             this.$message({
             type: 'success',
@@ -857,6 +848,7 @@ export default {
           });
             this.getTaskList();
             console.log(res);
+            this.dialog4 = false;
           }
       );
     },
@@ -1103,6 +1095,7 @@ export default {
         } else if (action === "编辑任务") {
           this.handleEdit(item, task);
         } else if (action === "完成任务") {
+          this.item = item;
           this.handleComplete();
         }
     },

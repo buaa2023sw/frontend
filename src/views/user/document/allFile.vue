@@ -188,7 +188,9 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-          <v-checkbox
+            <span v-if="user.id === people.peopleId"></span>
+          <v-checkbox 
+                  v-else
                   :input-value="active"
                   color="deep-purple accent-4"
                 ></v-checkbox>
@@ -247,7 +249,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-          <v-checkbox
+          <v-checkbox 
                   :input-value="active"
                   color="deep-purple accent-4"
                 ></v-checkbox>
@@ -370,7 +372,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-          <span></span>1
+          <span></span>
           <v-checkbox
                   :input-value="active"
                   color="deep-purple accent-4"
@@ -460,8 +462,8 @@
       </v-dialog>
 
       <v-dialog v-model="dialog3">
-        <v-md-editor v-model="textList[docId]" height="400px" left-toolbar="undo redo | image"
-        :disabled-menus="[]" @upload-image="handleUploadImage"></v-md-editor>
+        <v-md-editor v-model="textList[doc.id]" height="400px" left-toolbar="undo redo | image"
+        :disabled-menus="[]" @upload-image="handleUploadImage" @save="save()" @blur="blur()"></v-md-editor>
       </v-dialog>
       </v-card>
 </template>
@@ -477,7 +479,8 @@ import getIdenticon from "@/utils/identicon";
          },
     data() {
       return {
-      docId: '',
+      isCollect: false,  
+      doc: '',
       textList: {},
       expanded: [],
       addGroup: [1],
@@ -623,6 +626,8 @@ import getIdenticon from "@/utils/identicon";
         res => {
           console.log(res);
           this.allPeople = res['data']['data'];
+          console.log("allPeople");
+          console.log(this.allPeople);
         }
       );
       userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
@@ -635,14 +640,19 @@ import getIdenticon from "@/utils/identicon";
     },
     methods:{
       getIdenticon,
+      blur() {
+        console.log("123");
+      },
       edit() {
         let arr = [];
         for (let i=0;i < this.peopleCanWrite.length;i++) {
           arr.push(this.peopleCanWrite[i].peopleId);
         }
+        console.log("edit");
+        console.log(arr);
         userEditDoc({userId: this.user.id, projectId:this.selectedProj.projectId, 
-        name: this.editDocumentForm.name, outline: "", content: this.textList[this.editDocumentForm.id], 
-      accessUserId: arr, docId: this.editDocumentForm.id}).then(
+        name: this.editDocumentForm.name, outline: "", content: this.textList[this.editDocumentForm.id],
+        docId: this.editDocumentForm.id, accessUserId: arr}).then(
         res => {
           console.log("userEditDoc");
           console.log(res);
@@ -652,15 +662,15 @@ import getIdenticon from "@/utils/identicon";
       },
       openMd(item) {
         this.dialog3 = true;
-        this.docId = item.id;
-        if (this.textList[item.id] === null) {
-          this.textList[item.id] = '';
-        }
+        this.doc = item;
+        this.getDocumentData();
       },
       gotoCollect() {
+        this.isCollect = true;
         this.getCollectList();
       },
       gotoAll() {
+        this.isCollect = false;
         this.getDocumentData();
       },
       checkNameIntro() {
@@ -777,36 +787,26 @@ import getIdenticon from "@/utils/identicon";
           )
         },
         addCollect(item) {
-          this.isCollectArr[item.id] = !this.isCollectArr[item.id];
-          console.log(this.isColectArr);
+          console.log("123");
           addDocToCollect({userId: this.user.id, projectId: this.selectedProj.projectId, docId: item.id}).then(
             res => {
               console.log("addDocToCollect");
               console.log(res);
+              this.getDocumentData();
             }
           )
-          userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
-            res => {
-              console.log("userCollectDocList");
-              console.log(res);
-              this.collectDocList = res['data']['data'];
-            }
-         )
         },
         cancelCollect(item) {
-          this.isCollectArr[item.id] = !this.isCollectArr[item.id];
           delDocFromCollect({userId: this.user.id, projectId: this.selectedProj.projectId, docId: item.id}).then(
             res => {
               console.log(res);
+              if (this.isCollect) {
+                this.getCollectList();
+              } else {
+              this.getDocumentData();
+              }
             }
           )
-          userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
-            res => {
-              console.log("userCollectDocList");
-              console.log(res);
-              this.collectDocList = res['data']['data'];
-            }
-         )
         },
       addPerson() {
         console.log(this.addGroup);
@@ -828,6 +828,9 @@ import getIdenticon from "@/utils/identicon";
             console.log(res);
             this.documentData = res['data']['data'];
             console.log(this.documentData);
+            for (let i=0;i < this.documentData.length;i++) {
+              this.textList[this.documentData[i].id] = this.documentData[i].content;
+            }
           }
         )
       },
@@ -839,6 +842,20 @@ import getIdenticon from "@/utils/identicon";
         this.dialog3 = false;
         this.editDialog1 = true;
         this.item = item;
+      },
+      save() {
+        let accessUserId = [];
+        for (let key in this.doc.accessUser) {
+          accessUserId.push(key);
+        }
+        userEditDoc({userId: this.user.id, projectId: this.selectedProj.projectId,
+           name: this.doc.name, outline: "", content: this.textList[this.doc.id], accessUserId: accessUserId}).then(
+            res => {
+              console.log("userEditDoc");
+              console.log(res);
+              this.getDocumentData();
+            }
+           )
       },
       handleDelete(row) {
             userDelDoc({userId: this.user.id, projectId: this.selectedProj.projectId, docId: row.id}).then(
@@ -914,6 +931,11 @@ import getIdenticon from "@/utils/identicon";
 },
   handleEditorImgDel(){
     console.log('handleEditorImgDel');    //我这里没做什么操作，后续我要写上接口，从七牛云CDN删除相应的图片
+  }
+},
+watch: {
+  dialog3() {
+    
   }
 }
   }

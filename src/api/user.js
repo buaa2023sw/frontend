@@ -69,6 +69,10 @@ export const addMember = (data) => {
   return request.post("/api/plan/addMember", data);
 }
 
+export const showContribute = (data) => {
+  return request.post("/api/plan/showContribute", data);
+}
+
 //任务管理页面
 export const showTaskList = (data) => {
   return request.post("/api/plan/showTaskList", data);
@@ -89,6 +93,10 @@ export const notice = (data) => {
 
 export const addSubTask = (data) => {
   return request.post("/api/plan/addSubTask", data);
+}
+
+export const changeOrder = (data) => {
+  return request.post("/api/plan/changeOrder", data);
 }
 
 export const modifyTaskContent = (data) => {
