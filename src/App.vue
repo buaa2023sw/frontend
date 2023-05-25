@@ -1,7 +1,7 @@
 <template>
   <v-app id="main_page">
-    <v-app-bar app clipped-left ref="appBar" color="blue" dark extension-height="36" :absolute="true"
-      :src=this.topic>
+    <v-app-bar app clipped-left ref="appBar" color="white" dark extension-height="36" :absolute="true"
+      :src=topic>
       <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -454,6 +454,7 @@ export default {
       this.scrollUp = this.isScrollTop()
     })
     this.updateUserProj();
+    this.updateTopic();
   },
   // beforeUpdate() {
   //   this.getTaskList();
@@ -664,7 +665,7 @@ export default {
       window.location.href = '/manager/userMessages'
     },
     showLabel() {
-      if (this.user === undefined || this.user.status === 'C') {
+      if (this.user === null || this.user === undefined || this.user.status === 'C') {
         return false;
       }
       console.log("showLabel");
@@ -672,14 +673,15 @@ export default {
       console.log(this.user);
       console.log(this.$route.path);
 
-      console.log(   this.user !== null && this.proj !== undefined &&
+      console.log(this.user !== null && this.proj !== undefined &&
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
         !window.location.pathname.startsWith("/register"));
 
       return (
-        this.user !== null && this.proj !== undefined &&
+        this.user !== null && this.user !== undefined &&
+        this.proj !== null && this.proj !== undefined &&
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&

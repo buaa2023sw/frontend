@@ -94,11 +94,11 @@ export default {
                 message: "主题保存成功"
               });
               console.log(response.data.data)
-              // Cookies.set('user', JSON.stringify(response.data.data))
-              // this.updateUser()
-              // this.updateTopic()
-              // console.log(Cookies.get('user'))
-              // console.log(this.user)
+              Cookies.set('user', JSON.stringify(response.data.data))
+              this.updateUser()
+              this.updateTopic()
+              console.log(Cookies.get('user'))
+              console.log(this.user)
             } else {
               this.$message({
                 type: 'error',
