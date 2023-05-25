@@ -23,9 +23,9 @@
           </v-chip>
         </template>
 
-        <template #item.progress="{item}">
-          {{ item.progress }} %
-        </template>
+<!--        <template #item.progress="{item}">-->
+<!--          {{ item.progress }} %-->
+<!--        </template>-->
 <!--        <template #item.changeAccess="{item}">-->
 <!--          <v-btn class="ml-1" small outlined @click="openChangeProjectAccessDialog(item)">修改项目状态</v-btn>-->
 <!--        </template>-->
@@ -78,7 +78,7 @@ export default {
         { text: '创建人', value: 'leader' },
         { text: '创建人邮箱', value: 'email' },
         { text: '创建时间', value: 'createTime' },
-        { text: '完成进度', value: 'progress' },
+        // { text: '完成进度', value: 'progress' },
         { text: '状态', value: 'access' },
         {
           text: '',

@@ -41,7 +41,7 @@
                 <v-icon>mdi-link-variant</v-icon>
               </v-btn>
             </template>
-            <span>用户端</span>
+            <span>以该用户视角进入用户端</span>
           </v-tooltip>
         </template>
       </v-data-table>
