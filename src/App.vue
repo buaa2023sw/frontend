@@ -272,7 +272,7 @@
         </template>
         <AllFile @close="closeDocument" @open="openDocument"></AllFile>
           </v-dialog>
-      <v-list-item link :to="'/user/todo'">
+      <v-list-item link :to="'/user/chat'">
         <v-list-item-avatar>
           <v-icon>mdi-account-group-outline</v-icon>
         </v-list-item-avatar>
