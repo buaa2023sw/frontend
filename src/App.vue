@@ -10,7 +10,7 @@
       <v-icon v-if="user" style="right: 0%" @click="checkClock">mdi-clock-outline</v-icon>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-if="existUser()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
+          <v-btn link to="/allProject/" v-if="existUser()" icon color="white" v-bind="attrs" v-on="on" @click="gotoHomePage">
             <v-icon>mdi-home</v-icon>
           </v-btn>
         </template>
@@ -627,9 +627,9 @@ export default {
       let tmp = JSON.parse(Cookies.get("user"))
       return tmp.status === 'A'
     },
-    gotoHomePage() {
-      window.location.href = '/allProject'
-    },
+    //gotoHomePage() {
+      //window.location.href = '/allProject'
+    //},
     gotoManagerPage() {
       Cookies.set("user", Cookies.get("manager"))
       Cookies.remove("manager");
