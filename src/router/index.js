@@ -52,16 +52,19 @@ const router = new VueRouter({
       name: 'home',
       component: () => import('../views/Home.vue'),
       meta: { requireLogin: true }
-    }, {
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/Login.vue'),
       meta: { requireLogin: false }
-    }, {
-      path: '/register',
-      name: 'register',
-      component: () => import('../views/Register.vue')
-    }, {
+    },
+    // {
+    //   path: '/register',
+    //   name: 'register',
+    //   component: () => import('../views/Register.vue')
+    // },
+    {
       path: '/dev',
       name: 'dev',
       component: () => import('../views/Dev.vue')

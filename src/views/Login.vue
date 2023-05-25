@@ -7,23 +7,46 @@
       <v-col cols="6">
         <v-card class="elevation-12" style="max-width: 500px;">
           <v-card-text class="mt-4 mb-4">
-            <v-form @submit.prevent="login">
+            <v-form v-if="!flag" @submit.prevent="register" >
               <v-row>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="用户名或邮箱" v-model="userNameOrEmail" outlined dense></v-text-field>
+                  <v-text-field label="用户名" v-model="registerData.username" :rules="registerData.registerRules.user_name" outlined dense></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-text-field label="密码" v-model="password" outlined dense type="password"></v-text-field>
+                  <v-text-field label="邮箱" v-model="registerData.email" :rules="registerData.registerRules.user_email" outlined dense></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-checkbox label="不以加密形式传输密码（适用于前后端测试）" v-model="noEncrypt" hide-details></v-checkbox>
+                  <v-text-field label="密码" v-model="registerData.password" :rules="registerData.registerRules.user_password" outlined dense type="password"></v-text-field>
                 </v-col>
                 <v-col cols="12" class="mb-3">
-                  <v-btn color="blue darken-2" class="white--text" :disabled="!valid()" block @click="login">登录</v-btn>
+                  <v-text-field label="确认密码" v-model="registerData.confirmPassword" :rules="registerData.registerRules.user_confirmPassword" outlined dense type="password"></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-btn color="blue darken-2" class="white--text" :disabled="!registerValid()" block @click="register">注册账号</v-btn>
+                </v-col>
+                <v-col cols="12" class="text-center">
+                  <span class="caption grey--text text--darken-1">已有账号？</span>
+                  <v-btn color="transparent" class="grey--text text--darken-1" text @click="gotoLogin">前往登录</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+            <v-form v-if= "flag" @submit.prevent="login">
+              <v-row>
+                <v-col cols="12" class="mb-3">
+                  <v-text-field label="用户名或邮箱" v-model="loginData.userNameOrEmail" outlined dense></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-text-field label="密码" v-model="loginData.password" outlined dense type="password"></v-text-field>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-checkbox label="不以加密形式传输密码（适用于前后端测试）" v-model="loginData.noEncrypt" hide-details></v-checkbox>
+                </v-col>
+                <v-col cols="12" class="mb-3">
+                  <v-btn color="blue darken-2" class="white--text" :disabled="!loginValid()" block @click="login">登录</v-btn>
                 </v-col>
                 <v-col cols="12" class="text-center">
                   <span class="caption grey--text text--darken-1">没有账号？</span>
-                  <v-btn color="transparent" class="grey--text text--darken-1" text @click="$router.push('/register')">前往注册</v-btn>
+                  <v-btn color="transparent" class="grey--text text--darken-1" text @click="gotoRegister">前往注册</v-btn>
                 </v-col>
               </v-row>
             </v-form>
@@ -51,26 +74,84 @@ import { sha256 } from 'js-sha256'
 //     window.location.href = '/allProject';
 //   }
 // }
-if (Cookies.get('user') !== undefined) {
-  // alert('您已处于登录状态');
-  window.location.href = '/allProject';
-}
+// if (Cookies.get('user') !== undefined) {
+//   // alert('您已处于登录状态');
+//   window.location.href = '/allProject';
+// }
 
 export default {
   name: "login",
   data() {
     return {
-      userNameOrEmail: '',
-      password: '',
-      noEncrypt: false
+      flag: true,
+      loginData: {
+        userNameOrEmail: '',
+        password: '',
+        noEncrypt: false
+      },
+      registerData: {
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        registerRules: {
+          user_name: [
+            function (v) {
+              return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(v) || `用户名只能包含中文、英文或数字，且不能为空`;
+            },
+          ],
+          user_email: [
+            function (v) {
+              return /[\w]+@[A-Za-z]+(\.[A-Za-z0-9]+){1,2}/.test(v) || `非法的邮箱格式`;
+            },
+          ],
+          user_password: [
+            function (v) {
+              return /^.{6,}$/.test(v) || `密码长度至少为6位`;
+            },
+          ],
+          user_confirmPassword: [
+            function (v) {
+              return /^.{6,}$/.test(v) || `确认密码长度至少为6位`;
+            },
+          ],
+        },
+      }
     }
   },
   methods: {
-    valid() {
-      return this.userNameOrEmail !== '' && this.password !== ''
+    gotoLogin() {
+      this.registerDataClear()
+      this.loginDataClear()
+      this.flag = true
+    },
+    gotoRegister() {
+      this.registerDataClear()
+      this.loginDataClear()
+      this.flag = false
+    },
+    loginValid() {
+      return this.loginData.userNameOrEmail !== '' && this.loginData.password !== ''
+    },
+    registerValid() {
+      return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(this.registerData.username)
+          && /[\w]+@[A-Za-z]+(\.[A-Za-z0-9]+){1,2}/.test(this.registerData.email)
+          && /^.{6,}$/.test(this.registerData.password)
+          && /^.{6,}$/.test(this.registerData.confirmPassword)
+    },
+    loginDataClear() {
+      this.loginData.userNameOrEmail = ''
+      this.loginData.password = ''
+      this.loginData.noEncrypt = false
+    },
+    registerDataClear() {
+      this.registerData.username = ''
+      this.registerData.email = ''
+      this.registerData.password = ''
+      this.registerData.confirmPassword = ''
     },
     async login() {
-      if(!util.trim(this.userNameOrEmail) || !util.trim(this.password)){
+      if(!util.trim(this.loginData.userNameOrEmail) || !util.trim(this.loginData.password)){
         this.$message({
           type: 'error',
           message: "用户名或邮箱、密码不能为空"
@@ -83,10 +164,10 @@ export default {
       //   userNameOrEmail: this.userNameOrEmail,
       //   password: this.password
       // })
-      let secretPassword = this.noEncrypt ? this.password : sha256(this.password)
+      let secretPassword = this.loginData.noEncrypt ? this.loginData.password : sha256(this.loginData.password)
       console.log(secretPassword)
       axios.post("/api/login", {
-        userNameOrEmail: this.userNameOrEmail,
+        userNameOrEmail: this.loginData.userNameOrEmail,
         password: secretPassword
       })
           .then((response) => {
@@ -113,15 +194,72 @@ export default {
                 message: "登录成功"
               });
               console.log(response.data.data)
-              if (response.data.data.status === 'C') {
+              if (response.data.data.status === 'C') { // 管理员
                 window.location.href = '/manager/home'
-              } else {
+              } else { // 用户
                 window.location.href = '/allProject'
               }
+              this.loginDataClear()
+              this.registerDataClear()
             }
           })
           .catch((err) => {
             console.error(err);
+          })
+    },
+    register() {
+      if(!util.trim(this.registerData.username) || !util.trim(this.registerData.email)
+          || !util.trim(this.registerData.password) || !util.trim(this.registerData.confirmPassword)){
+        this.$message({
+          type: 'error',
+          message: "请完整填写所有注册信息"
+        });
+        return;
+      }
+      if (this.registerData.password !== this.registerData.confirmPassword) {
+        this.$message({
+          type: 'error',
+          message: "请保证密码和确认密码的一致性"
+        });
+        return
+      }
+      let secretPassword = sha256(this.registerData.password)
+      console.log(secretPassword)
+      axios.post("/api/register", {
+        username: this.registerData.username,
+        email: this.registerData.email,
+        password: secretPassword
+      })
+          .then((response) => {
+            console.log(response.data)
+            if (response.data.errcode === 1) {
+              this.$message({
+                type: 'error',
+                message: "发生未知错误，无法注册，请联系管理员"
+              });
+            } else if (response.data.errcode === 2) {
+              this.$message({
+                type: 'error',
+                message: "该邮箱已被使用"
+              });
+            } else if (response.data.errcode === 3) {
+              this.$message({
+                type: 'error',
+                message: "该用户名已被使用"
+              });
+            } else {
+              this.$message({
+                type: 'success',
+                message: "注册成功"
+              });
+              this.loginData.userNameOrEmail = this.registerData.username
+              this.registerDataClear()
+              this.flag = true
+            }
+          })
+          .catch((err) => {
+            console.error(err)
+            window.alert('发生未知错误，无法注册，请联系管理员')
           })
     }
   }
