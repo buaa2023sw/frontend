@@ -113,7 +113,12 @@ const router = new VueRouter({
       path: '/user/ai/diagnosis',
       name: 'diagnosis',
       component: () => import('../views/user/AI/Diagnosis.vue')
-    }
+    },
+    {
+      path: '/user/ai/testdata',
+      name: 'testdata',
+      component: () => import('../views/user/AI/TestData.vue')
+    },
   ]
 })
 
