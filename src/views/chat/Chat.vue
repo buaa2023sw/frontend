@@ -98,11 +98,26 @@ export default {
 
               // 关闭多余的ws
               for (const [key, value] of Object.entries(tempWS)) {
-                value.close()
+                if (value !== undefined) {
+                  value.close()
+                }
               }
             })
         },
         createChatRoom() {
+            if (this.createRoomName === '') {
+              this.$message({
+                type: 'warning',
+                message: '请输入聊天室名称'
+              })
+              return
+            } else if (this.createRoomDesc === '') {
+              this.$message({
+                type: 'warning',
+                message: '请输入聊天室简介'
+              })
+              return
+            }
             let users = this.selectedPopulation.map((item, index) => {
               return item.peopleId
             })
@@ -350,7 +365,6 @@ export default {
         </v-col>
 
         <v-col cols="9">
-<!--            <div class="blue"> right </div>-->
             <v-row v-if="chatRooms.length > 0">
                 <v-col cols="12">
                   <v-card>
@@ -361,14 +375,15 @@ export default {
                         ws://104.208.78.33:8000/ws/chat/{{ this.user.id }}/{{ chatRooms[selectedRoom].id }} | {{chatRooms[selectedRoom].desc}}
                       </v-card-subtitle>
                       <v-card-text>
-<!--                        {{chatRooms[selectedRoom]}} <br>-->
 
                         <v-hover v-for="user in chatRooms[selectedRoom].users" :key="user.userId" v-slot="{ hover }">
                           <span>
                             <v-avatar size="50px" class="mx-1">
                               <v-img :alt="user.username" :src="getIdenticon(user.userName, 50, 'user')"></v-img>
                             </v-avatar>
-                            <span v-if="hover" class="px-2 text-h5" style="font-weight: bold">{{ user.userName }}</span>
+                            <Transition>
+                              <p v-if="hover" class="px-2 text-h5 d-inline-block" style="font-weight: bold;">{{ user.userName }}</p>
+                            </Transition>
                           </span>
                         </v-hover>
                         <v-avatar class="mx-1 float-end">
@@ -476,6 +491,23 @@ export default {
 </v-container>
 </template>
 
-<style scoped>
+<style>
+.v-enter-active {
+  animation: slideInLeft-enter 0.3s;
+}
 
+.v-leave-active {
+  animation: slideInLeft-enter 0.3s reverse;
+}
+
+@keyframes slideInLeft-enter {
+  0% {
+    opacity: 0%;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 100%;
+    transform: translateX(0);
+  }
+}
 </style>
