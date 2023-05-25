@@ -417,23 +417,26 @@ if (user === undefined) { // 用户未登录
     window.location.href = '/login'
   }
 } else { // 用户已登录
-  console.log("????????")
-  // user = JSON.parse(user);
-  // if (Cookies.get("manager") !== undefined) { // 此时管理员在用户端
-     //window.location.href = '/allProject';
-  //} else {
-  //  let tmpuser = Cookies.get('user')
-  //  if (tmpuser.status === 'C') { // 当前用户为管理员
-  //    window.location.href = '/manager/home'
-  //  } else { // 当前用户为普通用户
-  //    window.location.href = '/allProject';
-  //  }
-  // }
-  console.log("logged in");
   user = JSON.parse(user)
-  console.log(window.location.pathname);
-  if (window.location.pathname === "/") {
-     window.location.href = "/allProject/";
+  let proj = undefined;
+  if (user !== undefined) {
+    if (user.status !== 'C') { // 普通用户
+      proj = Cookies.get("proj");
+      console.log(proj)
+      if (proj !== undefined) {
+        if (window.location.pathname !== "/allTask") {
+          window.location.href = "/allTask"
+        }
+      } else {
+        if (window.location.pathname !== "/allProject") {
+          window.location.href = "/allProject"
+        }
+      }
+    } else { // 管理员
+      if (window.location.pathname !== "/manager/home") {
+        window.location.href = "/manager/home"
+      }
+    }
   }
 }
 
@@ -452,9 +455,9 @@ export default {
     })
     this.updateUserProj();
   },
-  beforeUpdate() {
-    this.getTaskList();
-  },
+  // beforeUpdate() {
+  //   this.getTaskList();
+  // },
   components:{
     AllTask,
     AllFile,
@@ -499,32 +502,12 @@ export default {
   },
   beforeUpdate() {
     // this.drawer = user && proj && showLabel();
-    console.log("beforeUpdate");
-    console.log(window.location.pathname);
     this.showLabel();
-    let proj = undefined;
-    if (user !== undefined) {
-      if (user.status !== 'C') {
-      proj = Cookies.get("proj");
-      console.log(proj);
-      if (proj === undefined && window.location.pathname !== '/allFile') {
-        console.log("not choose project");
-        if (
-        window.location.pathname === "/register" ||  window.location.pathname === "/user/profile" ||
-        window.location.pathname === "/login" || window.location.pathname === "/manager"
-         ) {
-         } else if (window.location.pathname !== "/allProject/") {
-          window.location.href = "/allProject/";
-        }
-      } else {
-      proj = JSON.parse(proj);
-      console.log("proj not undefined");
-      console.log(proj);
-      console.log(proj.projectId);
-      }
+    let proj = Cookies.get("proj");
+    if (proj !== undefined) {
+      proj = JSON.parse(proj)
+      this.proj = proj;
     }
-  }
-  this.proj = proj;
   },
   provide() {
     return {
