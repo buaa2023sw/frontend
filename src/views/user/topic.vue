@@ -84,13 +84,10 @@ export default {
   },
   methods: {
     save() {
+      console.log(this.selectedTopic)
       axios.post("/api/saveTopic", {userId: this.user.id, topic: this.selectedTopic})
           .then((response) => {
             console.log(response)
-
-          })
-          .catch((err) => {
-            console.error(err);
             if (response.data.errcode === 0) {
               this.$message({
                 type: 'success',
@@ -108,6 +105,9 @@ export default {
                 message: "主题保存失败"
               });
             }
+          })
+          .catch((err) => {
+            console.error(err);
           })
     },
   },

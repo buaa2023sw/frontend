@@ -198,6 +198,7 @@ export default {
         //   "state": '进行中',
         //   "time": "2002-12-18",
         //   "owner": 'szx',
+        //   "access": "A"/"B" 增加项目正常/禁用字段
         //   "intro": 'very good'
         // },
         // {
@@ -224,8 +225,16 @@ export default {
     getProj(project) {
       console.log("getProj");
       console.log(JSON.stringify(project));
-      Cookies.set("proj", JSON.stringify(project));
-      window.location.href = "/allTask";
+      let manager = Cookies.get("manager")
+      if (project.access === "B" && manager === undefined) { // 项目禁用，且不是管理员跳转
+        this.$message({
+          type: 'error',
+          message: "该项目已被禁用"
+        });
+      } else {
+        Cookies.set("proj", JSON.stringify(project));
+        window.location.href = "/allTask";
+      }
       // this.proj = Cookies.get(proj);
     },
     filterOnlyCapsText(value, search, item) {

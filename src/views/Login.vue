@@ -1,7 +1,10 @@
 <template>
   <v-container fluid>
     <v-row align="center" justify="center" class="blue lighten-5" style="min-height: calc(100vh - 64px);">
-      <v-col cols="12" sm="8" md="6" lg="4" class="d-flex justify-center">
+      <v-col cols="6">
+        <iframe src="../../login.html" ref="iframe" width="100%" height="500px" scrolling="no" frameborder="null"></iframe>
+      </v-col>
+      <v-col cols="6">
         <v-card class="elevation-12" style="max-width: 500px;">
           <v-card-text class="mt-4 mb-4">
             <v-form @submit.prevent="login">
@@ -109,6 +112,7 @@ export default {
                 type: 'success',
                 message: "登录成功"
               });
+              console.log(response.data.data)
               if (response.data.data.status === 'C') {
                 window.location.href = '/manager/home'
               } else {

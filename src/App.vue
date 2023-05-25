@@ -1,7 +1,7 @@
 <template>
   <v-app id="main_page">
-    <v-app-bar app clipped-left ref="appBar" color="blue" dark extension-height="36" :absolute="true"
-      :src=this.topic>
+    <v-app-bar app clipped-left ref="appBar" color="white" dark extension-height="36" :absolute="true"
+      :src=topic>
       <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -417,6 +417,15 @@ if (user === undefined) { // 用户未登录
     window.location.href = '/login'
   }
 } else { // 用户已登录
+  let userpath = (window.location.pathname !== "/workDetail" && window.location.pathname !== "/allFile" &&
+      window.location.pathname !== "/allPerson" && window.location.pathname !== "/allTask" &&
+      window.location.pathname !== "/picture" && !window.location.pathname.startsWith("/plan") &&
+      !window.location.pathname.startsWith("/allProject") && window.location.pathname !== "/home" &&
+      !window.location.pathname.startsWith("/dev") && window.location.pathname !== "/profile" &&
+      window.location.pathname !== "topic" &&
+      !window.location.pathname.startsWith("/user")) // 合法的普通用户路径
+  let managerpath = (window.location.pathname !== "/profile" &&
+      window.location.pathname !== "topic" && !window.location.pathname.startsWith("/manager")) // 合法的纯管理员路径（位于管理端）
   user = JSON.parse(user)
   let proj = undefined;
   if (user !== undefined) {
@@ -424,18 +433,27 @@ if (user === undefined) { // 用户未登录
       proj = Cookies.get("proj");
       console.log(proj)
       if (proj !== undefined) {
-        if (window.location.pathname !== "/allTask") {
+        if (userpath) {
           window.location.href = "/allTask"
         }
+        // if (window.location.pathname !== "/allTask") {
+        //   window.location.href = "/allTask"
+        // }
       } else {
-        if (window.location.pathname !== "/allProject") {
+        if (userpath) {
           window.location.href = "/allProject"
         }
+        // if (window.location.pathname !== "/allProject") {
+        //   window.location.href = "/allProject"
+        // }
       }
     } else { // 管理员
-      if (window.location.pathname !== "/manager/home") {
+      if (managerpath) {
         window.location.href = "/manager/home"
       }
+      // if (window.location.pathname !== "/manager/home") {
+      //   window.location.href = "/manager/home"
+      // }
     }
   }
 }
@@ -454,6 +472,7 @@ export default {
       this.scrollUp = this.isScrollTop()
     })
     this.updateUserProj();
+    this.updateTopic();
   },
   // beforeUpdate() {
   //   this.getTaskList();
@@ -664,7 +683,7 @@ export default {
       window.location.href = '/manager/userMessages'
     },
     showLabel() {
-      if (this.user === undefined || this.user.status === 'C') {
+      if (this.user === null || this.user === undefined || this.user.status === 'C') {
         return false;
       }
       console.log("showLabel");
@@ -672,18 +691,21 @@ export default {
       console.log(this.user);
       console.log(this.$route.path);
 
-      console.log(   this.user !== null && this.proj !== undefined &&
+      console.log(this.user !== null && this.proj !== undefined &&
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
         !window.location.pathname.startsWith("/register"));
 
       return (
-        this.user !== null && this.proj !== undefined &&
+        this.user !== null && this.user !== undefined &&
+        this.proj !== null && this.proj !== undefined &&
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
-        !window.location.pathname.startsWith("/register")
+        !window.location.pathname.startsWith("/register") &&
+        !window.location.pathname.startsWith("/profile") &&
+        !window.location.pathname.startsWith("/topic")
       );
     },
     // getSelectedProj() {
