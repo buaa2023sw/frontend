@@ -109,6 +109,7 @@ export default {
                 type: 'success',
                 message: "登录成功"
               });
+              console.log(response.data.data)
               if (response.data.data.status === 'C') {
                 window.location.href = '/manager/home'
               } else {

@@ -683,7 +683,9 @@ export default {
         !window.location.pathname.startsWith("/manager") &&
         this.$route.path !== "/allProject/" &&
         !window.location.pathname.startsWith("/login") &&
-        !window.location.pathname.startsWith("/register")
+        !window.location.pathname.startsWith("/register") &&
+        !window.location.pathname.startsWith("/profile") &&
+        !window.location.pathname.startsWith("/topic")
       );
     },
     // getSelectedProj() {

@@ -12,7 +12,7 @@
                   size="100"
               >
 <!--                <span class="white&#45;&#45;text text-h5"> {{ showedUserName }} </span>-->
-                <v-img :src="getIdenticon(showedUserName, 100, 'user')"></v-img>
+                <v-img :src="getIdenticon(this.user.name, 100, 'user')"></v-img>
               </v-avatar>
               <!--
               <v-avatar size="100">
@@ -34,7 +34,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="showChangePassword" width="500">
+    <v-dialog v-if="showChangePassword" v-model="showChangePassword" width="500">
       <template>
         <v-container class="pa-0">
           <v-card>
