@@ -1,7 +1,7 @@
 <template>
   <v-app id="main_page">
     <v-app-bar app clipped-left ref="appBar" color="blue" dark extension-height="36" :absolute="true"
-      src="https://fastly.picsum.photos/id/53/1280/1280.jpg?hmac=QP5opo-oENp5iFwsSiWH8azQuR0w0bwps6MT6yvhKwA">
+      :src=this.topic>
       <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -44,8 +44,11 @@
           </v-img>
 
           <v-list>
-            <v-list-item link to="/user/profile">
+            <v-list-item link to="/profile">
               <v-list-item-title>个人信息</v-list-item-title>
+            </v-list-item>
+            <v-list-item link to="/topic">
+              <v-list-item-title>主题设置</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="logoff()">
               <v-list-item-title>退出登录</v-list-item-title>
@@ -465,6 +468,7 @@ export default {
   },
   data: () => {
     return {
+      topic: "https://fastly.picsum.photos/id/53/1280/1280.jpg?hmac=QP5opo-oENp5iFwsSiWH8azQuR0w0bwps6MT6yvhKwA",
       labelPosition: "left",
       drawer: true,
       mini: true,
@@ -529,12 +533,26 @@ export default {
       selectedProj: computed(() => this.proj),
       changeSelectedProj: this.changeSelectedProj,
       updateUserProj: this.updateUserProj,
-      updateUser: this.updateUser
+      updateUser: this.updateUser,
+      updateTopic: this.updateTopic
       // reload:this.reload
     };
   },
   methods: {
     getIdenticon,
+    updateTopic(selectedTopic) {
+      if (selectedTopic === 'A') { // 红色
+        this.topic = "https://fastly.picsum.photos/id/859/1919/1919.jpg?hmac=24AoHo7Jc5TRRRaJfWO0B4z2wW5Jl14r56rVKeMfpZI"
+      } else if (selectedTopic === 'B') { // 橙色
+        this.topic = "https://fastly.picsum.photos/id/360/1925/1280.jpg?hmac=vX9T-qgnqfOUqLnxlsxCZfkKn_wi-9vtPKdbq7H6EgU"
+      } else if (selectedTopic === 'C') { // 绿色
+        this.topic = "https://fastly.picsum.photos/id/509/4608/3456.jpg?hmac=ZvNo59d3NP2XjQE75AaROWBTpW2BAzZgWb0-Jso0l9Y"
+      } else if (selectedTopic === 'D') { // 蓝色
+        this.topic = "https://fastly.picsum.photos/id/53/1280/1280.jpg?hmac=QP5opo-oENp5iFwsSiWH8azQuR0w0bwps6MT6yvhKwA"
+      } else { // 紫色
+        this.topic = "https://fastly.picsum.photos/id/723/5000/3333.jpg?hmac=Lq_OA9h0W8RDhE3xt44qzGv5PtQVLSnVCjoizkIiQNs"
+      }
+    },
     updateUser() {
       var userCookie = Cookies.get("user")
       if (userCookie !== undefined) {

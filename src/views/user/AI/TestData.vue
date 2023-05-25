@@ -24,7 +24,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue" text :disabled="!valid()" @click="startDiagnosis()">确定</v-btn>
+              <v-btn color="blue" text :disabled="!valid()" @click="startTestData()">确定</v-btn>
             </v-card-actions>
           </v-card>
         </v-container>
@@ -108,7 +108,7 @@ export default {
     // 生成测试数据
     startTestData() {
       console.log(this.code)
-      axios.post("/api/ai/CodeReview", {code: this.code})
+      axios.post("/api/ai/CodeReview", {code: this.code}) // TODO
           .then((response) => {
             console.log(response)
             if (response.data.errcode === 1) {

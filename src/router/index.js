@@ -75,9 +75,14 @@ const router = new VueRouter({
       component: () => import('../views/dev/Branch.vue')
     },
     {
-      path: '/user/profile',
+      path: '/profile',
       name: 'profile',
       component: () => import('../views/user/profile.vue')
+    },
+    {
+      path: '/topic',
+      name: 'topic',
+      component: () => import('../views/user/topic.vue')
     },
     {
       path: '/manager/home',
