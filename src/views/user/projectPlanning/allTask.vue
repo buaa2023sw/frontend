@@ -75,9 +75,15 @@
             >
               <v-card style="width:100%;position: relative;">
                 <div>
-                <v-card-title>
-                  <h4>{{ task.taskName }}</h4>
-                   <v-icon size="small" @click="changeTaskName(task)">mdi-pencil</v-icon>
+                <v-card-title style="position: relative;">
+                  <v-icon style="position:absolute;">mdi-arrow-bottom-right</v-icon>
+                  <h4 style="position:relative;left:3%;">{{task.taskName }}</h4>
+                   <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
+                   >mdi-pencil</v-icon>
+                   <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
+                   >mdi-arrow-up-thin</v-icon>
+                   <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
+                   >mdi-arrow-down-thin</v-icon>
                 <v-switch
                 style="position: absolute;right: 1%;"
                 :input-value="isExpanded(task)"
@@ -88,7 +94,7 @@
                 <!-- <v-switch
                   :input-value="isExpanded(item)"
                   :label="isExpanded(item) ? 'Expanded' : 'Closed'"
-                  class="pl-4 mt-0"
+                  class="pl-4 mt-0" 
                   @change="(v) => expand(item, v)"
                 ></v-switch> -->
                 <v-divider></v-divider>
@@ -102,17 +108,6 @@
                  item-key='subTaskName'
                  :custom-filter="filterOnlyCapsText"
                 >
-<!--    
-  <template v-slot:[`item.remove`] ="{item}">
-     <v-btn depressed @click="handleDelete(item)">
-      移除用户
-    </v-btn>
-  </template>
-  <template v-slot:[`item.change`] ="{item}">
-     <v-btn depressed @click="handleChange(item)">
-      更改角色
-    </v-btn>
-  </template> -->
   <template v-slot:no-data>
         <div style="font-size:15px;font-weight: bold;text-align: center;">
           没有子任务
@@ -123,12 +118,6 @@
           没有找到对应子任务
         </div>
   </template>
-  <template v-slot:[`item.status`]="{ item }">
-      <div>{{ transform(item.status) }}</div>
-    </template>
-    <template v-slot:[`item.managerId`]="{ item }">
-      <div>{{ getName(item.managerId) }}</div>
-    </template>
     <template v-slot:[`item.contribute`]="{ item }">
       <div>{{ item.contribute }}%</div>
     </template>
@@ -167,6 +156,15 @@
       mdi-alarm
       </v-icon>
   </template>
+  <template v-slot:[`item.subTaskName`]="{item}">
+      <v-icon
+        small
+        class="mr-2"
+      >
+      mdi-bullseye-arrow
+      </v-icon>
+      <span>{{  item.subTaskName }}</span>
+  </template>
   <template v-slot:[`item.action`]="{item, index}">
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
@@ -192,82 +190,6 @@
         >
           <v-btn text @click="switchAction('完成任务', item, task)">完成任务</v-btn>
         </v-list-item>
-        <!-- <v-list-item
-        >
-        <v-dialog
-      v-model="dialog"
-      width="500"
-    >
-    <template v-slot:activator="{ on, attrs }">
-          <v-btn text
-          v-bind="attrs" v-on="on" @click="switchAction('详细信息', index, item)">详细信息</v-btn>
-        </template>
-        <v-card
-    :loading="loading"
-  >
-    <template slot="progress">
-      <v-progress-linear
-        color="deep-purple"
-        height="10"
-        indeterminate
-      ></v-progress-linear>
-    </template>
-
-    <v-img
-      height="250"
-      src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
-    ></v-img>
-
-    <v-card-title>{{item.subTaskName}}</v-card-title>
-
-    <v-card-text>
-      <v-row
-        align="center"
-        class="mx-0"
-      >
-        <div class="grey--text ms-4">
-          时间:{{item.create_time.slice(0, 10)}} - {{ item.deadline.slice(0, 10) }}
-        </div>
-      </v-row>
-<div class="my-4 text-subtitle-1">
-        负责人:{{ getName(item.managerId) }}
-      </div> 
-
-      <div>Small plates, salads & sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
-    </v-card-text>
-
-    <v-divider class="mx-4"></v-divider>
-
-    <v-card-title>Tonight's availability</v-card-title>
-
-    <v-card-text>
-      <v-chip-group
-        v-model="selection"
-        active-class="deep-purple accent-4 white--text"
-        column
-      >
-        <v-chip>5:30PM</v-chip>
-
-        <v-chip>7:30PM</v-chip>
-
-        <v-chip>8:00PM</v-chip>
-
-        <v-chip>9:00PM</v-chip>
-      </v-chip-group>
-    </v-card-text>
-
-    <v-card-actions>
-      <v-btn
-        color="deep-purple lighten-2"
-        text
-        @click="reserve"
-      >
-        Reserve
-      </v-btn>
-    </v-card-actions>
-  </v-card>
-      </v-dialog>
-        </v-list-item> -->
       </v-list>
     </v-menu>
   </template>
@@ -281,13 +203,13 @@
         large
         class="mr-2"
         @click="setupNewSon(task)"
-        style="position:absolute;left: 1.5%;top:82%"
+        style="position:absolute;left:1%;bottom:4%;"
       >
       mdi-plus-box
       </v-icon>
-      <v-icon
+      <v-icon 
                   large
-                   style="position: absolute;left: 6%;top:82%"
+                   style="position: absolute;left: 4%;bottom: 4%;"
                    @click="deleteTask(task)"
                    >
                    mdi-delete
@@ -346,7 +268,7 @@
     <el-form-item>
       <p>开始时间</p>
       <v-menu
-        v-model="menu1"
+        v-model="menu5"
         :close-on-content-click="false"
         return-value.sync="sad"
         transition="scale-transition"
@@ -374,16 +296,16 @@
           <v-btn
             text
             color="primary"
-            @click="menu1 = false"
+            @click="menu5 = false"
           >
-            Cancel
+           取消
           </v-btn>
           <v-btn
             text
             color="primary"
-            @click="menu1 = false"
+            @click="menu5 = false"
           >
-            OK
+            确定
           </v-btn>
         </v-date-picker>
       </v-menu>
@@ -391,7 +313,7 @@
     <el-form-item>
       <p>预计完成时间</p>
       <v-menu
-        v-model="menu2"
+        v-model="menu6"
         :close-on-content-click="false"
         return-value.sync="sad"
         transition="scale-transition"
@@ -419,14 +341,14 @@
           <v-btn
             text
             color="primary"
-            @click="menu2 = false"
+            @click="menu6 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
             color="primary"
-            @click="menu2 = false"
+            @click="menu6 = false"
           >
             OK
           </v-btn>
@@ -448,13 +370,22 @@
       <v-select
           v-model = "newSonForm.managerName"
           :items="personNameList"
-        ></v-select>
+        >
+        <template v-slot:item="{ item }">
+          <div style="position: relative;background-color: aliceblue;">
+            <v-avatar size="25"  color="indigo" >
+              <v-img :src="getIdenticon(item, 25, 'user')"></v-img>
+        </v-avatar>
+        <span style="position:absolute;left: 120%;">{{ item }}</span>
+          </div>
+        </template>
+      </v-select>
 </el-form>
 <span slot="footer" class="dialog-footer">
     <el-button @click="cancelNewSon">取 消</el-button>
     <el-button type="primary" @click="newSon">确 定</el-button>
   </span>
-</el-dialog> 
+</el-dialog https://v2.vuetifyjs.com/zh-Hans/components/alerts/> 
 
 <el-dialog
         title="设置提醒时间"
@@ -658,7 +589,16 @@
       <v-select
           v-model ="editSonForm.managerName"
           :items="personNameList"
-        ></v-select>
+        >
+        <template v-slot:item="{ item }">
+          <div style="position: relative;background-color: aliceblue;">
+            <v-avatar size="25"  color="indigo" >
+              <v-img :src="getIdenticon(item, 25, 'user')"></v-img>
+        </v-avatar>
+        <span style="position:absolute;left: 120%;">{{ item }}</span>
+          </div>
+        </template>
+      </v-select>
 </el-form>
 <span slot="footer" class="dialog-footer">
     <el-button @click="editTask = false">取 消</el-button>
@@ -666,6 +606,21 @@
   </span>
 </el-dialog> 
 
+<el-dialog
+        title="完成任务"
+         width="50%"
+        :before-close="handleClose"
+        :visible.sync="dialog4">
+        <el-form label-position="labelPosition" label-width="30px" :model="completeForm" ref="completeForm">
+    <el-form-item label="url">
+      <el-input v-model="completeForm.url"></el-input>
+    </el-form-item>
+      </el-form>
+<span slot="footer" class="dialog-footer">
+    <el-button @click="dialog4 = false">取 消</el-button>
+    <el-button type="primary" @click="submit">确 定</el-button>
+  </span>
+</el-dialog> 
     </div>
   </template>
 
@@ -707,10 +662,17 @@ export default {
     menu2: false,
     menu3: false,
     menu4: false,
+    menu5: false,
+    menu6: false,
     sonContribute: 0,
     myName: "罗本",
     tempItem: '',
     showPencil: {},
+    dialog4: false,
+    marker: {},
+    completeForm: {
+      url: ''
+    },
     options: ['删除任务', "编辑任务", "详细信息", "完成任务"],
     picker:
     (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
@@ -886,6 +848,18 @@ export default {
       this.setupFather = false;
       this.newFatherForm.name = '';
     },
+    submit() {
+        completeTask({taskId: item.subTaskId, userId: this.user.id, url: this.completeForm.url}).then(
+          res => {
+            this.$message({
+            type: 'success',
+            message: '提交成功!'
+          });
+            this.getTaskList();
+            console.log(res);
+          }
+      );
+    },
     newFather() {
       // newFather()
       if (this.newFatherForm.name .trim() === "") {
@@ -993,6 +967,10 @@ export default {
         s.toString().toLocaleUpperCase().indexOf(search.toLocaleUpperCase()) !==
           -1
       );
+    },
+    setPencil(item) {
+      this.marker[item.taskId] = true;
+      console.log(this.marker);
     },
     newSon() {
       if (this.newSonForm.name.trim() === "") {
@@ -1125,7 +1103,7 @@ export default {
         } else if (action === "编辑任务") {
           this.handleEdit(item, task);
         } else if (action === "完成任务") {
-          this.handleComplete(item);
+          this.handleComplete();
         }
     },
     handleEdit(item, task) {
@@ -1138,17 +1116,8 @@ export default {
       this.editSonForm.subTaskId = item.subTaskId;
       this.editTask = true;
     },
-    handleComplete(item) {
-      completeTask({taskId: item.subTaskId, userId: this.user.id}).then(
-        res => {
-          this.$message({
-          type: 'success',
-          message: '提交成功!'
-        });
-          this.getTaskList();
-          console.log(res);
-        }
-      );
+    handleComplete() {
+      this.dialog4 = true;
     },
     handleDelete(item) {
       this.$confirm('此操作将移除该任务, 是否继续?', '提示', {

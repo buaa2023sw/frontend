@@ -33,15 +33,14 @@
         :headers="headers"
         :items="documentData"
         class="elevation-1"
-        :expanded.sync="expanded"
-        show-expand
         item-key="id"
         :search="search"
         :custom-filter="filterOnlyCapsText"
         style="position:absolute;left:3%;width:94%;height: 70%;top:14%"
       >
       <template v-slot:[`item.name`] = "{item}" >
-         <a @click="openMd(item)">{{ item.name }}</a>
+        <v-icon>mdi-text-box-outline</v-icon>
+         <a @click="openMd(item)" style="position:relative;left:2%;top:3%;">{{ item.name }}</a>
       </template>
       <template v-slot:[`item.updateTime`] = "{item}" >
         {{ item.updateTime.slice(0, 10) + "-" + item.updateTime.slice(11, 19) }}
@@ -51,16 +50,7 @@
       </td>
     </template>
       <template v-slot:no-data>
-        <div style="text-align: center;">
-          <img src="../../../assets/search.png" height="150px" width="150px"/>
-        </div>
-        <div style="font-size:20px;font-weight: bold">
-          没有找到数据
-        </div>
-     <!-- <v-img
-      max-height="30%"
-      max-width="30%"
-      style  src="@/assets/search.png"></v-img>="position:absolute;left:35%;right:35%;top:5%" -->
+        <div></div>
      </template>
       <template v-slot:no-results>
         <div style="text-align: center;">
@@ -94,7 +84,7 @@
           </div>
         </template>
         <template v-slot:[`item.collect`]="{item}">
-          <v-icon @click="addCollect(item)" v-if="isCollectArr[item.id]">mdi-star-outline</v-icon>
+          <v-icon @click="addCollect(item)" v-if="!item.isCollect">mdi-star-outline</v-icon>
           <v-icon @click="cancelCollect(item)" v-else>mdi-star</v-icon>
           <v-icon @click="editStart(item)">mdi-pencil-outline</v-icon>
           <v-icon @click="handleDelete(item)">mdi-delete-outline</v-icon>
@@ -125,14 +115,6 @@
       style="width:80%;position: relative;left:2%"
       prepend-icon="mdi-map-marker"
     ></v-text-field>
-
-     <v-textarea
-          class="mx-2"
-          label="文档简介"
-          prepend-icon="mdi-comment"
-          v-model="newDocumentForm.intro"
-          style="width:80%;position: relative;left:1%"
-        ></v-textarea>
         </v-form>
       </v-card-text>
        <v-card-actions style="position:absolute;right:0%;bottom: 0%;">
@@ -315,14 +297,6 @@
       style="width:80%;position: relative;left:2%"
       prepend-icon="mdi-map-marker"
     ></v-text-field>
-
-     <v-textarea
-          class="mx-2"
-          label="文档简介"
-          prepend-icon="mdi-comment"
-          v-model="editDocumentForm.intro"
-          style="width:80%;position: relative;left:1%"
-        ></v-textarea>
         </v-form>
       </v-card-text>
        <v-card-actions style="position:absolute;right:0%;bottom: 0%;">
@@ -366,10 +340,10 @@
         md="2"
         style="position: relative;"
       >
-      <v-icon style="position: absolute;right:15.5%;">mdi-minus-box-outline</v-icon>
+      <v-icon style="position: absolute;right:15.5%;" @click="delPerson">mdi-minus-box-outline</v-icon>
       </v-col>
     </v-row>
-        <v-list  shaped >
+        <v-list shaped>
           <v-list-item-group
             v-model="deleteGroup"
             multiple
@@ -389,10 +363,10 @@
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
-              {{ people.name }}
+              {{ people.peopleName }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              {{ people.email }}
+              {{ people.peopleEmail }}
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
@@ -426,7 +400,7 @@
         md="2"
         style="position: relative;"
       >
-      <v-icon style="position: absolute;right:15.5%;">mdi-plus-box-outline</v-icon>
+      <v-icon style="position: absolute;right:15.5%;" @click="addPerson">mdi-plus-box-outline</v-icon>
       </v-col>
     </v-row>
         <!-- <p class="ml-s" style="font-size: medium;">添加具有权限修改的用户</p> -->
@@ -438,25 +412,25 @@
           active-class="deep-purple--text text--accent-4">
           <v-list-item
           v-for="people in filter(peopleCanNotWrite, searchNot)"
-          :key="people.id">
+          :key="people.peopleId">
           <template v-slot:default="{ active }">
           <v-list-item-avatar>
             <v-avatar active-class="deep-purple--text text--accent-4" color="indigo">
 <!--             <span class="white&#45;&#45;text text-h5">{{ people.name[0] }}</span>-->
               <v-img :src="getIdenticon(people.peopleName, 48, 'user')"></v-img>
-            </v-avatar>
+            </v-avatar> 
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
-              {{ people.name }}
+              {{ people.peopleName }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              {{ people.email }}
+              {{ people.peopleEmail }}
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
           <v-checkbox
-                  v-if="people.peopleId !== this.user.id"
+                  v-if="people.peopleId !== user.id"
                   :input-value="active"
                   color="deep-purple accent-4"
                 ></v-checkbox>
@@ -479,8 +453,8 @@
                 color="primary"
                 width="70px"
                 style="float: right"
-                @click="editDialog2 = false;editDialog1 = false;"
-              >新建</v-btn>
+                @click="editDialog2 = false;editDialog1 = false;edit()"
+              >确认</v-btn>
             </v-card-actions>
         </v-card>
       </v-dialog>
@@ -520,6 +494,7 @@ import getIdenticon from "@/utils/identicon";
       search: '',
       searchNot: '',
       isCollectArr: [],
+      item: [],
       headers: [
         {
           text: "名称",
@@ -530,7 +505,6 @@ import getIdenticon from "@/utils/identicon";
         { text: "所有者", value: "ownerName", sortable:false},
         { text: "最近更改时间", value: "updateTime"},
         { text: "", value: "collect", sortable:false},
-        { text: "", value: "data-table-expand"}
       ],
       html:"",
       blogInfo: {
@@ -602,7 +576,8 @@ import getIdenticon from "@/utils/identicon";
       editDocumentForm: {
         name: '',
         intro: '',
-        people: []
+        people: [],
+        id: "",
       },
       toolbars: {
         bold: true, // 粗体
@@ -661,6 +636,21 @@ import getIdenticon from "@/utils/identicon";
     },
     methods:{
       getIdenticon,
+      edit() {
+        let arr = [];
+        for (let i=0;i < this.peopleCanWrite.length;i++) {
+          arr.push(this.peopleCanWrite[i].peopleId);
+        }
+        userEditDoc({userId: this.user.id, projectId:this.selectedProj.projectId, 
+        name: this.editDocumentForm.name, outline: "", content: this.textList[this.editDocumentForm.id], 
+      accessUser: arr}).then(
+        res => {
+          console.log("userEditDoc");
+          console.log(res);
+          this.getDocumentData();
+        }
+      )
+      },
       openMd(item) {
         this.dialog3 = true;
         this.docId = item.id;
@@ -702,14 +692,22 @@ import getIdenticon from "@/utils/identicon";
         console.log("initEditPeople");
         console.log(this.allPeople);
         for (let i=0;i < this.allPeople.length;i++) {
-          if (this.allPeople[i].peopleId !== this.user.id) {
-            this.peopleCanNotWrite.push(this.allPeople[i]);
-          } else {
+          let flag = false;
+          for (let j=0;j < this.item.accessUser.length;j++) {
+            if (this.item.accessUser[j].id === this.allPeople[i].peopleId) {
+              flag = true;
+              break;
+            }
+          }
+          if (flag) {
             this.peopleCanWrite.push(this.allPeople[i]);
+          } else {
+            this.peopleCanNotWrite.push(this.allPeople[i]);
           }
         }
         console.log(this.peopleCanNotWrite);
         console.log(this.peopleCanWrite);
+        this.editDialog2 = true;
       },
       initPeople() {
         this.deleteGroup = [];
@@ -836,10 +834,12 @@ import getIdenticon from "@/utils/identicon";
       },
       editStart(item) {
         this.editDocumentForm.name = item.name;
-        this.editDocumentForm.intro = item.intro;
-        this.editDocumentForm.people = item.
+        this.editDocumentForm.intro = item.outline;
+        this.editDocumentForm.people = item.accessUser;
+        this.editDocumentForm.id = item.id;
         this.dialog3 = false;
         this.editDialog1 = true;
+        this.item = item;
       },
       handleDelete(row) {
         this.$confirm("此操作将永久删除该文档, 是否继续?", "提示", {

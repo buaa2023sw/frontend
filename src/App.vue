@@ -1,6 +1,7 @@
 <template>
   <v-app id="main_page">
-    <v-app-bar app clipped-left ref="appBar" color="blue" dark extension-height="36" :absolute="true">
+    <v-app-bar app clipped-left ref="appBar" color="blue" dark extension-height="36" :absolute="true"
+      src="https://fastly.picsum.photos/id/53/1280/1280.jpg?hmac=QP5opo-oENp5iFwsSiWH8azQuR0w0bwps6MT6yvhKwA">
       <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -425,6 +426,9 @@ export default {
     })
     this.updateUserProj();
   },
+  beforeUpdate() {
+    this.getTaskList();
+  },
   components:{
     AllTask,
     AllFile,
@@ -562,39 +566,45 @@ export default {
       );
     },
     gotoPic() {
-      this.getTaskList();
-      let projectItem = [];
-      let projectItemStart = [];
-      let projectItemEnd = [];
-      let workloads = [];
-      let expectedDates = [];
-      let actualDates = [];
-      let projectState = [];
-      console.log(this.tasks);
-      for(let i=0;i < this.tasks.length;i++) {
-        for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
-          projectItem.push(this.tasks[i].subTaskList[j].subTaskName);
-          projectItemStart.push(this.tasks[i].subTaskList[j].start_time.slice(0, 10));
-          projectItemEnd.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
-          workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
-          expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
-          actualDates.push(this.tasks[i].subTaskList[j].complete_time.slice(0, 10));
-          projectState.push(this.tasks[i].subTaskList[j].status);
-        }
-      }
-      console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
-      if (projectItem.length == 0) {
-        this.$message({
-          type: 'info',
-          message: '您还没有任务!'
-        });
-      } else {
-      this.$router.push({path:'/picture'
-      , query: {
-        projectItem: projectItem, projectItemStart: projectItemStart, projectItemEnd: projectItemEnd,
-        workloads: workloads, expectedDates: expectedDates, actualDates: actualDates, projectState: projectState
-      }});
-    }
+      showTaskList({userId: this.user.id, projectId: this.proj.projectId}).then(
+         res => {
+          console.log("getTaskList");
+          console.log(res);
+          this.tasks = res['data']['data'];
+          console.log(this.tasks);
+          let projectItem = [];
+          let projectItemStart = [];
+          let projectItemEnd = [];
+          let workloads = [];
+          let expectedDates = [];
+          let actualDates = [];
+          let projectState = [];
+          console.log(this.tasks);
+          for(let i=0;i < this.tasks.length;i++) {
+            for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
+              projectItem.push(this.tasks[i].subTaskList[j].subTaskName);
+              projectItemStart.push(this.tasks[i].subTaskList[j].start_time.slice(0, 10));
+              projectItemEnd.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
+              workloads.push(parseInt(this.tasks[i].subTaskList[j].contribute));
+              expectedDates.push(this.tasks[i].subTaskList[j].deadline.slice(0, 10));
+              actualDates.push(this.tasks[i].subTaskList[j].complete_time.slice(0, 10));
+              projectState.push(this.tasks[i].subTaskList[j].status);
+            }
+          }
+          console.log(this.tasks);console.log(projectItem);console.log(projectItemStart);console.log(projectItemEnd);
+          if (projectItem.length == 0) {
+            this.$message({
+              type: 'info',
+              message: '您还没有任务'
+            })
+            return;
+          } 
+          this.$router.push({path:'/picture'
+          , query: {
+            projectItem: projectItem, projectItemStart: projectItemStart, projectItemEnd: projectItemEnd,
+            workloads: workloads, expectedDates: expectedDates, actualDates: actualDates, projectState: projectState
+          }});
+    });
     },
     getProj(item) {
       console.log("getProj");

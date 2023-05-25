@@ -1,5 +1,5 @@
 import { sha256 } from "js-sha256";
-import Identicon from "identicon.js"
+import Identicon from "identicon.js";
 
 function getIdenticon(str, size, who) {
     let background = [255, 255, 255, 255]
