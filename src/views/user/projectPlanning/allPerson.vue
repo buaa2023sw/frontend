@@ -310,6 +310,13 @@ export default {
       this.newPersonForm.id = '';
     },
     changeRole() {
+      if (this.changeRoleForm.role === "") {
+        this.$message({
+          type: 'error',
+          message: '您还没有选择角色！'
+        });
+        return;
+      }
       if (this.changeRoleForm.role == '开发人员') {
         this.changeRoleForm.role = 'A';
       } else if (this.changeRoleForm.role == '管理员') {

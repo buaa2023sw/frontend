@@ -77,7 +77,8 @@
           </div>
         </template>
         <template v-slot:[`item.projectName`]="{ item }">
-          <a @click="getProj(item)">{{ item.projectName }}</a>
+          <v-icon small>mdi-application-export</v-icon>
+          <a @click="getProj(item)" style="position:relative;left:5%;">{{ item.projectName }}</a>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon small class="mr-2" @click="handleEdit(item)">
@@ -152,77 +153,6 @@
     </el-dialog>
   </div>
 </template>
-
-  <!-- <script>
-  import { getGameList } from '../../api'
-  export default {
-  created () {
-  this.get_game()
-  },
-  methods: {
-  jump: function (index) {
-    this.$router.push({path: '/main/boxscore', query: {id: index['id']}})
-  },
-  get_game () {
-    getGameList().then(res => {
-      res['game_details'].forEach(element => {
-        // console.log(element)
-        let temp = []
-        temp['time'] = element['time'].slice(0, 10) + '-' + element['time'].slice(11, 16)
-        temp['score'] = element['host_score'] + ' : ' + element['guest_score']
-        temp['host'] = element['host_name_cn']
-        temp['guest'] = element['guest_name_cn']
-        temp['location'] = element['host_gym']
-        temp['id'] = element['id']
-        this.gamedata.push(temp)
-
-        this.factGameData = this.gamedata
-        if (!this.teamNames.includes(temp['host'])) {
-          this.teamNames.push(temp['host'])
-          this.options.push({value: temp['host'], label: temp['host']})
-        }
-        if (!this.teamNames.includes(temp['guset'])) {
-          this.teamNames.push(temp['guest'])
-          this.options.push({value: temp['guest'], label: temp['guest']})
-        }
-        if (!this.hostTeamNames.includes(temp['host'])) {
-          this.hostTeamNames.push(temp['host'])
-          this.hostTeams.push({text: temp['host'], value: temp['host']})
-        }
-        if (!this.guestTeamNames.includes(temp['guest'])) {
-          this.guestTeamNames.push(temp['guest'])
-          this.guestTeams.push({text: temp['guest'], value: temp['guest']})
-        }
-        if (!this.dates.includes(temp['time'])) {
-          this.dates.push({text: temp['time'], value: temp['time']})
-        }
-      })
-    })
-    this.options.push({value: 'null', label: '默认'})
-    console.log(this.options)
-  },
-  filterHandler (value, row, column) {
-    this.clearFilter()
-    const property = column['property']
-    return row[property] === value
-  },
-  clearFilter () {
-    this.$refs.filterTable.clearFilter()
-  },
-  demo (value) {
-    if (value === 'null') {
-      this.factGameData = this.gamedata
-    } else {
-      this.factGameData = []
-      for (var i = 0; i < this.gamedata.length; i++) {
-        if (this.gamedata[i]['host'] === value || this.gamedata[i]['guest'] === value) {
-          this.factGameData.push(this.gamedata[i])
-        }
-      }
-    }
-  }
-  }, -->
-
 
 <script>
 import {

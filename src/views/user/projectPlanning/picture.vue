@@ -106,14 +106,16 @@ export default {
             let endTime = projectItemStartValue[tar.dataIndex] + projectItemDuringValue[tar.dataIndex];
             var s;
             if (state === 'A') {
-                s = '已完成';
-             } else if (state === 'B') {
-                s = '进行中';
+              s = '已完成';
+            } else if (state === 'B') {
+              s = '进行中';
             } else if (state === 'C') {
-                s = '未开始';
-             } else if (state === 'D') {
-               s = '不合法';
-            }
+              s = '未开始';
+            } else if (state === 'D') {
+              s = '延期已完成';
+            }  else if (state === 'E') {
+              s = '延期未完成';
+            } 
             return (
               tar.name +
               "<br/>" +
@@ -179,15 +181,17 @@ export default {
               normal: {
                 color: function (params) {
                   let state = projectState[params.dataIndex];
-                  if (state === "A") {
-                        return "green";
-                    } else if (state === "B") {
-                        return "orange";
-                    } else if (state === "C") {
-                        return "blue";
-                    } else if (state === "D") {
-                        return "red";
-                    }
+                  if (state=== 'A') {
+                    return 'green';
+                  } else if (state === 'B') {
+                    return 'orange';
+                  } else if (state=== 'C') {
+                    return 'blue';
+                  } else if (state=== 'D') {
+                    return 'red';
+                  } else if (state === 'E') {
+                    return 'yellow';
+                  }
               },
             }
         },
@@ -352,25 +356,6 @@ export default {
             type: "line",
             data: resWorkloadsA,
           },
-          // {
-          //   name: '剩余工作量1',
-          //   type: 'line',
-          //   data: resWorkloadsA,
-          // },
-          // {
-          //   name: '预期完成',
-          //   type: 'line',
-          //   data: this.chartData.expectedDates.map((date) => {
-          //     return this.getDaysFromStartDate(this.chartData.expectedDates[0], date);
-          //   }),
-          // },
-          // {
-          //   name: '实际完成',
-          //   type: 'line',
-          //   data: this.chartData.actualDates.map((date) => {
-          //     return this.getDaysFromStartDate(this.chartData.expectedDates[0], date);
-          //   }),
-          // },
         ],
       });
     },
