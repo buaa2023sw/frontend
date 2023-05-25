@@ -674,6 +674,7 @@ export default {
     logoff() {
       Cookies.remove("user");
       Cookies.remove("manager");
+      Cookies.remove("proj");
       window.location.href = "/login";
     },
     handleClose(done) {
