@@ -35,6 +35,7 @@
               <v-spacer></v-spacer>
               <v-btn color="red" text @click="openChangePasswordDialog">修改密码</v-btn>
               <v-btn color="primary" text @click="save">保存</v-btn>
+              <v-btn color="primary" text @click="back">返回</v-btn>
             </v-card-actions>
           </v-img>
         </v-card>
@@ -270,6 +271,9 @@ export default {
       this.oldPassword = ''
       this.newPassword = ''
       this.confirmNewPassword = ''
+    },
+    back() {
+      this.$router.go(-1);
     }
   },
 };
