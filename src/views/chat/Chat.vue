@@ -462,9 +462,10 @@ export default {
                           </v-row>
                             <v-list min-height="600" max-height="600" class="overflow-auto scroll-y">
                                 <v-list-item-group>
-                                    <div v-for="item in chatRooms[selectedRoom].history" :key="item.id">
-                                      <v-divider></v-divider>
-                                      <v-list-item disabled two-line >
+<!--                                  <v-slide-y-transition class="py-0" group tag="v-list-item-group">-->
+                                    <template v-for="item in chatRooms[selectedRoom].history">
+                                      <v-divider :key="item.id"></v-divider>
+                                      <v-list-item disabled two-line :key="item.id">
                                         <v-list-item-avatar v-if="user.name !== item.from" size="40px">
                                           <v-img :src="getIdenticon(item.from, 50, 'user')"></v-img>
                                         </v-list-item-avatar>
@@ -482,7 +483,8 @@ export default {
                                         </v-list-item-avatar>
 
                                       </v-list-item>
-                                    </div>
+                                    </template>
+<!--                                  </v-slide-y-transition>-->
                                 </v-list-item-group>
                             </v-list>
                         </v-card-text>

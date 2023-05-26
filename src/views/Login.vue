@@ -5,11 +5,11 @@
       <v-col cols="12">
         <v-container fluid class="no-blur" >
           <v-row>
-            <v-col cols="6">
+            <v-col cols="12" sm="12" md="6" lg="6" xl="6" >
               <iframe src="../../login.html" ref="iframe" width="100%" height="500px" scrolling="no" frameborder="null"></iframe>
             </v-col>
-            <v-col cols="6">
-              <v-card class="elevation-12" style="max-width: 500px;">
+            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+              <v-card class="elevation-12 mx-sm-auto" style="max-width: 500px;">
                 <v-card-text class="mt-4 mb-4">
                   <v-form v-if="!flag" @submit.prevent="register" >
               <v-row>
