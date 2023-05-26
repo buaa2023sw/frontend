@@ -273,6 +273,7 @@ export default {
       this.confirmNewPassword = ''
     },
     back() {
+      
       this.$router.go(-1);
     }
   },
