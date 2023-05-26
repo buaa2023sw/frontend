@@ -48,10 +48,15 @@ function getLinearGradient(topic) {
     return 'background: linear-gradient(90deg, rgba(255, 255, 255, 1), ' + getColor(topic) + '88)'
 }
 
+function getLinearGradientLiteral(topic) {
+    return 'background: linear-gradient(90deg, rgba(255, 255, 255, 1), ' + getColor(topic) + '88)'
+}
+
 export default {
     getDarkColor,
     getColor,
     getUrl,
     getRadialGradient,
-    getLinearGradient
+    getLinearGradient,
+    getLinearGradientLiteral
 }

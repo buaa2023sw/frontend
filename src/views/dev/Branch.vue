@@ -5,7 +5,7 @@
 <!--    <p>branchName: {{branchName}}</p>-->
 <!--    <p>commitHistory: {{commitHistory}}</p>-->
 
-    <v-container fluid>
+    <v-container>
         <h1>分支详情 - {{branchName}}</h1>
         <v-row>
           <v-col cols="12">
@@ -24,7 +24,12 @@
                 <v-list class="overflow-y-auto" max-height="calc(100vh - 250px)">
                   <v-list-item v-for="commit in commitHistory" :key="commit.id">
                     <v-list-item-content>
-                      <v-list-item-title>{{commit.commitMessage}}</v-list-item-title>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs}">
+                          <v-list-item-title v-bind="attrs" v-on="on">{{commit.commitMessage}}</v-list-item-title>
+                        </template>
+                        <span>{{commit.commitMessage}}</span>
+                      </v-tooltip>
                       <v-list-item-subtitle>{{new Date(commit.commitTime).toLocaleString()}} - {{commit.commithash.slice(0, 6)}} - {{commit.author}}</v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>

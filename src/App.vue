@@ -164,15 +164,15 @@
 
       </div> -->
       <v-list v-if="user.status !== 'C'">
-        <v-list-item two-line class="px-2">
-          <v-avatar size="40" color="indigo" >
+        <v-list-item :style="getLinearGradient(user.topic)" two-line class="px-2">
+          <v-list-item-avatar size="40" color="indigo" >
 <!--            <span class="white&#45;&#45;text text-h5">{{ this.proj.projectName[0] }}</span>-->
             <v-img :src="getIdenticon(this.proj.projectName, 40, 'proj')"></v-img>
-          </v-avatar>
+          </v-list-item-avatar>
           <v-list-item-content class="px-3">
               <!-- <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img> -->
-            <v-list-item-title class="text-h5" style="font-weight: bold">
-              {{this.proj.projectName}}
+            <v-list-item-title class="text-h5" >
+              <strong :style="'color: ' + getDarkColor(user.topic)">{{this.proj.projectName}}</strong>
             </v-list-item-title>
             <v-list-item-subtitle>
               {{this.proj.projectIntro == '' ? '暂无简介' : this.proj.projectIntro}}
@@ -180,38 +180,41 @@
           </v-list-item-content>
         </v-list-item>
 
-          <v-list-item link>
+          <v-list-item link to="/profile" :style="getLinearGradient(user.topic)" two-line>
             <v-list-item-content>
-              <v-list-item-title class="text-h6">
-                {{this.user.name}}
+              <v-list-item-title class="text-h5">
+                <strong :style="'color: ' + getDarkColor(user.topic)">{{this.user.name}}</strong>
               </v-list-item-title>
               <v-list-item-subtitle>{{this.user.email}}</v-list-item-subtitle>
             </v-list-item-content>
+            <v-list-item-avatar size="40">
+              <v-img :src="getIdenticon(this.user.name, 40, 'user')"></v-img>
+            </v-list-item-avatar>
           </v-list-item>
       </v-list>
       <v-list subheader v-if="user.status !== 'C'">
       <v-subheader>规划</v-subheader>
-      <v-list-item  link :to="'/allTask'">
+      <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/allTask'">
         <v-list-item-avatar>
-          <v-icon>mdi-ballot-outline</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-ballot-outline</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>任务列表</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link :to="'/allPerson'">
+      <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/allPerson'">
         <v-list-item-avatar>
-          <v-icon>mdi-account-outline</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-account-outline</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>人员列表</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="gotoPic">
+      <v-list-item :style="'color: ' + getDarkColor(user.topic)" @click="gotoPic">
         <v-list-item-avatar>
-          <v-icon>mdi-align-vertical-bottom</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-align-vertical-bottom</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -220,27 +223,27 @@
       </v-list-item>
 
       <v-subheader>开发</v-subheader>
-      <v-list-item link :to="'/dev'">
+      <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/dev'">
         <v-list-item-avatar>
-          <v-icon>mdi-align-vertical-center</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-align-vertical-center</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>代码</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item link :to="'/user/ai/diagnosis'">
+      <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/user/ai/diagnosis'">
         <v-list-item-avatar>
-          <v-icon>mdi-atom-variant</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-atom-variant</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>代码诊断</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-        <v-list-item link :to="'/user/ai/testdata'">
+        <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/user/ai/testdata'">
           <v-list-item-avatar>
-            <v-icon>mdi-palette-outline</v-icon>
+            <v-icon :color="getDarkColor(user.topic)">mdi-palette-outline</v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -256,9 +259,9 @@
           hide-overlay
 >
           <template v-slot:activator="{on, attrs}">
-          <v-list-item>
+          <v-list-item :style="'color: ' + getDarkColor(user.topic)" >
             <v-list-item-avatar>
-          <v-icon>mdi-file-document-outline</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-file-document-outline</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title v-bind="attrs" v-on="on">共享文档</v-list-item-title>
@@ -267,9 +270,9 @@
         </template>
         <AllFile @close="closeDocument" @open="openDocument"></AllFile>
           </v-dialog>
-      <v-list-item link :to="'/user/chat'">
+      <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/user/chat'">
         <v-list-item-avatar>
-          <v-icon>mdi-account-group-outline</v-icon>
+          <v-icon :color="getDarkColor(user.topic)">mdi-account-group-outline</v-icon>
         </v-list-item-avatar>
 
         <v-list-item-content>
@@ -400,6 +403,7 @@ import axios from "axios"
 import AllTask from "@/views/user/projectPlanning/allTask.vue"
 import AllFile from "@/views/user/document/allFile.vue"
 import getIdenticon from "@/utils/identicon";
+import topicSetting from "@/utils/topic-setting";
 // import allTask from "@/views/user/projectPlanning/allTask"
 
 let user = Cookies.get("user");
@@ -845,7 +849,11 @@ export default {
          }
         }
       }
-    }
+    },
+    getTopicColor: topicSetting.getColor,
+    getDarkColor: topicSetting.getDarkColor,
+    getLinearGradient: topicSetting.getLinearGradient,
+    getLinearGradientLiteral: topicSetting.getLinearGradientLiteral,
   },
 };
 </script>

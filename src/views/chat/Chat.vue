@@ -40,11 +40,13 @@ export default {
         getIdenticon,
         updateChatRooms() {
             console.log('updating chat rooms...')
-            // 保存现有的ws
+            // 保存现有的ws和history
             let tempWS = {}
+            let tempHistory = {}
             this.chatRooms.forEach((item, index) => {
               if (item.ws !== null) {
                 tempWS[item.id] = item.ws
+                tempHistory[item.id] = item.history
               }
             })
 
@@ -91,6 +93,7 @@ export default {
                 if (tempWS[item.id] !== undefined) {
                   item.ws = tempWS[item.id]
                   tempWS[item.id] = undefined
+                  item.history = tempHistory[item.id]
                 } else {
                   item.ws = this.initWS(item.id)
                   this.getChatHistory(item)
@@ -143,6 +146,7 @@ export default {
               roomId: room.id
             }).then((res) => {
               console.log(res.data)
+              room.history = []
               if (res.data.errcode === 0) {
                 res.data.data.messages.reverse().map((item, index) => {
                   room.history.push({
