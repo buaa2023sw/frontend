@@ -58,11 +58,6 @@
 
         <v-card v-else min-width="200px" link to="/login">
           <v-card-title>请登录</v-card-title>
-          <v-list>
-            <v-list-item link to="/register">
-              <v-list-item-title>注册</v-list-item-title>
-            </v-list-item>
-          </v-list>
         </v-card>
       </v-menu>
 
