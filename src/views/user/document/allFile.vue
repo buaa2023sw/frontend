@@ -370,6 +370,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
+          <span></span>
           <v-checkbox
                   :input-value="active"
                   color="deep-purple accent-4"
@@ -430,7 +431,6 @@
           </v-list-item-content>
           <v-list-item-action>
           <v-checkbox
-                  v-if="people.peopleId !== user.id"
                   :input-value="active"
                   color="deep-purple accent-4"
                 ></v-checkbox>
@@ -841,31 +841,19 @@ import getIdenticon from "@/utils/identicon";
         this.item = item;
       },
       handleDelete(row) {
-        this.$confirm("此操作将永久删除该文档, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(() => {
             userDelDoc({userId: this.user.id, projectId: this.selectedProj.projectId, docId: row.id}).then(
               res => {
+                console.log("userDelDoc");
                 console.log(res);
                 this.getDocumentData();
+                this.open();
               }
             )
-            this.open();
             this.$message({
               type: "success",
               message: "删除成功!",
             });
-          })
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "已取消删除",
-            });
-          });
-    },
+          },
       filter(arr, search) {
         if (search === '') {
           return arr;
