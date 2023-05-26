@@ -6,10 +6,10 @@
 <!--    <p>commitHistory: {{commitHistory}}</p>-->
 
     <v-container>
-        <h1>分支详情 - {{branchName}}</h1>
+        <h1 :style="'color: ' + getDarkColor(user.topic)">分支详情 - {{branchName}}</h1>
         <v-row>
           <v-col cols="12">
-            <v-tabs v-model="tabs">
+            <v-tabs :color="getDarkColor(user.topic)" :slider-color="getDarkColor(user.topic)" v-model="tabs">
               <v-tab>提交记录&统计</v-tab>
               <v-tab :disabled="!graphReady">查看仓库文件</v-tab>
             </v-tabs>
@@ -368,7 +368,9 @@ export default {
             })
 
         },
-        getLinearGradient: topicSetting.getLinearGradient
+        getLinearGradient: topicSetting.getLinearGradient,
+        getTopicColor: topicSetting.getColor,
+        getDarkColor: topicSetting.getDarkColor,
     }
 }
 </script>

@@ -236,10 +236,10 @@ export default {
                     return-object
                 >
                   <template v-slot:prepend="{ item, open }">
-                    <v-icon v-if="!item.file">
+                    <v-icon v-if="!item.file" :color="getTopicColor(user.topic)">
                       {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                     </v-icon>
-                    <v-icon v-else>
+                    <v-icon v-else :color="getTopicColor(user.topic)">
                       {{ files[item.file] !== undefined ? files[item.file] : 'mdi-file-document' }}
                     </v-icon>
                   </template>
@@ -285,7 +285,7 @@ export default {
           </v-col>
       </v-row>
 
-    <v-bottom-sheet inset v-model="sheet">
+    <v-bottom-sheet v-if="fileContentReady" inset v-model="sheet">
       <v-card class="text-center">
         <v-card-title>代码助手</v-card-title>
         <v-card-text>
