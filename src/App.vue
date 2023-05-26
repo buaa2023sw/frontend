@@ -8,10 +8,10 @@
 
 
       <v-icon v-if="false" style="right: 1%">mdi-bell</v-icon>
-      <v-icon v-if="existUser()" style="right: 0%" @click="checkClock">mdi-clock-outline</v-icon>
+      <v-icon v-if="existUser()" @click="checkClock">mdi-clock-outline</v-icon>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn link to="/allProject/" v-if="existUser()" icon color="white" v-bind="attrs" v-on="on">
+          <v-btn link href="/allProject/" v-if="existUser()" icon color="white" v-bind="attrs" v-on="on">
             <v-icon>mdi-home</v-icon>
           </v-btn>
         </template>
