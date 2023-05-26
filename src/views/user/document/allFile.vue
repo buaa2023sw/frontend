@@ -2,7 +2,7 @@
     <v-card style="position: relative;">
         <v-toolbar
           dark
-          color="primary"
+          :src="getUrl(user.topic)"
         >
           <v-btn
             icon
@@ -17,7 +17,8 @@
         <v-tabs
           v-model="tab"
           fixed-tabs
-          color="primary"
+          :color="getTopicColor(user.topic)"
+          :slider-color="getDarkColor(user.topic)"
           align-with-title
         >
         <v-tab @click="gotoAll">
@@ -26,7 +27,7 @@
         <v-tab @click="gotoCollect">
           收藏夹
         </v-tab>
-          <v-tabs-slider color="primary"></v-tabs-slider>
+          <v-tabs-slider></v-tabs-slider>
         </v-tabs>
 
         <v-data-table
@@ -77,9 +78,9 @@
                 position: absolute;
               "
               depressed
-              color="primary"
+              :color="getTopicColor(user.topic)"
               @click="newDocumentForm.name = '';newDocumentForm.intro = '';dialog1 = true;"
-              >创建文档</v-btn
+              ><strong>创建文档</strong></v-btn
             >
           </div>
         </template>
@@ -120,7 +121,7 @@
        <v-card-actions style="position:absolute;right:0%;bottom: 0%;">
        <v-btn
          text
-         color="primary"
+         :color="getTopicColor(user.topic)"
          width="70px"
          @click="initPeople();checkNameIntro()"
          >
@@ -269,7 +270,7 @@
               >返回</v-btn>
               <v-btn
                 text
-                color="primary"
+                :color="getTopicColor(user.topic)"
                 width="70px"
                 style="float: right"
                 @click="dialog2 = false;dialog1 = false;addDoc()"
@@ -304,7 +305,7 @@
        <v-card-actions style="position:absolute;right:0%;bottom: 0%;">
        <v-btn
          text
-         color="primary"
+         :color="getTopicColor(user.topic)"
          width="70px"
          @click="initEditPeople()"
          >
@@ -453,7 +454,7 @@
               >返回</v-btn>
               <v-btn
                 text
-                color="primary"
+                :color="getTopicColor(user.topic)"
                 width="70px"
                 style="float: right"
                 @click="editDialog2 = false;editDialog1 = false;edit()"
@@ -463,8 +464,18 @@
       </v-dialog>
 
       <v-dialog v-model="dialog3">
-        <v-md-editor v-model="textList[doc.id]" height="400px" left-toolbar="undo redo | image"
-        :disabled-menus="[]" @upload-image="handleUploadImage" @save="save()" @blur="blur()"></v-md-editor>
+        <v-card>
+          <v-card-title>{{doc.name}}</v-card-title>
+          <v-card-subtitle>{{doc.outline === '' ? '暂无简介' : doc.outline}}</v-card-subtitle>
+          <v-card-text>
+            <v-md-editor v-model="textList[doc.id]" height="400px" left-toolbar="undo redo | image"
+                         :disabled-menus="[]" @upload-image="handleUploadImage" @save="save()" @blur="blur()"></v-md-editor>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn :color="getDarkColor(user.topic)" text @click="save()">保存</v-btn>
+          </v-card-actions>
+        </v-card>
       </v-dialog>
       </v-card>
 </template>
@@ -473,6 +484,7 @@
 import {showPersonList, userDocList, userCollectDocList, addDocToCollect, delDocFromCollect, userCreateDoc, 
        userEditDocOther, userDelDoc, userEditDocContent, userReleaseDocLock, userGetDocLock, isDocLocked} from "@/api/user"
 import getIdenticon from "@/utils/identicon";
+import topicSetting from "@/utils/topic-setting";
 
   export default {
     inject: {'user': {defualt: null},
@@ -875,6 +887,10 @@ import getIdenticon from "@/utils/identicon";
               console.log("userEditDocContent");
               console.log(res);
               this.getDocumentData();
+              this.$message({
+                type: "success",
+                message: "保存成功!",
+              });
             }
            )
       },
@@ -952,7 +968,12 @@ import getIdenticon from "@/utils/identicon";
 },
   handleEditorImgDel(){
     console.log('handleEditorImgDel');    //我这里没做什么操作，后续我要写上接口，从七牛云CDN删除相应的图片
-  }
+  },
+      getTopicColor: topicSetting.getColor,
+      getDarkColor: topicSetting.getDarkColor,
+      getLinearGradient: topicSetting.getLinearGradient,
+      getRadialGradient: topicSetting.getRadialGradient,
+      getUrl: topicSetting.getUrl
 },
 watch: {
   dialog3: {
