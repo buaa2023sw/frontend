@@ -632,7 +632,6 @@ import getIdenticon from "@/utils/identicon";
              this.collectDocList = res['data']['data'];
            }
       )
-      
     },
     methods:{
       getIdenticon,
@@ -643,7 +642,7 @@ import getIdenticon from "@/utils/identicon";
         }
         userEditDoc({userId: this.user.id, projectId:this.selectedProj.projectId, 
         name: this.editDocumentForm.name, outline: "", content: this.textList[this.editDocumentForm.id], 
-      accessUser: arr}).then(
+      accessUserId: arr, docId: this.editDocumentForm.id}).then(
         res => {
           console.log("userEditDoc");
           console.log(res);

@@ -12,6 +12,7 @@
               <v-card class="elevation-12 mx-sm-auto" style="max-width: 500px;">
                 <v-card-text class="mt-4 mb-4">
                   <v-form v-if="!flag" @submit.prevent="register" >
+
               <v-row>
                 <v-col cols="12" class="mb-3">
                   <v-text-field label="用户名" v-model="registerData.username" :rules="registerData.registerRules.user_name" outlined dense></v-text-field>
@@ -61,7 +62,8 @@
         </v-container>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
+</div>
 </template>
 
 <script>
