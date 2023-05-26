@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 import * as CodeMirror from 'codemirror/lib/codemirror.js'
 import "@/utils/cm-settings.js"
 import topicSetting from "@/utils/topic-setting";
+import {downloadStrAsFile} from "@/utils/file-system";
 
 export default {
     name: "FileView",
@@ -21,25 +22,13 @@ export default {
                 xls: 'mdi-file-excel',
                 vue: 'mdi-vuejs'
             },
-            items: [
-                {
-                    name: 'README.md',
-                    file: 'md',
-                },
-                {
-                    name: 'src',
-                    children: [
-                        {
-                            name: 'file1.txt',
-                            file: 'txt'
-                        }
-                    ]
-                }
-            ],
+            items: [],
             cmEditor: null,
             sheet: false,
-            fileContent: 'Select a file to view its content.',
-            selectedText: ''
+            fileContent: '选择一个文件以查看其内容\n\n选择文件后，可以点击右上角”代码助手“，使用JiHub进行AI代码诊断、生成单元测试、下载文件',
+            selectedText: '',
+            fileTreeReady: false,
+            fileContentReady: false,
         }
     },
     inject: {
@@ -49,6 +38,7 @@ export default {
         branchName: {default: null}
     },
     methods: {
+        downloadStrAsFile,
         getFileExt(obj, path) {
             if (obj['children'] === undefined) {
                 obj['file'] = 'unknown'
@@ -94,6 +84,21 @@ export default {
           this.selectedText = this.cmEditor.getSelection()
         },
         diagSelected() {
+          //如果文件长度大于Cookie最长长度，就不诊断了
+          if (this.selectedText.length > 4096) {
+            this.$message({
+              type: 'error',
+              message: '文件太长了，AI会罢工的！'
+            })
+            return
+          }
+          if (this.selectedText.length <= 10) {
+            this.$message({
+              type: 'error',
+              message: '代码这么短，怎么诊断嘛'
+            })
+            return
+          }
           Cookies.set('diag', this.selectedText)
           window.open('/user/ai/diagnosis', '_blank')
         },
@@ -110,6 +115,21 @@ export default {
           window.open('/user/ai/diagnosis', '_blank')
         },
         unitTestSelected() {
+          //如果文件长度大于Cookie最长长度，就不诊断了
+          if (this.selectedText.length > 4096) {
+            this.$message({
+              type: 'error',
+              message: '文件太长了，AI会罢工的！'
+            })
+            return
+          }
+          if (this.selectedText.length <= 10) {
+            this.$message({
+              type: 'error',
+              message: '代码这么短，怎么生成嘛'
+            })
+            return
+          }
           Cookies.set('diag', this.selectedText)
           window.open('/user/ai/testdata', '_blank')
         },
@@ -130,6 +150,7 @@ export default {
         getLinearGradient: topicSetting.getLinearGradient,
     },
     created() {
+        this.fileTreeReady = false;
         axios.post('/api/develop/getFileTree', {
             userId: this.user.id,
             projectId: this.proj.projectId,
@@ -148,12 +169,17 @@ export default {
         }).catch((err) => {
             alert('/api/develop/getFileTree error' + err)
             console.log(err);
+        }).finally(() => {
+            this.fileTreeReady = true;
         })
     },
     watch: {
         tree() {
             console.log('selected file change!')
             if (this.tree[0]['file'] !== undefined) {
+                this.fileContentReady = false;
+                this.cmEditor.setValue('正在努力拉取文件！\n\n选择文件后，可以点击右上角”代码助手“，使用JiHub进行AI代码诊断、生成单元测试、下载文件')
+                this.cmEditor.setOption('mode', '')
                 axios.post('/api/develop/getContent', {
                     userId: this.user.id,
                     projectId: this.proj.projectId,
@@ -172,6 +198,8 @@ export default {
                 }).catch((err) => {
                     alert('/api/develop/getFileContent error' + err)
                     console.log(err);
+                }).finally(() => {
+                    this.fileContentReady = true;
                 })
             }
         }
@@ -198,6 +226,7 @@ export default {
               <h2>文件树</h2>
               <v-card :style="getLinearGradient(user.topic)" min-height="calc(100vh - 300px)" max-height="calc(100vh - 300px)" class="overflow-y-auto">
                 <v-treeview
+                    v-if="fileTreeReady"
                     :items="items"
                     activatable
                     :active.sync="tree"
@@ -215,12 +244,39 @@ export default {
                     </v-icon>
                   </template>
                 </v-treeview>
+                <v-skeleton-loader
+                    v-else
+                    type="list-item-three-line@5"
+                    class="mt-2"
+                ></v-skeleton-loader>
               </v-card>
           </v-col>
           <v-col cols="9">
             <h2>
-              {{ tree.length === 0 ? '请选择一个文件' : tree[0]['path'] }}
-              <a v-if="selectedText !== ''" style="float: right" @click="sheet = !sheet" :style="'color: ' + getTopicColor(user.topic)" v-ripple>代码诊断助手</a>
+              <v-scroll-y-transition>
+                <span>
+                  {{
+                    !fileTreeReady ? '文件树加载中，稍侯...' :
+                        tree.length === 0 ? '请选择一个文件' :
+                            !fileContentReady ? '正在努力拉取文件' : ''
+                  }}
+                </span>
+              </v-scroll-y-transition>
+              <v-scroll-y-transition>
+                <a v-ripple
+                   v-if="fileContentReady"
+                   :style="'text-decoration: none; color: ' + getTopicColor(user.topic)"
+                   :href="'https://github.com/' + repo.user + '/' + repo.repo + '/blob/' + branchName + '/' + tree[0]['path']"
+                   target="_blank">
+                  {{
+                    !fileTreeReady ? '文件树加载中，稍侯...' :
+                        tree.length === 0 ? '请选择一个文件' :
+                            !fileContentReady ? '正在努力拉取文件' :
+                                repo.repo + tree[0]['path']
+                  }}
+                </a>
+              </v-scroll-y-transition>
+              <a style="float: right" v-if="fileContentReady" @click="sheet = !sheet" :style="'color: ' + getTopicColor(user.topic)" v-ripple>代码助手</a>
             </h2>
 
               <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)">
@@ -231,24 +287,36 @@ export default {
 
     <v-bottom-sheet inset v-model="sheet">
       <v-card class="text-center">
-        <v-card-title>代码诊断助手</v-card-title>
+        <v-card-title>代码助手</v-card-title>
         <v-card-text>
           <v-container fluid>
             <v-row>
               <v-spacer></v-spacer>
               <v-col cols="12" sm="12" md="10" lg="6" xl="6">
-                <v-textarea label="选择的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>
+                <v-textarea label="选中的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>
               </v-col>
               <v-spacer></v-spacer>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
-              <v-btn plain :color="getTopicColor(user.topic)" @click="unitTestSelected">让JiHub对选中代码生成单元测试</v-btn>
-              <v-btn plain :color="getTopicColor(user.topic)" @click="unitTestWholeFile">让JiHub对整个文件生成单元测试</v-btn>
-            <v-spacer></v-spacer>
-              <v-btn plain :color="getTopicColor(user.topic)" @click="diagSelected">让JiHub诊断选中的代码</v-btn>
-              <v-btn plain :color="getTopicColor(user.topic)" @click="diagWholeFile">让JiHub诊断整个文件</v-btn>
+          <v-spacer></v-spacer>
+              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="unitTestSelected"><v-icon>mdi-check</v-icon>让JiHub对选中代码生成单元测试</v-btn>
+              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="unitTestWholeFile"><v-icon>mdi-check</v-icon>让JiHub对整个文件生成单元测试</v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="diagSelected"><v-icon>mdi-code-braces</v-icon>让JiHub诊断选中的代码</v-btn>
+              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="diagWholeFile"><v-icon>mdi-code-braces</v-icon>让JiHub诊断整个文件</v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+              <v-btn width="20rem" outlined :color="getTopicColor(user.topic)" link :href="'https://github.com/' + repo.user + '/' + repo.repo + '/blob/' + branchName + '/' + tree[0]['path']" target="_blank"><v-icon>mdi-github</v-icon>在GitHub浏览</v-btn>
+              <v-btn width="20rem" outlined :color="getTopicColor(user.topic)" @click="() => downloadStrAsFile(selectedText, user.name + '\'s-clip' + '-' + this.tree[0]['name'])"><v-icon>mdi-download</v-icon>下载选中代码</v-btn>
+              <v-btn width="20rem" outlined :color="getTopicColor(user.topic)" @click="() => downloadStrAsFile(fileContent, this.tree[0]['name'])"><v-icon>mdi-download</v-icon>下载整个文件</v-btn>
+          <v-spacer></v-spacer>
         </v-card-actions>
 
         <v-row style="height: 5rem"></v-row>
