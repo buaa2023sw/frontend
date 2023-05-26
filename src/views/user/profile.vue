@@ -3,34 +3,40 @@
     <v-row align="center" justify="center">
       <v-col cols="12">
         <v-card class="mx-auto" width="800" height="300" padding="16">
-          <v-card-title class="headline font-weight text-left">查看个人信息</v-card-title>
-          <v-divider></v-divider>
-          <v-row align="center">
-            <v-col cols="3" class="text-center">
-              <v-avatar
-                  color="indigo"
-                  size="100"
-              >
-<!--                <span class="white&#45;&#45;text text-h5"> {{ showedUserName }} </span>-->
-                <v-img :src="getIdenticon(this.user.name, 100, 'user')"></v-img>
-              </v-avatar>
-              <!--
-              <v-avatar size="100">
-                <img :src="userInfo.avatar" alt="avatar">
-              </v-avatar>
-              -->
-              <div> {{ showedUserName }} </div>
-            </v-col>
-            <v-col cols="8">
-              <v-text-field label="用户名" v-model="userInfo.username" outlined dense></v-text-field>
-              <v-text-field label="邮箱" v-model="userInfo.email" outlined dense></v-text-field>
-            </v-col>
-          </v-row>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="red" text @click="openChangePasswordDialog">修改密码</v-btn>
-            <v-btn color="primary" text @click="save">保存</v-btn>
-          </v-card-actions>
+          <v-img
+              :src="getIdenticon(this.user.name, 100, 'user')"
+              height="300"
+              gradient="to bottom, rgba(255,255,255,.3), rgba(255,255,255,.9) 30%, rgba(255,255,255,.9) 70%, rgba(255,255,255,.3)"
+          >
+            <v-card-title class="headline font-weight text-left">查看个人信息</v-card-title>
+            <v-divider></v-divider>
+            <v-row align="center">
+              <v-col cols="3" class="text-center">
+                <v-avatar
+                    color="indigo"
+                    size="100"
+                >
+                  <!--                <span class="white&#45;&#45;text text-h5"> {{ showedUserName }} </span>-->
+                  <v-img :src="getIdenticon(this.user.name, 100, 'user')"></v-img>
+                </v-avatar>
+                <!--
+                <v-avatar size="100">
+                  <img :src="userInfo.avatar" alt="avatar">
+                </v-avatar>
+                -->
+                <strong class="d-block"> {{ userInfo.username }} </strong>
+              </v-col>
+              <v-col cols="8">
+                <v-text-field label="用户名" v-model="userInfo.username" outlined dense></v-text-field>
+                <v-text-field label="邮箱" v-model="userInfo.email" outlined dense></v-text-field>
+              </v-col>
+            </v-row>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="red" text @click="openChangePasswordDialog">修改密码</v-btn>
+              <v-btn color="primary" text @click="save">保存</v-btn>
+            </v-card-actions>
+          </v-img>
         </v-card>
       </v-col>
     </v-row>
