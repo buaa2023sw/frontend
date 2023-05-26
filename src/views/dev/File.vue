@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from 'js-cookie'
 import * as CodeMirror from 'codemirror/lib/codemirror.js'
 import "@/utils/cm-settings.js"
+import topicSetting from "@/utils/topic-setting";
 
 export default {
     name: "FileView",
@@ -123,7 +124,10 @@ export default {
           }
           Cookies.set('diag', this.fileContent)
           window.open('/user/ai/testdata', '_blank')
-        }
+        },
+        getTopicColor: topicSetting.getDarkColor,
+        getRadialGradient: topicSetting.getRadialGradient,
+        getLinearGradient: topicSetting.getLinearGradient,
     },
     created() {
         axios.post('/api/develop/getFileTree', {
@@ -192,7 +196,7 @@ export default {
       <v-row>
           <v-col cols="3">
               <h2>文件树</h2>
-              <v-card min-height="calc(100vh - 300px)" max-height="calc(100vh - 300px)" class="overflow-y-auto">
+              <v-card :style="getLinearGradient(user.topic)" min-height="calc(100vh - 300px)" max-height="calc(100vh - 300px)" class="overflow-y-auto">
                 <v-treeview
                     :items="items"
                     activatable
@@ -216,7 +220,7 @@ export default {
           <v-col cols="9">
             <h2>
               {{ tree.length === 0 ? '请选择一个文件' : tree[0]['path'] }}
-              <a v-if="selectedText !== ''" style="float: right" @click="sheet = !sheet" class="text--accent-2" v-ripple>代码诊断助手</a>
+              <a v-if="selectedText !== ''" style="float: right" @click="sheet = !sheet" :style="'color: ' + getTopicColor(user.topic)" v-ripple>代码诊断助手</a>
             </h2>
 
               <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)">
@@ -240,11 +244,11 @@ export default {
           </v-container>
         </v-card-text>
         <v-card-actions>
-              <v-btn @click="unitTestSelected" plain class="blue--text">让JiHub对选中代码生成单元测试</v-btn>
-              <v-btn @click="unitTestWholeFile" plain class="blue--text">让JiHub对整个文件生成单元测试</v-btn>
+              <v-btn plain :color="getTopicColor(user.topic)" @click="unitTestSelected">让JiHub对选中代码生成单元测试</v-btn>
+              <v-btn plain :color="getTopicColor(user.topic)" @click="unitTestWholeFile">让JiHub对整个文件生成单元测试</v-btn>
             <v-spacer></v-spacer>
-              <v-btn @click="diagSelected" plain class="blue--text">让JiHub诊断选中的代码</v-btn>
-              <v-btn @click="diagWholeFile" plain class="blue--text">让JiHub诊断整个文件</v-btn>
+              <v-btn plain :color="getTopicColor(user.topic)" @click="diagSelected">让JiHub诊断选中的代码</v-btn>
+              <v-btn plain :color="getTopicColor(user.topic)" @click="diagWholeFile">让JiHub诊断整个文件</v-btn>
         </v-card-actions>
 
         <v-row style="height: 5rem"></v-row>

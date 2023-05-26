@@ -1,6 +1,7 @@
 <script>
 import { computed } from 'vue'
 import axios from "axios";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   name: "issue_view",
@@ -75,7 +76,8 @@ export default {
         if (!issue.isOpen && this.statusFilter === 0) return false;
         else return true;
       })
-    }
+    },
+    getTopicColor: topicSetting.getColor
   }, created() {
     this.updateIssue()
   }
@@ -84,19 +86,20 @@ export default {
 
 <template>
 <div>
-  <h2>事务</h2>
 <!--  <p>this is issue view.</p>-->
 <!--    <p>{{ this.issues.length }}</p>-->
   <v-skeleton-loader v-if="this.issuesBusy" type="button, table" />
   <v-row v-else-if="this.issues.length !== 0">
     <v-col>
-    <v-btn
-        style="margin-left: 10px; margin-right: 20px"
-        rounded
-        @click="statusFilter = (statusFilter + 1) % 3; filteredIssues = issueFilter()"
-    >
-      {{ statuses[statusFilter] }}
-    </v-btn>
+      <v-simple-table dense>
+        <tbody>
+        <tr v-for="issue in filteredIssues" :key="issue.id">
+          <td>#{{issue.id}} ({{issue.isOpen ? '开启' : '已关闭'}})</td>
+          <td>{{issue.issuer}}</td>
+          <td>{{issue.title}}</td>
+        </tr>
+        </tbody>
+      </v-simple-table>
     </v-col>
   </v-row>
   <v-row v-else>
@@ -105,15 +108,20 @@ export default {
     </v-col>
   </v-row>
 
-  <v-simple-table dense>
-    <tbody>
-    <tr v-for="issue in filteredIssues" :key="issue.id">
-      <td>#{{issue.id}} ({{issue.isOpen ? '开启' : '已关闭'}})</td>
-      <td>{{issue.issuer}}</td>
-      <td>{{issue.title}}</td>
-    </tr>
-    </tbody>
-  </v-simple-table>
+  <v-card-actions>
+    <v-btn
+        :color="getTopicColor(user.topic)"
+        @click="statusFilter = (statusFilter + 1) % 3; filteredIssues = issueFilter()"
+    >
+      筛选状态：{{ statuses[statusFilter] }}
+    </v-btn>
+
+    <v-spacer></v-spacer>
+
+    <v-btn :color="getTopicColor(user.topic)" link :href="'https://github.com/' + selectedRepo.user + '/' + selectedRepo.repo + '/issues'" target="_blank">
+      <v-icon>mdi-github</v-icon>在GitHub浏览
+    </v-btn>
+  </v-card-actions>
 </div>
 </template>
 

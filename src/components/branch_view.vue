@@ -79,7 +79,7 @@ export default {
 <!--  <p>I am branch view, I am aware that my proj = {{ proj }}, and that my selected repo = {{ selectedRepo }}</p>-->
 <v-row>
   <v-col cols="3">
-    <h2>分支</h2>
+    <v-card-title>分支</v-card-title>
     <div v-if="branchBusy">
         <v-card-title><v-progress-circular indeterminate></v-progress-circular>正在与服务器同步分支</v-card-title>
     </div>

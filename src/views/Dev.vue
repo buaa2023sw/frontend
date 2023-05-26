@@ -4,6 +4,7 @@ import bindGithubRepo from "../components/bind_repo.vue"
 import bindedGithubRepos from "../components/repo_list.vue"
 import repoView from "../components/repo_view.vue"
 import axios from 'axios'
+import topicSetting from "@/utils/topic-setting";
 
 export default {
     name: "Dev",
@@ -78,14 +79,16 @@ export default {
         //     console.log(JSON.stringify(this.selectedProj) + '<-' + JSON.stringify(proj));
         //     this.selectedProj = proj;
         //     console.log(JSON.stringify(this.selectedProj));
-        // }
+        // },
+        getTopicColor: topicSetting.getColor,
+        getRadialGradient: topicSetting.getRadialGradient
     }
 }
 </script>
 
 <template>
     <v-app>
-        <v-container fluid v-if="selectedProj !== null">
+        <v-container v-if="selectedProj !== null">
 <!--            <v-row>-->
 <!--                <p>injected info:</p>-->
 <!--            </v-row>-->
@@ -129,7 +132,7 @@ export default {
                     <v-card>
                         <v-card-title>{{ project.name }}</v-card-title>
                         <v-card-actions>
-                            <v-btn @click="changeSelectedProj(project)">开始！</v-btn>
+                            <v-btn :color="getTopicColor(user.topic)" @click="changeSelectedProj(project)">开始！</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-col>

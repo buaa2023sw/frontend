@@ -12,7 +12,7 @@
     >
       进度显示图
     </div>
-    <v-btn class="ma-2" color="primary" dark @click="back">
+    <v-btn class="ma-2" :color="getTopicColor(user.topic)" @click="back">
       <v-icon dark left> mdi-arrow-left </v-icon>
       返回
     </v-btn>
@@ -21,6 +21,7 @@
 
 <script>
 import * as echarts from "echarts";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   data() {
@@ -38,6 +39,9 @@ export default {
     //   this.drawB();
     this.drawP();
     this.drawB();
+  },
+  inject: {
+    user: {default: null}
   },
   methods: {
     transform(state) {
@@ -364,6 +368,7 @@ export default {
     back() {
       this.$router.go(-1);
     },
+    getTopicColor: topicSetting.getColor
   },
 };
 </script>

@@ -54,7 +54,7 @@
                 position: absolute;
               "
               depressed
-              color="primary"
+              :color="getTopicColor(user.topic)"
               @click="setupDialog = true"
               >创建项目</v-btn
             >
@@ -164,6 +164,7 @@ import {
 } from "@/api/user";
 import Cookies from "js-cookie";
 import getIdenticon from "@/utils/identicon";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   // inject: ['user', 'selectedProj'],
@@ -450,6 +451,7 @@ export default {
         return "green";
       }
     },
+    getTopicColor: topicSetting.getColor
   },
 };
 </script>

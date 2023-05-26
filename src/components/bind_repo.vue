@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios'
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   name: "bindGithubRepo",
@@ -41,7 +42,8 @@ export default {
           )
               .then((res) => {this.bindingInProgress = false; this.updateBindRepos() })
               .catch((err) => { alert('哦不，好像绑定失败了！'); this.bindingInProgress = false; })
-      }
+      },
+    getTopicColor: topicSetting.getColor,
   }, watch: {
     }
 }
@@ -54,7 +56,7 @@ export default {
             <v-text-field v-model="gh_username" label="GitHub Username"></v-text-field>
         </v-col>
         <v-col cols="1" class="text-center my-3">
-            <v-btn fab @click="seperate = !seperate">/</v-btn>
+            <v-btn :color="getTopicColor(user.topic)" fab @click="seperate = !seperate">/</v-btn>
         </v-col>
         <v-col cols="6">
             <v-text-field v-model="gh_reponame" label="GitHub Reponame"></v-text-field>
@@ -63,7 +65,7 @@ export default {
         <v-row>
             <v-col cols="4"></v-col>
             <v-col cols="4">
-                <v-btn @click="bindSplit()" :disabled="bindingInProgress || gh_reponame === '' || gh_username === ''">
+                <v-btn :color="getTopicColor(user.topic)" @click="bindSplit()" :disabled="bindingInProgress || gh_reponame === '' || gh_username === ''">
                     绑定
                     {{ gh_username === '' ? '?' : gh_username }} /
                     {{ gh_reponame === '' ? '?' : gh_reponame }}

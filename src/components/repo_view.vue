@@ -3,6 +3,7 @@ import {computed} from 'vue'
 import branchView from './branch_view.vue'
 import issue_view from "@/components/issue_view.vue";
 import pr_view from "@/components/pr_view.vue";
+import topicSetting from "@/utils/topic-setting";
 export default {
     name: "repoView",
     components: {
@@ -29,6 +30,7 @@ export default {
       }
     },
     inject: {
+        user: {default: null},
         proj: { default: null },
         bindRepos: {default: null},
         bindReposBusy: {default: null}
@@ -37,6 +39,11 @@ export default {
         return {
           selectedRepo: computed(() => this.bindRepos[this.selectedRepo])
         }
+    },
+    methods: {
+      getTopicColor: topicSetting.getColor,
+      getDarkColor: topicSetting.getDarkColor,
+      getRadialGradient: topicSetting.getRadialGradient
     }
 }
 </script>
@@ -49,16 +56,32 @@ export default {
 
   <v-skeleton-loader v-if="bindReposBusy" type="card"></v-skeleton-loader>
   <div v-else-if="bindRepos.length > 0">
-      <v-tabs v-model="selectedRepo">
+      <v-tabs :color="getDarkColor(user.topic)" v-model="selectedRepo">
           <v-tab v-for="repository in bindRepos" :key="repository.id">{{ repository.repo }}</v-tab>
       </v-tabs>
       <v-tabs-items v-model="selectedRepo">
           <v-tab-item v-for="repository in bindRepos" :key="repository.id">
               <p v-if="bindRepos[selectedRepo].intro !== ''">代码存储库介绍：{{ bindRepos[selectedRepo].intro }}</p>
               <p v-else>这个代码存储库没有介绍哦</p>
-              <v-row><v-col class="ma-1"><v-card raised class="pa-2"><branchView /></v-card></v-col></v-row>
-              <v-row><v-col class="ma-1"><v-card raised class="pa-2"><issue_view /></v-card></v-col></v-row>
-              <v-row><v-col class="ma-1"><v-card raised class="pa-2"><pr_view /></v-card></v-col></v-row>
+              <v-row><v-col class="ma-1"><v-card :style="getRadialGradient(user.topic)" raised class="pa-2"><branchView /></v-card></v-col></v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="6" lg="6" xl="6" class="ma-auto">
+                  <v-card height="200px" :style="getRadialGradient(user.topic)" raised class="pa-2 overflow-y-auto">
+                    <v-card-title>事务</v-card-title>
+                    <v-card-text>
+                      <issue_view />
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col cols="12" sm="12" md="6" lg="6" xl="6" class="ma-auto">
+                  <v-card height="200px" :style="getRadialGradient(user.topic)" raised class="pa-2 overflow-y-auto">
+                    <v-card-title>和并请求</v-card-title>
+                    <v-card-text>
+                      <pr_view />
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
           </v-tab-item>
       </v-tabs-items>
   </div>

@@ -12,6 +12,20 @@ function getColor(topic) {
     }
 }
 
+function getDarkColor(topic) {
+    if (topic === 'A') { // 红色
+        return "#693b38"
+    } else if (topic === 'B') { // 橙色
+        return "#684a32"
+    } else if (topic === 'C') { // 绿色
+        return "#43613e"
+    } else if (topic === 'D') { // 蓝色
+        return "#334a68"
+    } else { // 紫色
+        return "#5e455e"
+    }
+}
+
 function getUrl(topic) {
     if (topic === 'A') { // 红色
         return "https://fastly.picsum.photos/id/859/1919/1919.jpg?hmac=24AoHo7Jc5TRRRaJfWO0B4z2wW5Jl14r56rVKeMfpZI"
@@ -30,8 +44,14 @@ function getRadialGradient(topic) {
     return 'background: radial-gradient(circle, rgba(255, 255, 255, 1), ' + getColor(topic) + '88)'
 }
 
+function getLinearGradient(topic) {
+    return 'background: linear-gradient(90deg, rgba(255, 255, 255, 1), ' + getColor(topic) + '88)'
+}
+
 export default {
+    getDarkColor,
     getColor,
     getUrl,
-    getRadialGradient
+    getRadialGradient,
+    getLinearGradient
 }

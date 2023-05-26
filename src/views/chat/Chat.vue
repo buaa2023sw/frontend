@@ -2,6 +2,7 @@
 import axios from "axios"
 import getIdenticon from "@/utils/identicon";
 import {computed} from "vue";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
     name: "Chat",
@@ -269,7 +270,11 @@ export default {
                 message: this.messageInput
             }));
             this.messageInput = ''
-        }
+        },
+        getDarkColor: topicSetting.getDarkColor,
+        getTopicColor: topicSetting.getColor,
+        getLinearGradient: topicSetting.getLinearGradient,
+        getRadialGradient: topicSetting.getRadialGradient
     },
     beforeRouteLeave(to, from, next) {
       console.log('leaving chat room, closing all ws')
@@ -290,7 +295,7 @@ export default {
                 <v-list-item-group v-model="selectedRoom" mandatory>
                     <v-list-item two-line v-for="item in chatRooms" :key="item.id">
                         <v-list-item-content>
-                          <v-list-item-title style="font-weight: bold">{{ item.title }} <span class="float-end grey--text">{{item.desc}}</span> </v-list-item-title>
+                          <v-list-item-title style="font-weight: bold"><span :style="'color: ' + getDarkColor(user.topic)">{{ item.title }}</span> <span class="float-end grey--text">{{item.desc}}</span> </v-list-item-title>
                           <v-list-item-subtitle>
                             {{item.history.length === 0 ? '还没有消息哦' : item.history[0].from + ' : ' + item.history[0].content}}
                             <span class="float-end">{{item.history.length === 0 ? '' : new Date(item.history[0].time).toLocaleTimeString()}}</span>
@@ -300,9 +305,9 @@ export default {
                 </v-list-item-group>
                 <v-divider></v-divider>
                 <v-list-item ripple @click="createSheet = !createSheet">
-                    <v-list-item-content>创建新的聊天室</v-list-item-content>
+                    <v-list-item-content><span :style="'color: ' + getDarkColor(user.topic)">创建新的聊天室</span></v-list-item-content>
                     <v-list-item-icon>
-                      <v-icon>mdi-plus-circle</v-icon>
+                      <v-icon :color="getDarkColor(user.topic)">mdi-plus-circle</v-icon>
                     </v-list-item-icon>
                 </v-list-item>
 
@@ -371,7 +376,7 @@ export default {
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn plain class="green--text" @click="createChatRoom">创建！</v-btn>
+                      <v-btn plain :color="getDarkColor(user.topic)" @click="createChatRoom">创建！</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -401,7 +406,7 @@ export default {
                           </span>
                         </v-hover>
                         <v-avatar class="mx-1 float-end">
-                          <v-icon size="50px" @click="inviteSheet = !inviteSheet">mdi-plus-circle</v-icon>
+                          <v-icon size="50px" @click="inviteSheet = !inviteSheet" :color="getDarkColor(user.topic)">mdi-plus-circle</v-icon>
                         </v-avatar>
                       </v-card-text>
                   </v-card>
@@ -428,14 +433,14 @@ export default {
                       <v-divider></v-divider>
                       <v-card-subtitle v-if="inviteNominees[inviteSelected] !== undefined">要邀请 {{inviteNominees[inviteSelected].peopleName}} 进入群聊“{{ chatRooms[selectedRoom].title }}”吗？</v-card-subtitle>
                       <v-card-actions>
-                        <v-btn plain class="green--text" @click="() => inviteUserToChat(chatRooms[selectedRoom].id, inviteNominees[inviteSelected].peopleId)">确定邀请</v-btn>
+                        <v-btn plain :color="getDarkColor(user.topic)" @click="() => inviteUserToChat(chatRooms[selectedRoom].id, inviteNominees[inviteSelected].peopleId)">确定邀请</v-btn>
                         <v-btn plain class="red--text" @click="() => inviteSheet = !inviteSheet">我再想想</v-btn>
                       </v-card-actions>
                     </v-card-text>
                     <v-card-text v-else>
                       <v-card-subtitle>项目所有的成员都在聊天室里了！</v-card-subtitle>
                       <v-card-actions>
-                        <v-btn plain class="green--text" @click="() => inviteSheet = !inviteSheet">好</v-btn>
+                        <v-btn plain :color="getDarkColor(user.topic)" @click="() => inviteSheet = !inviteSheet">好</v-btn>
                       </v-card-actions>
                     </v-card-text>
 
@@ -465,23 +470,23 @@ export default {
 <!--                                  <v-slide-y-transition class="py-0" group tag="v-list-item-group">-->
                                     <template v-for="item in chatRooms[selectedRoom].history">
                                       <v-divider :key="item.id"></v-divider>
-                                      <v-list-item disabled two-line :key="item.id">
-                                        <v-list-item-avatar v-if="user.name !== item.from" size="40px">
+                                      <v-list-item disabled two-line :key="item.id" v-if="user.name !== item.from" >
+                                        <v-list-item-avatar size="40px">
                                           <v-img :src="getIdenticon(item.from, 50, 'user')"></v-img>
                                         </v-list-item-avatar>
-                                        <v-list-item-content v-if="user.name !== item.from">
+                                        <v-list-item-content>
                                           <v-list-item-title class="text--primary" style="font-weight: bold; font-size: large;">{{ item.content }}</v-list-item-title>
                                           <v-list-item-subtitle>{{ item.from }}<span class="float-end">{{ new Date(item.time).toLocaleTimeString() }}</span></v-list-item-subtitle>
                                         </v-list-item-content>
-
-                                        <v-list-item-content v-if="user.name === item.from">
+                                      </v-list-item>
+                                      <v-list-item disabled two-line :key="item.id" v-else :style="getLinearGradient(user.topic)">
+                                        <v-list-item-content>
                                           <v-list-item-title class="text--primary" style="font-weight: bold; font-size: large;"><span class="float-end">{{ item.content }}</span></v-list-item-title>
                                           <v-list-item-subtitle>{{ new Date(item.time).toLocaleTimeString() }}<span class="float-end">您</span></v-list-item-subtitle>
                                         </v-list-item-content>
-                                        <v-list-item-avatar v-if="user.name === item.from" size="40px">
+                                        <v-list-item-avatar size="40px">
                                           <v-img :src="getIdenticon(item.from, 50, 'user')"></v-img>
                                         </v-list-item-avatar>
-
                                       </v-list-item>
                                     </template>
 <!--                                  </v-slide-y-transition>-->

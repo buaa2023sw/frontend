@@ -44,7 +44,7 @@
       <v-btn
       style="top:20%;right:14%;height:60%;width:13%;position: absolute"
     depressed
-    color="primary"
+    :color="getTopicColor(user.topic)"
     @click="gotoWork"
     >查看工作量分配
     <v-icon
@@ -56,7 +56,7 @@
       <v-btn
       style="top:20%;right:2%;height:60%;width:10%;position: absolute"
     depressed
-    color="primary"
+    :color="getTopicColor(user.topic)"
     @click="setupDialog = true"
     >添加成员
     <v-icon
@@ -160,6 +160,7 @@
 import { showPersonList, removeMember, showContribute, modifyRole, addMember } from '@/api/user'
 import project_messagesVue from '@/views/manager/project_messages.vue'
 import getIdenticon from "@/utils/identicon";
+import topicSetting from "@/utils/topic-setting";
 export default {
   name: 'AllProject',
   // inject: {user: {default: null},
@@ -378,7 +379,8 @@ export default {
       } else if (role == 'C') {
         return '负责人'
       }
-    }
+    },
+    getTopicColor: topicSetting.getColor
   }
 }
 </script>

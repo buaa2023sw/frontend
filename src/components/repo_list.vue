@@ -1,6 +1,7 @@
 <script>
 
 import axios from "axios";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
     name: "bindedGithubRepos",
@@ -37,7 +38,8 @@ export default {
                     repoId: repo.id
                 }).then((res) => { this.updateBindRepos() })
                 .catch((err) => { alert('哦不，好像解绑失败了！'); this.bindingInProgress = false; })
-        }
+        },
+        getTopicColor: topicSetting.getColor,
     }
 }
 
@@ -62,15 +64,13 @@ export default {
                     {{ repo.user }} / {{ repo.repo }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <v-divider></v-divider>
-                    <span class="description" v-if="repo.intro !== ''">{{ repo.intro }}</span>
-                    <span class="description" v-else>存储库的简介空空如也呢</span>
-                    <v-divider></v-divider>
-                    <br>
-                    <v-row>
-                    <v-col cols="6" class="text-center"><v-btn link :href="'https://github.com/' + repo.user + '/' + repo.repo" target="_blank">GitHub</v-btn></v-col>
-                    <v-col cols="6" class="text-center"><v-btn @click="unbind(repo)">Unbind</v-btn></v-col>
-                    </v-row>
+                        <div class="description" v-if="repo.intro !== ''">{{ repo.intro }}</div>
+                        <div class="description" v-else>存储库的简介空空如也呢</div>
+                  <br>
+                  <v-row>
+                    <v-col cols="6"  class="text-center"><v-btn :color="getTopicColor(user.topic)" link :href="'https://github.com/' + repo.user + '/' + repo.repo" target="_blank"><v-icon>mdi-github</v-icon>GitHub</v-btn></v-col>
+                    <v-col cols="6"  class="text-center"><v-btn :color="getTopicColor(user.topic)" @click="unbind(repo)"><v-icon>mdi-link-variant-off</v-icon>Unbind</v-btn></v-col>
+                  </v-row>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-expansion-panels>

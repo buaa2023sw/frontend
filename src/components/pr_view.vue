@@ -1,6 +1,7 @@
 
 <script>
 import axios from "axios";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   name: "pr_view",
@@ -58,7 +59,8 @@ export default {
               console.log('get pr failure with err: ' + err)
               this.prsBusy = false
           })
-      }
+      },
+    getTopicColor: topicSetting.getColor
   }, inject: {
         user: {default: null},
         proj: {default: null},
@@ -71,7 +73,6 @@ export default {
 
 <template>
 <div>
-  <h2>合并请求</h2>
 <!--  <p>This is pr view</p>-->
 
   <v-skeleton-loader v-if="this.prsBusy" type="button, table" />
@@ -94,6 +95,14 @@ export default {
     <p>合并请求似乎空空如也？现在就去GitHub上发一个吧！</p>
   </v-col>
   </v-row>
+
+  <v-card-actions>
+    <v-spacer></v-spacer>
+
+    <v-btn :color="getTopicColor(user.topic)" link :href="'https://github.com/' + selectedRepo.user + '/' + selectedRepo.repo + '/pulls'" target="_blank">
+      <v-icon>mdi-github</v-icon>在GitHub浏览
+    </v-btn>
+  </v-card-actions>
 </div>
 </template>
 

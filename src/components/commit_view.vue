@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   name: "commit_view",
@@ -53,18 +54,16 @@ export default {
               alert('/api/develop/getBindRepos error' + err)
               this.commitHistoryBusy = false
           })
-      }
+      },
+      getTopicColor: topicSetting.getColor,
+      getDarkColor: topicSetting.getDarkColor
   },
   data() {
     return {
       commitHistoryBusy: true,
       commitHistory: [
         {
-          id: 1,
-          committer: 'TrickEye',
-          message: 'commitMessage, hahaha',
-          hash: '114514',
-          time: '2023/4/2'
+
         }
       ],
       statsPerDay: {}
@@ -86,7 +85,7 @@ export default {
 
 <template>
 <div>
-<h2>分支<span class="need-mono"> “{{ selectedBranch.name }}” </span>上的提交记录</h2>
+<v-card-title>分支<span class="need-mono"> “{{ selectedBranch.name }}” </span>上的提交记录</v-card-title>
 
   <p v-if="!commitHistoryBusy">分支<span class="need-mono"> “{{selectedBranch.name}}” </span>中有 {{ commitHistory.length }} 条提交记录。最新的提交记录：</p>
   <p v-else>正在与服务器同步分支{{selectedBranch.name}}上的最新提交记录...</p>
@@ -119,10 +118,11 @@ export default {
       <br>
       <v-divider></v-divider>
       <br>
-      <span>过去10天的提交记录数量</span>
+      <v-card-title>过去10天的提交记录数量</v-card-title>
       <v-sparkline
               :labels="statsPerDay.label"
               :value="statsPerDay.value"
+              :color="getDarkColor(user.topic)"
               auto-line-width
               smooth
               padding="20"
@@ -131,14 +131,11 @@ export default {
               auto-draw
       ></v-sparkline>
       <br> <v-divider></v-divider> <br>
-      <v-row>
-          <v-col cols="6" class="text-center">
-              <v-btn
-                  link :href="'https://github.com/' + selectedRepo.user + '/' + selectedRepo.repo + '/tree/' + selectedBranch.name"
-              ><v-icon>mdi-github</v-icon>在GitHub查看</v-btn>
-          </v-col>
-          <v-col cols="6" class="text-center"><v-btn link :to="'/dev/' + proj.id + '/' + selectedRepo.id + '/' + selectedBranch.name + '/'"><v-icon>mdi-send</v-icon>浏览详情</v-btn></v-col>
-      </v-row>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn width="10rem" :color="getTopicColor(user.topic)" link :href="'https://github.com/' + selectedRepo.user + '/' + selectedRepo.repo + '/tree/' + selectedBranch.name" target="_blank"><v-icon>mdi-github</v-icon>在GitHub查看</v-btn>
+        <v-btn width="10rem" :color="getTopicColor(user.topic)" link :to="'/dev/' + proj.id + '/' + selectedRepo.id + '/' + selectedBranch.name + '/'" target="_blank"><v-icon>mdi-send</v-icon>浏览详情</v-btn>
+      </v-card-actions>
   </div>
   <v-skeleton-loader v-else type="table" class="mx-auto" />
 

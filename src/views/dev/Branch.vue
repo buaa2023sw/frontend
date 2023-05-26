@@ -21,7 +21,7 @@
             <v-row>
               <v-col cols="3" class="px-3">
                 <h2>提交记录</h2>
-                <v-list class="overflow-y-auto" max-height="1200px">
+                <v-list class="overflow-y-auto" max-height="calc(100vh - 250px)">
                   <v-list-item v-for="commit in commitHistory" :key="commit.id">
                     <v-list-item-content>
                       <v-list-item-title>{{commit.commitMessage}}</v-list-item-title>
@@ -55,7 +55,7 @@
                   <br>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-card>
+                      <v-card :style="getLinearGradient(user.topic)">
                         <v-container fluid>
                           <v-row>
                             <v-col cols="8">
@@ -111,6 +111,7 @@ import * as echarts from 'echarts';
 
 import FileView from './File.vue'
 import {computed} from "vue";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
     name: "Branch",
@@ -361,7 +362,8 @@ export default {
                 ]
             })
 
-        }
+        },
+        getLinearGradient: topicSetting.getLinearGradient
     }
 }
 </script>

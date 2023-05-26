@@ -12,7 +12,7 @@
         ></v-text-field>
         <v-btn
       depressed
-      color="primary"
+      :color="getTopicColor(user.topic)"
       style="position:absolute;top:1%;right:30%;height:4%;width:10%;"
       @click="gotoPic"
       >  <v-icon 
@@ -22,21 +22,21 @@
     图表展示</v-btn>
         <v-btn
       depressed
-      color="primary"
+      :color="getTopicColor(user.topic)"
       style="position:absolute;top:1%;right:17%;height:4%;width:11%;"
       @click="checkMyTask"
       v-if="checkMyFlag === false"
       >查看我的任务</v-btn>
       <v-btn
       depressed
-      color="primary"
+      :color="getTopicColor(user.topic)"
       style="position:absolute;top:1%;right:17%;height:4%;width:10%;"
       @click="checkAllTask"
       v-else
       >查看全部任务</v-btn>
         <v-btn
       depressed
-      color="primary"
+      :color="getTopicColor(user.topic)"
       style="position:absolute;top:1%;right:1%;height:4%;width:10%;"
       @click="setupFather = true"
       >创建任务</v-btn>
@@ -296,14 +296,14 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu5 = false"
           >
            取消
           </v-btn>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu5 = false"
           >
             确定
@@ -341,14 +341,14 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu6 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu6 = false"
           >
             OK
@@ -386,7 +386,7 @@
     <el-button @click="cancelNewSon">取 消</el-button>
     <el-button type="primary" @click="newSon">确 定</el-button>
   </span>
-</el-dialog https://v2.vuetifyjs.com/zh-Hans/components/alerts/> 
+</el-dialog>
 
 <el-dialog
         title="设置提醒时间"
@@ -422,14 +422,14 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu3 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu3 = false"
           >
             OK
@@ -469,14 +469,14 @@
           <v-spacer></v-spacer>
           <v-btn
             tftuext
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu4 = false"
           >
             Cancel
           </v-btn>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu4 = false"
           >
             OK
@@ -529,7 +529,7 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu3 = false"
           >
             确定
@@ -567,7 +567,7 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            color="primary"
+            :color="getTopicColor(user.topic)"
             @click="menu4 = false"
           >
             确定
@@ -628,6 +628,7 @@
 <script>
 import {showTaskList,changeOrder, addTask, notice, addSubTask, modifyTaskContent, watchMyTask, completeTask, removeTask, showPersonList} from '@/api/user.js'
 import getIdenticon from "@/utils/identicon";
+import topicSetting from "@/utils/topic-setting";
 
 export default {
   name: "allTask",
@@ -1221,7 +1222,8 @@ export default {
     console.log(this.personIdList);
     console.log(this.personNameList);
     return this.personNameList[this.personIdList.indexOf(id)];
-  }
+  },
+    getTopicColor: topicSetting.getColor
 }
 }
 </script>
