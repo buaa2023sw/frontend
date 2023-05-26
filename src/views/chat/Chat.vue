@@ -255,6 +255,13 @@ export default {
           return socket
         },
         sendMsg() {
+            if ((this.messageInput || '').length > 80) {
+              this.$message({
+                type: 'error',
+                message: '消息太长了'
+              })
+              return
+            }
             console.log('will send: ' + this.messageInput)
             this.chatRooms[this.selectedRoom].ws.send(JSON.stringify({
                 sender: this.user.id,
@@ -443,11 +450,12 @@ export default {
                             <v-spacer></v-spacer>
                             <v-col cols="10">
                               <v-text-field
-                                  rounded filled
+                                  rounded filled counter="80"
                                   label="输入消息"
                                   v-model="messageInput"
                                   :append-outer-icon="'mdi-send'"
                                   @click:append-outer="sendMsg"
+                                  @keydown.enter="sendMsg"
                               ></v-text-field>
                             </v-col>
                             <v-spacer></v-spacer>
