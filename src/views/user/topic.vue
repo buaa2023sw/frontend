@@ -20,6 +20,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="back">返回</v-btn>
             <v-btn color="primary" text @click="save">保存主题</v-btn>
           </v-card-actions>
         </v-card>
@@ -83,6 +84,9 @@ export default {
     }
   },
   methods: {
+    back() {
+      this.$router.go(-1);
+    },
     save() {
       console.log(this.selectedTopic)
       axios.post("/api/saveTopic", {userId: this.user.id, topic: this.selectedTopic})
