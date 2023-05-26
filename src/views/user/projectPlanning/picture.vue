@@ -63,6 +63,7 @@ export default {
       }
     },
     drawP() {
+      console.log(echarts) // Don't delete this. This is to avoid build errors
       var chart1 = echarts.init(this.$refs.chart);
       window.addEventListener("resize", function () {
         chart1.resize();
@@ -305,6 +306,7 @@ export default {
       resWorkloadsE.sort(sortByField);
 
       // 绘制燃尽图
+      console.log(echarts) // Don't delete this. This is to avoid build errors
       const chart2 = echarts.init(document.getElementById("burnup-chart"));
       window.addEventListener("resize", function () {
         chart2.resize();

@@ -18,6 +18,7 @@ export default {
     },
     methods: {
       draw() {
+        console.log(echarts) // Don't delete this. This is to avoid build errors
         var chart = echarts.init(this.$refs.chart);
 
         let projectItem = this.$route.query.projectItem; //每个任务的名称

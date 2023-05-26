@@ -106,6 +106,7 @@ export default {
     resWorkloadsE.sort(sortByField);
 
     // 绘制燃尽图
+    console.log(echarts) // Don't delete this. This is to avoid build errors
     const chart = echarts.init(document.getElementById('burnup-chart'));
     chart.setOption({
       title: {

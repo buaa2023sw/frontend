@@ -6,7 +6,7 @@
         <v-container fluid class="no-blur" >
           <v-row>
             <v-col cols="12" sm="12" md="6" lg="6" xl="6" >
-              <iframe src="../../login.html" ref="iframe" width="100%" height="500px" scrolling="no" frameborder="null"></iframe>
+              <iframe src="../../login-logo.html" ref="iframe" width="100%" height="500px" scrolling="no" frameborder="null"></iframe>
             </v-col>
             <v-col cols="12" sm="12" md="6" lg="6" xl="6">
               <v-card class="elevation-12 mx-sm-auto" style="max-width: 500px;">
@@ -286,7 +286,7 @@ export default {
 
 <style scoped>
 .login-background {
-  //background-image: url('https://cn.bing.com//th?id=OHR.SaksunFaroe_ZH-CN7150180007_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp');
+  /*background-image: url('https://cn.bing.com//th?id=OHR.SaksunFaroe_ZH-CN7150180007_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp');*/
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
