@@ -372,8 +372,9 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-          <span></span>
+          <span v-if="user.id === people.peopleId"></span>
           <v-checkbox
+                  v-else
                   :input-value="active"
                   color="deep-purple accent-4"
                 ></v-checkbox>
@@ -470,7 +471,7 @@
 
 <script>
 import {showPersonList, userDocList, userCollectDocList, addDocToCollect, delDocFromCollect, userCreateDoc, 
-       userEditDoc, userDelDoc, docTimeUpdate} from "@/api/user"
+       userEditDocOther, userDelDoc, userEditDocContent, userReleaseDocLock, userGetDocLock, isDocLocked} from "@/api/user"
 import getIdenticon from "@/utils/identicon";
 
   export default {
@@ -650,20 +651,40 @@ import getIdenticon from "@/utils/identicon";
         }
         console.log("edit");
         console.log(arr);
-        userEditDoc({userId: this.user.id, projectId:this.selectedProj.projectId, 
-        name: this.editDocumentForm.name, outline: "", content: this.textList[this.editDocumentForm.id],
-        docId: this.editDocumentForm.id, accessUserId: arr}).then(
+        userEditDocOther({userId: this.user.id, projectId:this.selectedProj.projectId, docId: this.editDocumentForm.id,
+        name: this.editDocumentForm.name, accessUserId: arr}).then(
         res => {
-          console.log("userEditDoc");
+          console.log("userEditDocOther");
           console.log(res);
           this.getDocumentData();
         }
       )
       },
       openMd(item) {
-        this.dialog3 = true;
         this.doc = item;
-        this.getDocumentData();
+        let lock = false;
+        isDocLocked({docId: item.id}).then(
+          res => {
+            console.log("isDocLocked");
+            console.log(res);
+            lock = res['data']['isLocked'];
+            if (lock) {
+          this.$message({
+                type: 'error',
+                message: '该文档正在被编辑！'
+              })
+        } else {
+          userGetDocLock({userId: this.user.id, projectId: this.selectedProj.projectId, docId: item.id}).then(
+          res => {
+            console.log("userGetDocLock");
+            console.log(res);
+            this.getDocumentData();
+            this.dialog3 = true;
+          }
+        )
+        }
+          }
+        )
       },
       gotoCollect() {
         this.isCollect = true;
@@ -848,10 +869,10 @@ import getIdenticon from "@/utils/identicon";
         for (let key in this.doc.accessUser) {
           accessUserId.push(key);
         }
-        userEditDoc({userId: this.user.id, projectId: this.selectedProj.projectId,
-           name: this.doc.name, outline: "", content: this.textList[this.doc.id], accessUserId: accessUserId}).then(
+        userEditDocContent({userId: this.user.id, projectId: this.selectedProj.projectId, docId: this.doc.id, 
+          content: this.textList[this.doc.id]}).then(
             res => {
-              console.log("userEditDoc");
+              console.log("userEditDocContent");
               console.log(res);
               this.getDocumentData();
             }
@@ -934,8 +955,17 @@ import getIdenticon from "@/utils/identicon";
   }
 },
 watch: {
-  dialog3() {
-    
+  dialog3: {
+    handler(newVal, oldVal) {
+      if (newVal == false) {
+        userReleaseDocLock({userId: this.user.id, projectId: this.selectedProj.projectId, docId: this.doc.id}).then(
+          res => {
+            console.log("userReleaseDocLock");
+            console.log(res);
+          }
+        )
+      } 
+    }
   }
 }
   }

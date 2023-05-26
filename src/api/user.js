@@ -165,8 +165,8 @@ export const userCreateDoc = (data) => {
   return request.post("/api/doc/userCreateDoc", data);
 }
 
-export const userEditDoc = (data) => {
-  return request.post("/api/doc/userEditDoc", data);
+export const userEditDocOther = (data) => {
+  return request.post("/api/doc/userEditDocOther", data);
 }
 
 export const userDelDoc = (data) => {
@@ -175,4 +175,21 @@ export const userDelDoc = (data) => {
 
 export const docTimeUpdate = (data) => {
   return request.post("/api/doc/docTimeUpdate", data);
+}
+
+export const userEditDocContent = (data) => {
+  return request.post("/api/doc/userEditDocContent", data);
+}
+
+export const userGetDocLock = (data) => {
+  return request.post("/api/doc/userGetDocLock", data);
+}
+
+
+export const userReleaseDocLock = (data) => {
+  return request.post("/api/doc/userReleaseDocLock", data);
+}
+
+export const isDocLocked = (data) => {
+  return request.post("/api/doc/isDocLocked", data);
 }

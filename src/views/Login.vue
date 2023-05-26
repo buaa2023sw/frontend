@@ -62,8 +62,7 @@
         </v-container>
       </v-col>
     </v-row>
-  </div>
-</div>
+  </v-container>
 </template>
 
 <script>
@@ -288,7 +287,7 @@ export default {
 
 <style scoped>
 .login-background {
-  /*background-image: url('https://cn.bing.com//th?id=OHR.SaksunFaroe_ZH-CN7150180007_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp');*/
+  background-image: url('https://cn.bing.com//th?id=OHR.SaksunFaroe_ZH-CN7150180007_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

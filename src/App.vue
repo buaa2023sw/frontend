@@ -472,12 +472,6 @@ export default {
     this.updateUserProj();
     this.updateTopic();
   },
-<<<<<<< HEAD
-  // beforeUpdate() {
-  //   this.getTaskList();
-  // },
-=======
->>>>>>> szx 5.25
   components:{
     AllTask,
     AllFile,
@@ -524,33 +518,10 @@ export default {
   beforeUpdate() {
     // this.drawer = user && proj && showLabel();
     this.showLabel();
-<<<<<<< HEAD
     let proj = Cookies.get("proj");
     if (proj !== undefined) {
       proj = JSON.parse(proj)
       this.proj = proj;
-=======
-    let proj = undefined;
-    if (user !== undefined) {
-      if (user.status !== 'C') {
-      proj = Cookies.get("proj");
-      console.log(proj);
-      if (proj === undefined) {
-        console.log("not choose project");
-        if (
-        window.location.pathname === "/register" ||  window.location.pathname === "/user/profile" ||
-        window.location.pathname === "/login" || window.location.pathname === "/manager"
-         ) {
-         } else if (window.location.pathname !== "/allProject/") {
-          window.location.href = "/allProject/";
-        }
-      } else {
-      proj = JSON.parse(proj);
-      console.log("proj not undefined");
-      console.log(proj);
-      console.log(proj.projectId);
-      }
->>>>>>> szx 5.25
     }
   },
   provide() {
