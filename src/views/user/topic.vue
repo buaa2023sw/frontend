@@ -1,28 +1,34 @@
 <template>
-  <v-container fluid fill-height>
+  <v-container fluid fill-height :style="getRadialGradient(selectedTopic)">
     <v-row align="center" justify="center">
       <v-col cols="12">
         <v-card class="mx-auto" width="500" height="350" padding="16">
-          <v-card-title class="headline font-weight text-left">主题设置</v-card-title>
-          <v-divider></v-divider>
-<!--          <v-row align="center">-->
-<!--            <v-col cols="3" class="text-center">-->
+          <v-img
+            :src="getUrl(selectedTopic)"
+            width="500" height="350"
+            gradient="131deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.8) 24%, rgba(0,0,0,0) 100%"
+          >
+            <v-card-title class="headline font-weight text-left">主题设置</v-card-title>
+            <v-divider></v-divider>
+            <!--          <v-row align="center">-->
+            <!--            <v-col cols="3" class="text-center">-->
 
-<!--            </v-col>-->
-<!--            <v-col cols="8">-->
+            <!--            </v-col>-->
+            <!--            <v-col cols="8">-->
 
-<!--            </v-col>-->
-<!--          </v-row>-->
-          <v-card-text>
-            <v-radio-group v-model="selectedTopic">
-              <v-radio v-for="i in topicList" :key="i.value" :label="i.label" :value="i.value" :color="i.color"></v-radio>
-            </v-radio-group>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="back">返回</v-btn>
-            <v-btn color="primary" text @click="save">保存主题</v-btn>
-          </v-card-actions>
+            <!--            </v-col>-->
+            <!--          </v-row>-->
+            <v-card-text>
+              <v-radio-group v-model="selectedTopic">
+                <v-radio v-for="i in topicList" :key="i.value" :label="i.label" :value="i.value" :color="i.color"></v-radio>
+              </v-radio-group>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn :color="getColor(selectedTopic)" @click="back">返回</v-btn>
+              <v-btn :color="getColor(selectedTopic)" @click="save">保存主题</v-btn>
+            </v-card-actions>
+          </v-img>
         </v-card>
       </v-col>
     </v-row>
@@ -43,6 +49,7 @@
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
+import topicSetting from '@/utils/topic-setting.js'
 
 export default {
   name: "topic",
@@ -114,6 +121,9 @@ export default {
             console.error(err);
           })
     },
+    getUrl: topicSetting.getUrl,
+    getColor: topicSetting.getColor,
+    getRadialGradient: topicSetting.getRadialGradient,
   },
 }
 </script>

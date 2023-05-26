@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid fill-height>
+  <v-container fluid fill-height :style="getRadialGradient(user.topic)">
     <v-row align="center" justify="center">
       <v-col cols="12">
         <v-card class="mx-auto" width="800" height="300" padding="16">
@@ -79,6 +79,7 @@ import util from "@/views/util";
 import Cookies from "js-cookie";
 import getIdenticon from "@/utils/identicon";
 import {sha256} from "js-sha256";
+import topicSetting from '@/utils/topic-setting.js'
 
 export default {
   name: "profile",
@@ -275,7 +276,8 @@ export default {
     back() {
       
       this.$router.go(-1);
-    }
+    },
+    getRadialGradient: topicSetting.getRadialGradient,
   },
 };
 </script>
