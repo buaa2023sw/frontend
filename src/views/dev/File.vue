@@ -18,6 +18,7 @@ export default {
                 png: 'mdi-file-image',
                 txt: 'mdi-file-document-outline',
                 xls: 'mdi-file-excel',
+                vue: 'mdi-vuejs'
             },
             items: [
                 {
@@ -107,7 +108,22 @@ export default {
           Cookies.set('diag', this.fileContent)
           window.open('/user/ai/diagnosis', '_blank')
         },
-
+        unitTestSelected() {
+          Cookies.set('diag', this.selectedText)
+          window.open('/user/ai/testdata', '_blank')
+        },
+        unitTestWholeFile() {
+          //如果文件长度大于Cookie最长长度，就不诊断了
+          if (this.fileContent.length > 4096) {
+            this.$message({
+              type: 'error',
+              message: '文件太长了，AI会罢工的！'
+            })
+            return
+          }
+          Cookies.set('diag', this.fileContent)
+          window.open('/user/ai/testdata', '_blank')
+        }
     },
     created() {
         axios.post('/api/develop/getFileTree', {
@@ -176,7 +192,7 @@ export default {
       <v-row>
           <v-col cols="3">
               <h2>文件树</h2>
-              <v-card min-height="80rem" max-height="80rem" class="overflow-y-auto">
+              <v-card min-height="calc(100vh - 300px)" max-height="calc(100vh - 300px)" class="overflow-y-auto">
                 <v-treeview
                     :items="items"
                     activatable
@@ -191,7 +207,7 @@ export default {
                       {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                     </v-icon>
                     <v-icon v-else>
-                      {{ files[item.file] }}
+                      {{ files[item.file] !== undefined ? files[item.file] : 'mdi-file-document' }}
                     </v-icon>
                   </template>
                 </v-treeview>
@@ -203,8 +219,8 @@ export default {
               <a v-if="selectedText !== ''" style="float: right" @click="sheet = !sheet" class="text--accent-2" v-ripple>代码诊断助手</a>
             </h2>
 
-              <v-card max-height="80rem" min-height="80rem">
-                <textarea ref="cm1" v-model='fileContent' style="height: 450px; width: 100%"></textarea>
+              <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)">
+                <textarea ref="cm1" v-model='fileContent' style="height: calc(100vh - 300px); width: 100%"></textarea>
               </v-card>
           </v-col>
       </v-row>
@@ -212,26 +228,26 @@ export default {
     <v-bottom-sheet inset v-model="sheet">
       <v-card class="text-center">
         <v-card-title>代码诊断助手</v-card-title>
-        <v-container>
-          <v-row>
+        <v-card-text>
+          <v-container fluid>
+            <v-row>
+              <v-spacer></v-spacer>
+              <v-col cols="12" sm="12" md="10" lg="6" xl="6">
+                <v-textarea label="选择的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>
+              </v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+              <v-btn @click="unitTestSelected" plain class="blue--text">让JiHub对选中代码生成单元测试</v-btn>
+              <v-btn @click="unitTestWholeFile" plain class="blue--text">让JiHub对整个文件生成单元测试</v-btn>
             <v-spacer></v-spacer>
-            <v-col cols="6">
-              <v-textarea label="选择的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>
-            </v-col>
-            <v-spacer></v-spacer>
-          </v-row>
-          <v-row>
-            <v-spacer></v-spacer>
-            <v-col cols="3">
-              <v-btn @click="diagSelected">让JiHub诊断选中的代码</v-btn>
-            </v-col>
-            <v-col cols="3">
-              <v-btn @click="diagWholeFile">让JiHub诊断整个文件</v-btn>
-            </v-col>
-            <v-spacer></v-spacer>
-          </v-row>
-          <v-row style="height: 5rem"></v-row>
-        </v-container>
+              <v-btn @click="diagSelected" plain class="blue--text">让JiHub诊断选中的代码</v-btn>
+              <v-btn @click="diagWholeFile" plain class="blue--text">让JiHub诊断整个文件</v-btn>
+        </v-card-actions>
+
+        <v-row style="height: 5rem"></v-row>
       </v-card>
     </v-bottom-sheet>
   </v-container>
@@ -240,7 +256,7 @@ export default {
 
 <style>
 .CodeMirror {
-  height: 80rem;
+  height: calc(100vh - 300px);
 }
 
 .need-mono {

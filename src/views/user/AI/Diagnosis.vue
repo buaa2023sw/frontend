@@ -24,7 +24,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue" text :disabled="!valid()" @click="startDiagnosis()">确定</v-btn>
+              <v-btn color="blue" :loading="resultBusy" text :disabled="!valid()" @click="startDiagnosis()">确定</v-btn>
             </v-card-actions>
           </v-card>
         </v-container>
@@ -100,6 +100,7 @@ export default {
     return {
       code: '',
       result: "暂无诊断结果。请在左侧输入代码并点击确认，以获取诊断结果。",
+      resultBusy: false
     }
   },
   methods: {
@@ -117,6 +118,7 @@ export default {
     // 代码诊断
     startDiagnosis() {
       console.log(this.code)
+      this.resultBusy = true;
       axios.post("/api/ai/CodeReview", {code: this.code})
           .then((response) => {
             console.log(response)
@@ -132,7 +134,9 @@ export default {
           .catch((err) => {
             console.error(err);
             this.result = null
-          })
+          }).finally(() => {
+            this.resultBusy = false;
+      })
     },
   },
   created() {

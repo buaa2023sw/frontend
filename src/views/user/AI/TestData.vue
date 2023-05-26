@@ -24,7 +24,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue" text :disabled="!valid()" @click="startTestData()">确定</v-btn>
+              <v-btn color="blue" text :loading="resultBusy" :disabled="!valid()" @click="startTestData()">确定</v-btn>
             </v-card-actions>
           </v-card>
         </v-container>
@@ -92,6 +92,7 @@
 
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default {
   name: "TestData",
@@ -99,15 +100,25 @@ export default {
     return {
       code: '',
       result: "暂无测试数据。请在左侧输入代码并点击确认，以获取测试数据。",
+      resultBusy: false
     }
   },
   methods: {
     valid() {
       return this.code !== ''
     },
+    getFromCookie() {
+      if (Cookies.get('diag') !== undefined) {
+        this.code = Cookies.get('diag')
+        Cookies.remove('diag')
+      } else {
+        this.code = ''
+      }
+    },
     // 生成测试数据
     startTestData() {
       console.log(this.code)
+      this.resultBusy = true;
       axios.post("/api/ai/UnitTest", {code: this.code}) // TODO
           .then((response) => {
             console.log(response)
@@ -123,9 +134,14 @@ export default {
           .catch((err) => {
             console.error(err);
             this.result = null
-          })
+          }).finally(() => {
+            this.resultBusy = false
+      })
     },
   },
+  created() {
+    this.getFromCookie()
+  }
 }
 </script>
 
