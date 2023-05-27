@@ -301,11 +301,11 @@ export default {
   right: 0;
   bottom: 0;
   top: 0;
-  background: linear-gradient(rgba(70, 118, 184, 60%), rgba(128, 128, 128, .5));
+  background: linear-gradient(rgba(70, 118, 184, 80%), rgba(128, 128, 128, .8));
   background-size: cover;
 }
 
 .no-blur {
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(20px);
 }
 </style>
