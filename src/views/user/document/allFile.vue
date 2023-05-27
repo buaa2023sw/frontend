@@ -485,6 +485,7 @@ import {showPersonList, userDocList, userCollectDocList, addDocToCollect, delDoc
        userEditDocOther, userDelDoc, userEditDocContent, userReleaseDocLock, userGetDocLock, isDocLocked} from "@/api/user"
 import getIdenticon from "@/utils/identicon";
 import topicSetting from "@/utils/topic-setting";
+import Cookies from "js-cookie"
 
   export default {
     inject: {'user': {defualt: null},
@@ -645,11 +646,11 @@ import topicSetting from "@/utils/topic-setting";
       );
       userCollectDocList({userId: this.user.id, projectId: this.selectedProj.projectId}).then(
           res => {
-             console.log("userCollectDocLis");
+             console.log("userCollectDocList");
              console.log(res);
              this.collectDocList = res['data']['data'];
            }
-      )
+      );
     },
     methods:{
       getIdenticon,
@@ -686,6 +687,7 @@ import topicSetting from "@/utils/topic-setting";
                 message: '该文档正在被编辑！'
               })
         } else {
+          Cookies.set('doc', JSON.stringify(this.doc));
           userGetDocLock({userId: this.user.id, projectId: this.selectedProj.projectId, docId: item.id}).then(
           res => {
             console.log("userGetDocLock");
@@ -979,12 +981,17 @@ watch: {
   dialog3: {
     handler(newVal, oldVal) {
       if (newVal == false) {
-        userReleaseDocLock({userId: this.user.id, projectId: this.selectedProj.projectId, docId: this.doc.id}).then(
+        let doc = Cookies.get("doc");
+        if (doc !== undefined) {
+        doc = JSON.parse(doc);
+        userReleaseDocLock({userId: this.user.id, projectId: this.selectedProj.projectId, docId: doc.id}).then(
           res => {
             console.log("userReleaseDocLock");
             console.log(res);
           }
         )
+        Cookies.set('doc', undefined);
+        }
       } 
     }
   }

@@ -398,7 +398,8 @@
 <script>
 import Cookies from "js-cookie"
 import { computed } from "vue"
-import { newProject, showTaskList, watchAllProject, getEmail, showNoticeList, removeNotice} from "@/api/user"
+import { newProject, showTaskList, watchAllProject, getEmail, showNoticeList, removeNotice,
+  userReleaseDocLock} from "@/api/user"
 import axios from "axios"
 import AllTask from "@/views/user/projectPlanning/allTask.vue"
 import AllFile from "@/views/user/document/allFile.vue"
@@ -407,6 +408,7 @@ import topicSetting from "@/utils/topic-setting";
 // import allTask from "@/views/user/projectPlanning/allTask"
 
 let user = Cookies.get("user");
+let proj;
 console.log(user);
 if (user === undefined) { // 用户未登录
   console.log("not logged in");
@@ -424,7 +426,7 @@ if (user === undefined) { // 用户未登录
   let managerpath = (window.location.pathname !== "/profile" &&
       window.location.pathname !== "topic" && !window.location.pathname.startsWith("/manager")) // 合法的纯管理员路径（位于管理端）
   user = JSON.parse(user)
-  let proj = undefined;
+  proj = undefined;
   if (user !== undefined) {
     if (user.status !== 'C') { // 普通用户
       proj = Cookies.get("proj");
@@ -465,11 +467,25 @@ export default {
   //     })
   // }
   created() {
+    console.log("created");
     window.addEventListener('scroll', () => {
       this.scrollUp = this.isScrollTop()
     })
     this.updateUserProj();
     this.updateTopic();
+    let doc = Cookies.get("doc");
+      console.log("cookies");
+      console.log(doc);
+      if (doc !== undefined) {
+        doc = JSON.parse(doc);
+        console.log(proj);
+        userReleaseDocLock({userId: user.id, projectId: JSON.parse(proj).projectId, docId: doc.id}).then(
+          res => {
+            console.log("userReleaseDocLock");
+            console.log(res);
+          }
+        )
+      }
   },
   components:{
     AllTask,
