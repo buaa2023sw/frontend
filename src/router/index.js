@@ -122,7 +122,11 @@ const router = new VueRouter({
       path: '/user/ai/testdata',
       name: 'testdata',
       component: () => import('../views/user/AI/TestData.vue')
-    }
+    }, {
+      path: '/user/database',
+      name: 'database',
+      component: () => import('../views/dev/Database.vue')
+    },
   ]
 })
 

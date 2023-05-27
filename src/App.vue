@@ -193,7 +193,7 @@
           </v-list-item>
       </v-list>
       <v-list subheader v-if="user.status !== 'C'">
-      <v-subheader>规划</v-subheader>
+      <v-subheader inset>规划</v-subheader>
       <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/allTask'">
         <v-list-item-avatar>
           <v-icon :color="getDarkColor(user.topic)">mdi-ballot-outline</v-icon>
@@ -222,7 +222,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-subheader>开发</v-subheader>
+      <v-subheader inset>开发</v-subheader>
       <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/dev'">
         <v-list-item-avatar>
           <v-icon :color="getDarkColor(user.topic)">mdi-align-vertical-center</v-icon>
@@ -250,7 +250,17 @@
             <v-list-item-title>生成测试数据</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-      <v-subheader>沟通</v-subheader>
+
+        <v-list-item :style="'color: ' + getDarkColor(user.topic)" link :to="'/user/database'">
+          <v-list-item-avatar>
+            <v-icon :color="getDarkColor(user.topic)">mdi-database</v-icon>
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title>团队数据库</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      <v-subheader inset>沟通</v-subheader>
           <v-dialog
           width="1300"
           v-model="dialog"
