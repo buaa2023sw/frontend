@@ -76,14 +76,16 @@
               <v-card style="width:100%;position: relative;">
                 <div>
                 <v-card-title style="position: relative;">
-                  <v-icon style="position:absolute;">mdi-arrow-bottom-right</v-icon>
-                  <h4 style="position:relative;left:3%;">{{task.taskName }}</h4>
+                  <v-icon style="position:absolute;">mdi-apps</v-icon>
+                  <h4 style="position:relative;left:3%;">{{ task.taskName }}</h4>
+                  <div style="position:relative;left:3%;">
                    <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
                    >mdi-pencil</v-icon>
                    <v-icon size="small" @click="upTask(task)" style="position:relative;left:3%;"
                    >mdi-arrow-up-thin</v-icon>
                    <v-icon size="small" @click="downTask(task)" style="position:relative;left:3%;"
                    >mdi-arrow-down-thin</v-icon>
+                  </div>
                 <v-switch
                 style="position: absolute;right: 1%;"
                 :input-value="isExpanded(task)"
@@ -667,6 +669,7 @@ export default {
     menu5: false,
     menu6: false,
     sonContribute: 0,
+    mark: {},
     myName: "罗本",
     tempItem: '',
     showPencil: {},
