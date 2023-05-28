@@ -24,7 +24,8 @@ export default {
                 return user.userId === item.peopleId
               }) === undefined
             })),
-            inviteSelected: []
+            inviteSelected: [],
+            messageServiceAvailable: false
         }
     },
     inject: {
@@ -35,6 +36,7 @@ export default {
         // this.initWS(1)
         this.updateChatRooms()
         this.updatePopulation()
+        this.initMessagingService()
     },
     methods: {
         getIdenticon,
@@ -240,6 +242,12 @@ export default {
                 content: content,
                 time: time
               })
+              if (this.messageServiceAvailable && document.visibilityState === 'hidden' && fromName !== this.user.name) {
+                const notification = new Notification(`来自讨论室 ${room.title} 的一条新消息`, {
+                  body: `${fromName}: ${content}`,
+                  icon: getIdenticon(fromName, 100, 'user')
+                })
+              }
             }
           }
 
@@ -274,6 +282,25 @@ export default {
                 message: this.messageInput
             }));
             this.messageInput = ''
+        },
+        initMessagingService() {
+          if ("Notification" in window) {
+            console.log('Notification is supported, initing messaging service')
+            Notification.requestPermission().then(permission => {
+              if (permission === "granted") {
+                console.log('Notification permission granted')
+                this.messageServiceAvailable = true;
+                const notification = new Notification('已注册消息通知', {
+                  icon: '../../favicon.ico',
+                  body: "消息通知已开启，JiHub会在收到新消息时显示提醒",
+                })
+              } else {
+                console.log('Notification permission denied')
+                this.messageServiceAvailable = false;
+                this.$message.warning('您已拒绝接收消息通知')
+              }
+            })
+          }
         },
         getDarkColor: topicSetting.getDarkColor,
         getTopicColor: topicSetting.getColor,
