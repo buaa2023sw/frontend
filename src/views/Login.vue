@@ -110,7 +110,7 @@ export default {
           ],
           user_email: [
             function (v) {
-              return /[\w]+@[A-Za-z]+(\.[A-Za-z0-9]+){1,2}/.test(v) || `非法的邮箱格式`;
+              return /[\w]+@[A-Za-z0-9]+(\.[A-Za-z0-9]+){1,2}/.test(v) || `非法的邮箱格式`;
             },
           ],
           user_password: [
@@ -144,7 +144,7 @@ export default {
     },
     registerValid() {
       return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(this.registerData.username)
-          && /[\w]+@[A-Za-z]+(\.[A-Za-z0-9]+){1,2}/.test(this.registerData.email)
+          && /[\w]+@[A-Za-z0-9]+(\.[A-Za-z0-9]+){1,2}/.test(this.registerData.email)
           && /^.{6,}$/.test(this.registerData.password)
           && /^.{6,}$/.test(this.registerData.confirmPassword)
     },
