@@ -46,7 +46,6 @@
         :items="tasks"
         item-key="taskId"
         hide-default-footer
-        :single-expand="false"
       >
       <template v-slot:no-data>
         <div style="text-align: center;">
@@ -86,11 +85,6 @@
                    <v-icon size="small" @click="downTask(task)" style="position:relative;left:3%;"
                    >mdi-arrow-down-thin</v-icon>
                   </div>
-                <v-switch
-                style="position: absolute;right: 1%;"
-                :input-value="isExpanded(task)"
-                class="pl-4 mt-0"
-                @change="(v) => expand(task, v)"></v-switch>
                 </v-card-title>
               </div>
                 <!-- <v-switch
@@ -101,7 +95,6 @@
                 ></v-switch> -->
                 <v-divider></v-divider>
                 <v-data-table
-                v-if="isExpanded(task)"
                 :search="search"
                 :headers="headers"
                 :items="task.subTaskList"
