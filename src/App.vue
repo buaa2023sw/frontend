@@ -2,7 +2,7 @@
   <v-app id="main_page">
     <v-app-bar app clipped-left ref="appBar" color="white" dark extension-height="36" :absolute="true"
       :src=topic>
-      <v-toolbar-title style="font-weight: bold">JiHub</v-toolbar-title>
+      <v-toolbar-title style="font-weight: bold">JiHub<span v-if="existManager()"> - Admin Override</span></v-toolbar-title>
 
       <v-spacer></v-spacer>
 
