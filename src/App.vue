@@ -377,9 +377,9 @@
         <tbody>
           <tr v-for="notice in noticeList" :key="notice.noticeId" @mouseenter="arr[notice.taskId] = true" @mouseleave="arr[notice.taskId] = false">
             <td>{{ getTaskName(notice.taskId) }}</td>
-            <td>{{ notice.deadline }}</td>
+            <td>{{ new Date(notice.deadline).toLocaleString() }}</td>
             <td>
-              <v-icon v-if="arr[notice.taskId]" @click="handleDeleteNotice(notice.noticeId)">mdi-delete</v-icon>
+              <v-icon @click="handleDeleteNotice(notice.noticeId)">mdi-delete</v-icon>
             </td>
           </tr>
         </tbody>
@@ -486,7 +486,7 @@ export default {
     let doc = Cookies.get("doc");
       console.log("cookies");
       console.log(doc);
-      if (doc !== undefined) {
+      if (doc !== undefined && doc !== 'undefined') {
         doc = JSON.parse(doc);
         console.log(proj);
         userReleaseDocLock({userId: user.id, projectId: JSON.parse(proj).projectId, docId: doc.id}).then(
@@ -496,6 +496,20 @@ export default {
           }
         )
       }
+      Notification.requestPermission()
+
+      let proj = Cookies.get("proj");
+      if (proj !== undefined && proj !== 'undefined') {
+        proj = JSON.parse(proj)
+        this.proj = proj;
+      }
+
+      this.getTaskList()
+
+      console.log('setting interval...')
+      setInterval(() => {
+        this.updateNoticeList();
+      }, 5000)
   },
   components:{
     AllTask,
@@ -589,6 +603,36 @@ export default {
       if (userCookie !== undefined) {
         this.user = JSON.parse(userCookie)
       }
+    },
+    updateNoticeList() {
+      console.log("updating NoticeList...")
+      showNoticeList({projectId: this.proj.projectId}).then(
+          res => {
+            this.noticeList = res['data']['data']
+            this.noticeList.forEach(item => {
+              // 如果两个时间小于5秒，就弹出提醒
+              if (Math.abs(new Date(item.deadline) - new Date()) < 5000) {
+                console.log(Math.abs(new Date(item.deadline) - new Date()))
+                this.$message({
+                  showClose: true,
+                  message: "有到期的截止日期！",
+                  type: "warning",
+                  duration: 0,
+                });
+                if ("Notification" in window) {
+                  Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                      let notification = new Notification("有到期的截止日期！", {
+                        body: "请及时处理！"
+                      });
+                    }
+                  });
+                }
+              }
+            })
+            console.log(this.noticeList);
+          }
+      )
     },
     checkClock() {
       this.clockDialog = true;  
@@ -865,8 +909,8 @@ export default {
         return scrollTop === 0
 }},
     getTaskName(taskId) {
-      this.getTaskList();
-      console.log("getTaskName");
+      // this.getTaskList();
+      console.log("getTaskName is called");
       console.log(this.tasks);
       for(let i=0;i < this.tasks.length;i++) {
         for (let j=0;j < this.tasks[i].subTaskList.length;j++) {
