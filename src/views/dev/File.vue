@@ -222,7 +222,7 @@ export default {
 <template>
   <v-container>
       <v-row>
-          <v-col cols="3">
+          <v-col :cols="fileContentReady ? 2 : 3">
               <h2>文件树</h2>
               <v-card :style="getLinearGradient(user.topic)" min-height="calc(100vh - 300px)" max-height="calc(100vh - 300px)" class="overflow-y-auto">
                 <v-treeview
@@ -251,7 +251,7 @@ export default {
                 ></v-skeleton-loader>
               </v-card>
           </v-col>
-          <v-col cols="9">
+          <v-col :cols="fileContentReady ? 7 : 9">
             <h2>
               <v-scroll-y-transition>
                 <span>
@@ -276,52 +276,71 @@ export default {
                   }}
                 </a>
               </v-scroll-y-transition>
-              <a style="float: right" v-if="fileContentReady" @click="sheet = !sheet" :style="'color: ' + getTopicColor(user.topic)" v-ripple>代码助手</a>
+<!--              <a style="float: right" v-if="fileContentReady" @click="sheet = !sheet" :style="'color: ' + getTopicColor(user.topic)" v-ripple>代码助手</a>-->
             </h2>
 
               <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)">
                 <textarea ref="cm1" v-model='fileContent' style="height: calc(100vh - 300px); width: 100%"></textarea>
               </v-card>
           </v-col>
+
+          <v-col cols="3" v-if="fileContentReady">
+            <h2 :style="'text-decoration: none; color: ' + getTopicColor(user.topic)">代码助手</h2>
+            <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)">
+              <v-card-title :style="getLinearGradient(user.topic)"><strong>欢迎来到代码助手</strong></v-card-title>
+              <v-divider></v-divider>
+              <v-card-title>单元测试</v-card-title>
+              <v-card-text>JiHub可以对您选中的代码，或是整个文件生成单元测试</v-card-text>
+<!--              <v-card-title>代码助手</v-card-title>-->
+<!--              <v-card-text>-->
+<!--                <v-container fluid>-->
+<!--                  <v-row>-->
+<!--                    <v-spacer></v-spacer>-->
+<!--                    <v-col cols="12" sm="12" md="10" lg="6" xl="6">-->
+<!--                      <v-textarea label="选中的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>-->
+<!--                    </v-col>-->
+<!--                    <v-spacer></v-spacer>-->
+<!--                  </v-row>-->
+<!--                </v-container>-->
+<!--              </v-card-text>-->
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" @click="unitTestSelected"><v-icon>mdi-check</v-icon>对选中代码</v-btn>
+              </v-card-actions>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" @click="unitTestWholeFile"><v-icon>mdi-check</v-icon>对整个文件</v-btn>
+              </v-card-actions>
+              <v-divider></v-divider>
+              <v-card-title>代码诊断</v-card-title>
+              <v-card-text>如果您阅读此代码比较困难，JiHub也很乐意对您选中的代码，或是整个文件进行代码诊断</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" @click="diagSelected"><v-icon>mdi-code-braces</v-icon>对选中代码</v-btn>
+              </v-card-actions>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" @click="diagWholeFile"><v-icon>mdi-code-braces</v-icon>对整个文件</v-btn>
+              </v-card-actions>
+              <v-divider></v-divider>
+              <v-card-text>或者如果您想在GitHub操作，或查看源文件？</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" link :href="'https://github.com/' + repo.user + '/' + repo.repo + '/blob/' + branchName + '/' + tree[0]['path']" target="_blank"><v-icon>mdi-github</v-icon>在GitHub浏览</v-btn>
+              </v-card-actions>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" @click="() => downloadStrAsFile(selectedText, user.name + '\'s-clip' + '-' + this.tree[0]['name'])"><v-icon>mdi-download</v-icon>下载选中代码</v-btn>
+              </v-card-actions>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn width="" outlined :color="getTopicColor(user.topic)" @click="() => downloadStrAsFile(fileContent, this.tree[0]['name'])"><v-icon>mdi-download</v-icon>下载整个文件</v-btn>
+              </v-card-actions>
+
+              <v-row style="height: 5rem"></v-row>
+            </v-card>
+          </v-col>
       </v-row>
-
-    <v-bottom-sheet v-if="fileContentReady" inset v-model="sheet">
-      <v-card class="text-center">
-        <v-card-title>代码助手</v-card-title>
-        <v-card-text>
-          <v-container fluid>
-            <v-row>
-              <v-spacer></v-spacer>
-              <v-col cols="12" sm="12" md="10" lg="6" xl="6">
-                <v-textarea label="选中的代码" outlined v-model="selectedText" class="need-mono" rows="20"></v-textarea>
-              </v-col>
-              <v-spacer></v-spacer>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="unitTestSelected"><v-icon>mdi-check</v-icon>让JiHub对选中代码生成单元测试</v-btn>
-              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="unitTestWholeFile"><v-icon>mdi-check</v-icon>让JiHub对整个文件生成单元测试</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="diagSelected"><v-icon>mdi-code-braces</v-icon>让JiHub诊断选中的代码</v-btn>
-              <v-btn width="30rem" outlined :color="getTopicColor(user.topic)" @click="diagWholeFile"><v-icon>mdi-code-braces</v-icon>让JiHub诊断整个文件</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-              <v-btn width="20rem" outlined :color="getTopicColor(user.topic)" link :href="'https://github.com/' + repo.user + '/' + repo.repo + '/blob/' + branchName + '/' + tree[0]['path']" target="_blank"><v-icon>mdi-github</v-icon>在GitHub浏览</v-btn>
-              <v-btn width="20rem" outlined :color="getTopicColor(user.topic)" @click="() => downloadStrAsFile(selectedText, user.name + '\'s-clip' + '-' + this.tree[0]['name'])"><v-icon>mdi-download</v-icon>下载选中代码</v-btn>
-              <v-btn width="20rem" outlined :color="getTopicColor(user.topic)" @click="() => downloadStrAsFile(fileContent, this.tree[0]['name'])"><v-icon>mdi-download</v-icon>下载整个文件</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-
-        <v-row style="height: 5rem"></v-row>
-      </v-card>
-    </v-bottom-sheet>
   </v-container>
 
 </template>
