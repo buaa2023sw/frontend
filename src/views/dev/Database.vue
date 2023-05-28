@@ -176,7 +176,11 @@ export default {
     getTopicColor: topicSetting.getColor,
     getDarkColor: topicSetting.getDarkColor,
     getLinearGradient: topicSetting.getLinearGradient,
-    getRadialGradient: topicSetting.getRadialGradient
+    getRadialGradient: topicSetting.getRadialGradient,
+    checkLeadingZero(n) {
+      if (n === '0') return true
+      else return n[0] === '0'
+    }
   },
   created() {
     this.updateDatabase()
@@ -249,7 +253,7 @@ export default {
         <v-hover v-slot="{hover}">
           <v-card @click="() => initUploadDialog(null)" min-height="13rem" max-height="13rem" :style="hover ? getRadialGradient(user.topic) : ''">
             <v-card-title><strong :style="'color: ' + getDarkColor(user.topic)">创建新的文件系列</strong></v-card-title>
-            <v-card-text>上传一个文件，用版本代码在JiHub上追踪</v-card-text>
+            <v-card-text>上传一个文件，使用版本代码在JiHub上持续追溯，随时下载，项目成员也可上传最新进展</v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click="() => initUploadDialog(null)" plain>开始</v-btn>
@@ -294,7 +298,7 @@ export default {
                       v-if="fileInput"
                       v-model="fileExtInput"
                       label="文件拓展名"
-                      :rules="[(v) => v !== '']"
+                      :rules="[(v) => v !== '', (v) => v.indexOf('.') === -1 ? true : '拓展名不允许\'.\'符号']"
                       prepend-icon="mdi-file"
                       counter="10"
                       outlined></v-text-field>
@@ -308,7 +312,7 @@ export default {
                       v-if="fileInput && fileNameInput !== '' && fileNameInput.indexOf('-') === -1 && fileNameInput.length <= 16 && fileExtInput !== '' && fileExtInput.length <= 10"
                       v-model="fileMajorInput"
                       label="主版本号"
-                      :rules="[(v) => v !== '', (v) => v >= 0 ? true : '版本号必须为正整数', (v) => (v !== '0' && v.startsWith('0')) ? '不允许前导零' : true]"
+                      :rules="[(v) => v !== '', (v) => v >= 0 ? true : '版本号必须为正整数', (v) => (v !== '0' && v.startsWith('0')) ? '不允许前导零' : true, (v) => v <= 999 ? true : '版本号太大了']"
                       prepend-icon="mdi-file"
                       counter="3"
                       outlined></v-text-field>
@@ -320,7 +324,7 @@ export default {
                       v-if="fileInput && fileNameInput !== '' && fileNameInput.indexOf('-') === -1 && fileNameInput.length <= 16 && fileExtInput !== '' && fileExtInput.length <= 10"
                       v-model="fileMinorInput"
                       label="小版本号"
-                      :rules="[(v) => v !== '', (v) => v >= 0 ? true : '版本号必须为正整数', (v) => (v !== '0' && v.startsWith('0')) ? '不允许前导零' : true]"
+                      :rules="[(v) => v !== '', (v) => v >= 0 ? true : '版本号必须为正整数', (v) => (v !== '0' && v.startsWith('0')) ? '不允许前导零' : true, (v) => v <= 999 ? true : '版本号太大了']"
                       prepend-icon="mdi-file"
                       counter="3"
                       outlined></v-text-field>
@@ -332,7 +336,7 @@ export default {
                       v-if="fileInput && fileNameInput !== '' && fileNameInput.indexOf('-') === -1 && fileNameInput.length <= 16 && fileExtInput !== '' && fileExtInput.length <= 10"
                       v-model="filePatchInput"
                       label="修订号"
-                      :rules="[(v) => v !== '', (v) => v >= 0 ? true : '版本号必须为正整数', (v) => (v !== '0' && v.startsWith('0')) ? '不允许前导零' : true]"
+                      :rules="[(v) => v !== '', (v) => v >= 0 ? true : '版本号必须为正整数', (v) => (v !== '0' && v.startsWith('0')) ? '不允许前导零' : true, (v) => v <= 999 ? true : '版本号太大了']"
                       prepend-icon="mdi-file"
                       counter="3"
                       outlined></v-text-field>
@@ -376,7 +380,7 @@ export default {
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn plain color="red" @click="uploadDialog = !uploadDialog">取消</v-btn>
-          <v-btn plain :color="getDarkColor(user.topic)" :disabled="!(fileInput && fileNameInput !== '' && fileNameInput.indexOf('-') === -1 && fileNameInput.length <= 16 && fileExtInput !== '' && fileExtInput.length <= 10 && (changeNameAllow || (1000000 * fileMajorInput + 1000 * fileMinorInput + filePatchInput > minPatch)))" @click="upload">确定上传</v-btn>
+          <v-btn plain :color="getDarkColor(user.topic)" :disabled="!(fileInput && fileNameInput !== '' && fileNameInput.indexOf('-') === -1 && fileNameInput.length <= 16 && fileExtInput !== '' && fileExtInput.length <= 10 && fileExtInput.indexOf('.') === -1 && (changeNameAllow || (1000000 * fileMajorInput + 1000 * fileMinorInput + filePatchInput > minPatch)) && 0 <= fileMajorInput && fileMajorInput <= 999 && 0 <= fileMinorInput && fileMinorInput <= 999 && 0 <= filePatchInput && filePatchInput <= 999 && !checkLeadingZero(fileMajorInput) && !checkLeadingZero(fileMinorInput) && !checkLeadingZero(filePatchInput))" @click="upload">确定上传</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

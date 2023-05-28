@@ -160,6 +160,7 @@ export default {
       this.code = this.cmEditor.getValue()
     },
     getTopicColor: topicSetting.getDarkColor,
+    getLinearGradient: topicSetting.getLinearGradient,
     downloadStrAsFile,
     download() {
       this.downloadStrAsFile(
