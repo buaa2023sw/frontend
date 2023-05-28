@@ -14,6 +14,7 @@ export default {
             chatRooms: [],
             createSheet: false,
             inviteSheet: false,
+            expelSheet: false,
             createRoomName: '',
             createRoomDesc: '',
             projectPopulation: [],
@@ -66,7 +67,8 @@ export default {
                     title: item.roomName,
                     desc: item.outline,
                     users: item.users,
-                    history: []
+                    history: [],
+                    selectedUser: null
                   }
                 })
                 console.log(chatRooms)
@@ -79,6 +81,7 @@ export default {
                 })
                 this.chatRooms = Object.values(temp)
                 console.log(chatRooms)
+                this.selectedRoom = 0
               } else {
                 throw new Error('get discussion list failure with non 0 errcode (' + res.data.errcode + ')')
               }
@@ -184,8 +187,12 @@ export default {
           }).then((res) => {
             console.log(res)
           }).finally(() => {
-            this.inviteSheet = false
-            this.updateChatRooms()
+            this.messageInput = `${this.user.name}` + '邀请' + `${this.inviteNominees[this.inviteSelected].peopleName}` + '加入了聊天室'
+            this.sendMsg()
+            setTimeout(() => {
+              this.updateChatRooms()
+              this.inviteSheet = false
+            }, 2000)
           })
 
         },
@@ -301,6 +308,20 @@ export default {
               }
             })
           }
+        },
+        expelUser(room, expelledUser) {
+          console.log(room, expelledUser)
+          axios.post('/api/chat/deletePerson', {
+            userId: expelledUser.userId,
+            roomId: room.id
+          }).finally(() => {
+            this.messageInput = `${this.user.name}` + '将' + `${expelledUser.userName}` + '移出了讨论室'
+            this.sendMsg()
+            setTimeout(() => {
+              this.updateChatRooms()
+              this.expelSheet = false
+            }, 2000)
+          })
         },
         getDarkColor: topicSetting.getDarkColor,
         getTopicColor: topicSetting.getColor,
@@ -422,26 +443,49 @@ export default {
                       <v-card-subtitle>
                         <v-icon v-if="this.chatRooms[this.selectedRoom].ws !== undefined && this.chatRooms[this.selectedRoom].ws.readyState === 1" class="green--text">mdi-circle</v-icon>
                         <v-icon v-else class="yellow--text">mdi-circle</v-icon>
-                        ws://104.208.78.33:8000/ws/chat/{{ this.user.id }}/{{ chatRooms[selectedRoom].id }} | {{chatRooms[selectedRoom].desc}}
+                        {{chatRooms[selectedRoom].desc === '' ? '这个聊天室没有简介哦' : chatRooms[selectedRoom].desc }} | {{chatRooms[selectedRoom].users.length}} 名成员
                       </v-card-subtitle>
                       <v-card-text>
-
-                        <v-hover v-for="user in chatRooms[selectedRoom].users" :key="user.userId" v-slot="{ hover }">
-                          <span>
-                            <v-avatar size="50px" class="mx-1">
-                              <v-img :alt="user.username" :src="getIdenticon(user.userName, 50, 'user')"></v-img>
-                            </v-avatar>
-                            <Transition>
-                              <p v-if="hover" class="px-2 text-h5 d-inline-block" style="font-weight: bold;">{{ user.userName }}</p>
-                            </Transition>
-                          </span>
-                        </v-hover>
+                        <span v-for="user in chatRooms[selectedRoom].users" :key="user.userId">
+                            <v-btn fab @click="chatRooms[selectedRoom].selectedUser = chatRooms[selectedRoom].selectedUser === user ? null : user">
+                              <v-avatar size="50px" class="mx-1">
+                                <v-img :alt="user.username" :src="getIdenticon(user.userName, 50, 'user')"></v-img>
+                              </v-avatar>
+                            </v-btn>
+                        </span>
+<!--                        {{chatRooms[selectedRoom].selectedUser === null ? 'null' : chatRooms[selectedRoom].selectedUser.name}}-->
                         <v-avatar class="mx-1 float-end">
                           <v-icon size="50px" @click="inviteSheet = !inviteSheet" :color="getDarkColor(user.topic)">mdi-plus-circle</v-icon>
                         </v-avatar>
                       </v-card-text>
+                      <v-expand-transition>
+                        <div v-if="chatRooms[selectedRoom].selectedUser !== null">
+                          <v-divider></v-divider>
+                          <v-card-actions>
+                            <v-avatar size="50px" class="mx-1"><v-img :src="getIdenticon(chatRooms[selectedRoom].selectedUser.userName, 50, 'user')"></v-img></v-avatar>
+                            <strong>{{chatRooms[selectedRoom].selectedUser.userName}}</strong>
+                            <strong>{{chatRooms[selectedRoom].selectedUser.userName === this.user.name ? '（您自己）' : ''}}</strong>
+                            <v-spacer></v-spacer>
+                            <v-btn v-if="chatRooms[selectedRoom].selectedUser.userName !== this.user.name" color="red" class="white--text" @click="expelSheet = !expelSheet"><v-icon>mdi-alert</v-icon>移除群聊</v-btn>
+                          </v-card-actions>
+                        </div>
+                      </v-expand-transition>
                   </v-card>
                 </v-col>
+
+                <v-bottom-sheet inset v-model="expelSheet">
+                  <v-card v-if="chatRooms[selectedRoom].selectedUser !== null">
+                    <v-card-title>删除成员确认</v-card-title>
+                    <v-card-text>警告！这样做会导致成员 {{ chatRooms[selectedRoom].selectedUser.userName }} 无法访问聊天室“{{chatRooms[selectedRoom].title }}”。您确定要删除成员 {{ chatRooms[selectedRoom].selectedUser.userName }} 吗？</v-card-text>
+                    <v-card-actions>
+                      {{ chatRooms[selectedRoom].selectedUser}}
+                      <v-spacer></v-spacer>
+                      <v-btn color="green" class="white--text" @click="expelSheet = !expelSheet">再想想</v-btn>
+                      <v-btn color="red" class="white--text" @click="() => expelUser(chatRooms[selectedRoom], chatRooms[selectedRoom].selectedUser)"><v-icon>mdi-alert</v-icon>我确定</v-btn>
+                    </v-card-actions>
+                    <div style="height: 50vh"></div>
+                  </v-card>
+                </v-bottom-sheet>
 
                 <v-dialog v-model="inviteSheet">
                   <v-card>
@@ -507,13 +551,13 @@ export default {
                                         </v-list-item-avatar>
                                         <v-list-item-content>
                                           <v-list-item-title class="text--primary" style="font-weight: bold; font-size: large;">{{ item.content }}</v-list-item-title>
-                                          <v-list-item-subtitle>{{ item.from }}<span class="float-end">{{ new Date(item.time).toLocaleTimeString() }}</span></v-list-item-subtitle>
+                                          <v-list-item-subtitle>{{ item.from }}<span class="float-end">{{ new Date(item.time).getDate() === new Date().getDate() ? new Date(item.time).toLocaleTimeString() : new Date(item.time).toLocaleString() }}</span></v-list-item-subtitle>
                                         </v-list-item-content>
                                       </v-list-item>
                                       <v-list-item disabled two-line :key="item.id" v-else :style="getLinearGradient(user.topic)">
                                         <v-list-item-content>
                                           <v-list-item-title class="text--primary" style="font-weight: bold; font-size: large;"><span class="float-end">{{ item.content }}</span></v-list-item-title>
-                                          <v-list-item-subtitle>{{ new Date(item.time).toLocaleTimeString() }}<span class="float-end">您</span></v-list-item-subtitle>
+                                          <v-list-item-subtitle>{{ new Date(item.time).getDate() === new Date().getDate() ? new Date(item.time).toLocaleTimeString() : new Date(item.time).toLocaleString() }}<span class="float-end">您</span></v-list-item-subtitle>
                                         </v-list-item-content>
                                         <v-list-item-avatar size="40px">
                                           <v-img :src="getIdenticon(item.from, 50, 'user')"></v-img>
