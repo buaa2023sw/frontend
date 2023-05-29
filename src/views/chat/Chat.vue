@@ -148,7 +148,8 @@ export default {
         },
         getChatHistory(room) {
             axios.post('/api/chat/getRoomMessages', {
-              roomId: room.id
+              roomId: room.id,
+              userId: this.user.id
             }).then((res) => {
               console.log(res.data)
               room.history = []
