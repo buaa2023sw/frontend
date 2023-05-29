@@ -16,11 +16,13 @@ import AllFile from "@/views/user/document/allFile.vue"
 
 import mavonEditor from "mavon-editor"
 import VueMarkdownEditor from '@kangc/v-md-editor'
+import createKatexPlugin from '@kangc/v-md-editor/lib/plugins/katex/cdn.js';
 import '@kangc/v-md-editor/lib/style/base-editor.css';
 import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
 import Prism from 'prismjs';
 
 VueMarkdownEditor.use(vuepressTheme);
+VueMarkdownEditor.use(createKatexPlugin());
 Vue.use(VueMarkdownEditor);
 VueMarkdownEditor.use(vuepressTheme, {
   Prism,
