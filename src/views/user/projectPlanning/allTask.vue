@@ -39,7 +39,7 @@
       :color="getTopicColor(user.topic)"
       style="position:absolute;top:1%;right:1%;height:4%;width:10%;"
       @click="setupFather = true"
-      >创建任务</v-btn>
+      >创建新的冲刺</v-btn>
     <v-container fluid style="position:relative">
       <v-data-iterator
         style="width:100%;position: absolute;"
@@ -52,7 +52,7 @@
           <img src="../../../assets/notask.png" height="400px" width="325px"/>
         </div>
         <div style="font-size:40px;font-weight: bold;text-align: center;">
-          您还没有设置任务
+          您还没有设置冲刺
         </div>
       </template>
       <template v-slot:no-results>
@@ -74,17 +74,15 @@
             >
               <v-card style="width:100%;position: relative;">
                 <div>
-                <v-card-title style="position: relative;">
-                  <v-icon style="position:absolute;">mdi-apps</v-icon>
-                  <h4 style="position:relative;left:3%;">{{ task.taskName }}</h4>
-                  <div style="position:relative;left:3%;">
-                   <v-icon size="small" @click="changeTaskName(task)" style="position:relative;left:3%;"
+                <v-card-title :style="getLinearGradient(user.topic)">
+                  <v-icon>mdi-apps</v-icon>
+                  <h4>{{ task.taskName }}</h4>
+                   <v-icon size="" @click="changeTaskName(task)"
                    >mdi-pencil</v-icon>
-                   <v-icon size="small" @click="upTask(task)" style="position:relative;left:3%;"
+                   <v-icon size="" @click="upTask(task)"
                    >mdi-arrow-up-thin</v-icon>
-                   <v-icon size="small" @click="downTask(task)" style="position:relative;left:3%;"
+                   <v-icon size="" @click="downTask(task)"
                    >mdi-arrow-down-thin</v-icon>
-                  </div>
                 </v-card-title>
               </div>
                 <!-- <v-switch
@@ -114,7 +112,7 @@
         </div>
   </template>
     <template v-slot:[`item.contribute`]="{ item }">
-      <div>{{ item.contribute }}%</div>
+      <div>{{ item.contribute }}</div>
     </template>
     <template v-slot:[`item.start_time`]="{ item }">
       <div>{{ item.start_time.slice(0, 10) }}</div>
@@ -144,7 +142,7 @@
     </template>
   <template v-slot:[`item.alarm`]="{item}">
       <v-icon
-        small
+          :color="getTopicColor(user.topic)"
         class="mr-2"
         @click="setAlarm(item)"
       >
@@ -153,7 +151,7 @@
   </template>
   <template v-slot:[`item.subTaskName`]="{item}">
       <v-icon
-        small
+        :color="getTopicColor(user.topic)"
         class="mr-2"
       >
       mdi-bullseye-arrow
@@ -165,7 +163,7 @@
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-icon
-        small
+        :color="getTopicColor(user.topic)"
         class="mr-2"
         v-bind="attrs"
         v-on= on
@@ -221,12 +219,12 @@
     </div>
 
     <el-dialog
-        title="创建任务"
+        title="创建冲刺"
         :visible.sync="setupFather"
          width="50%"
         :before-close="cancelNewFather">
         <el-form :label-position="labelPosition" label-width="80px" :model="newFatherForm" ref="newFatherForm">
-    <el-form-item label="任务名称">
+    <el-form-item label="冲刺名称">
       <el-input v-model="newFatherForm.name"></el-input>
     </el-form-item>
 </el-form>
@@ -237,12 +235,12 @@
 </el-dialog> 
 
 <el-dialog
-        title="修改任务名称"
+        title="修改冲刺名称"
         :visible.sync="changeTaskNameFlag"
          width="50%"
         :before-close="handleClose">
         <el-form :label-position="labelPosition" label-width="80px">
-    <el-form-item label="任务名称">
+    <el-form-item label="冲刺名称">
       <el-input v-model="changeNameForm.name"></el-input>
     </el-form-item>
 </el-form>
@@ -1219,7 +1217,8 @@ export default {
     console.log(this.personNameList);
     return this.personNameList[this.personIdList.indexOf(id)];
   },
-    getTopicColor: topicSetting.getColor
+    getTopicColor: topicSetting.getColor,
+    getLinearGradient: topicSetting.getLinearGradient
 }
 }
 </script>

@@ -304,7 +304,6 @@ export default {
               } else {
                 console.log('Notification permission denied')
                 this.messageServiceAvailable = false;
-                this.$message.warning('您已拒绝接收消息通知')
               }
             })
           }
