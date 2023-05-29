@@ -69,7 +69,7 @@ const router = new VueRouter({
       name: 'dev',
       component: () => import('../views/Dev.vue')
     }, {
-      path: '/dev/:projid/:repoid/:branchname',
+      path: '/dev/:projid/:repoid/:branchname+',
       name: '分支详情',
       component: () => import('../views/dev/Branch.vue')
     },

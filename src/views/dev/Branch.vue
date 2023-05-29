@@ -166,6 +166,7 @@ export default {
         }
     },
     created() {
+        console.log(this.branchName)
         this.proj = this.user.projects.reduce((acc, cur) => cur.projectId == this.projId ? cur : acc, null)
         if (this.proj === null) {
             alert('proj not found')
