@@ -17,11 +17,17 @@ export default {
       filePatchInput: 0,
 
       changeNameAllow: true,
-      minPatch: -1
+      minPatch: -1,
+
+      downloading: false,
+      downloadProgressBannerContent: 'Downloading...',
+      uploading: false,
+      uploadProgressBannerContent: 'Uploading...'
     }
   },
   methods: {
     upload() {
+      this.uploading = true
       console.log(this.fileInput)
       console.log(this.fileNameInput)
       console.log(this.fileExtInput)
@@ -38,7 +44,8 @@ export default {
         method: 'post',
         maxBodyLength: Infinity,
         url: '/api/file/uploadFile',
-        data : data
+        data : data,
+        onUploadProgress: this.uploadProgressChanged
       };
 
       axios(config)
@@ -53,9 +60,22 @@ export default {
         .finally(() => {
           this.updateDatabase()
           this.uploadDialog = false
+          this.uploading = false
         })
     },
+    downloadProgressChanged(progressiveEvent) {
+      this.downloadProgressBannerContent = `Downloading... ${Math.round(progressiveEvent.loaded / progressiveEvent.total * 100)}%`
+    },
+    uploadProgressChanged(progressiveEvent) {
+      this.uploadProgressBannerContent = `Uploading... ${Math.round(progressiveEvent.loaded / progressiveEvent.total * 100)}%`
+    },
     download(file) {
+      if (this.downloading === true) {
+        this.$message.error('正在下载文件，请在当前文件下载完成后重试')
+        return
+      }
+      this.downloading = true
+
       console.log(file)
       // 组合成文件名
       const filename = file.fullname
@@ -63,7 +83,8 @@ export default {
         projectId: this.proj.projectId,
         fileName: filename
       }, {
-        responseType: 'blob'
+        responseType: 'blob',
+        onDownloadProgress: this.downloadProgressChanged
       }).then((res) => {
         const blob = new Blob([res.data]);
         const url = URL.createObjectURL(blob);
@@ -80,6 +101,8 @@ export default {
       }).catch(err => {
         this.$message.error('下载文件失败')
         console.log(err)
+      }).finally(() => {
+        this.downloading = false
       })
     },
     mapFileToEntry(filename) {
@@ -192,6 +215,9 @@ export default {
 
 <template>
   <v-container>
+    <v-snackbar timeout="-1" v-model="downloading" :color="getDarkColor(user.topic)" class="white--text">{{ downloadProgressBannerContent }}</v-snackbar>
+    <v-snackbar timeout="-1" v-model="uploading" :color="getDarkColor(user.topic)" class="white--text">{{ uploadProgressBannerContent }}</v-snackbar>
+
     <v-row><v-col cols="12"><h1 :style="'color: ' + getDarkColor(user.topic)">团队数据库</h1></v-col></v-row>
 
     <v-row>
