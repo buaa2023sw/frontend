@@ -362,7 +362,7 @@
       title="我的提醒"
       :visible.sync="clockDialog"
        width="50%"
-      :before-close="handleClose">
+      >
       <v-simple-table>
         <thead>
           <tr>
