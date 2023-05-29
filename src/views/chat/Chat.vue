@@ -477,7 +477,6 @@ export default {
                     <v-card-title>删除成员确认</v-card-title>
                     <v-card-text>警告！这样做会导致成员 {{ chatRooms[selectedRoom].selectedUser.userName }} 无法访问聊天室“{{chatRooms[selectedRoom].title }}”。您确定要删除成员 {{ chatRooms[selectedRoom].selectedUser.userName }} 吗？</v-card-text>
                     <v-card-actions>
-                      {{ chatRooms[selectedRoom].selectedUser}}
                       <v-spacer></v-spacer>
                       <v-btn color="green" class="white--text" @click="expelSheet = !expelSheet">再想想</v-btn>
                       <v-btn color="red" class="white--text" @click="() => expelUser(chatRooms[selectedRoom], chatRooms[selectedRoom].selectedUser)"><v-icon>mdi-alert</v-icon>我确定</v-btn>
