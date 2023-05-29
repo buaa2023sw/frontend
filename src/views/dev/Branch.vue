@@ -42,16 +42,21 @@
                     <v-col v-for="(entry, index) in [daily, monthly, yearly]" :key="index" :cols="entry.col">
                       <v-card :color="entry.color" class="text-center align-center">
                         <v-sparkline
-                            :labels="entry.label"
+                            :labels="index === 0 ? null : entry.label"
                             :value="entry.data"
                             auto-line-width
                             smooth
                             padding="20"
                             stroke-linecap="round"
-                            show-labels
+                            :show-labels="false"
                             auto-draw
                         ></v-sparkline>
                         <v-card-title>从 {{entry.label[0]}} 到 {{entry.label[entry.label.length-1]}} 的提交</v-card-title>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn :color="getDarkColor(user.topic)" plain v-if="entry.col === 4" @click="entry.col = 12">展开</v-btn>
+                          <v-btn :color="getDarkColor(user.topic)" plain v-else @click="entry.col = 4">收起</v-btn>
+                        </v-card-actions>
                       </v-card>
                     </v-col>
                   </v-row>

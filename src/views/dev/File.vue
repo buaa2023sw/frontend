@@ -286,7 +286,7 @@ export default {
 
           <v-col cols="3" v-if="fileContentReady">
             <h2 :style="'text-decoration: none; color: ' + getTopicColor(user.topic)">代码助手</h2>
-            <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)">
+            <v-card max-height="calc(100vh - 300px)" min-height="calc(100vh - 300px)" class="overflow-y-auto overflow-x-hidden">
               <v-card-title :style="getLinearGradient(user.topic)"><strong>欢迎来到代码助手</strong></v-card-title>
               <v-divider></v-divider>
               <v-card-title>单元测试</v-card-title>
