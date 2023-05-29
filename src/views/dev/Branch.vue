@@ -42,7 +42,7 @@
                     <v-col v-for="(entry, index) in [daily, monthly, yearly]" :key="index" :cols="entry.col">
                       <v-card :color="entry.color" class="text-center align-center">
                         <v-sparkline
-                            :labels="index === 0 ? null : entry.label"
+                            :labels="index === 0 ? [] : entry.label"
                             :value="entry.data"
                             auto-line-width
                             smooth
