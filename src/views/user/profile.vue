@@ -27,14 +27,14 @@
                 <strong class="d-block"> {{ userInfo.username }} </strong>
               </v-col>
               <v-col cols="8">
-                <v-text-field label="用户名" v-model="userInfo.username" outlined dense></v-text-field>
-                <v-text-field label="邮箱" v-model="userInfo.email" outlined dense></v-text-field>
+                <v-text-field label="用户名" v-model="userInfo.username" :rules="editRules.username" outlined dense></v-text-field>
+                <v-text-field label="邮箱" v-model="userInfo.email" :rules="editRules.email" outlined dense></v-text-field>
               </v-col>
             </v-row>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red" text @click="openChangePasswordDialog">修改密码</v-btn>
-              <v-btn color="primary" text @click="save">保存</v-btn>
+              <v-btn color="primary" text :disabled="!editValid()" @click="save">保存</v-btn>
               <v-btn color="primary" text @click="back">返回</v-btn>
             </v-card-actions>
           </v-img>
@@ -97,6 +97,18 @@ export default {
         email: '',
         avatar: '',
       },
+      editRules: {
+        username: [
+          function (v) {
+            return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(v) || `用户名只能包含中文、英文或数字，且不能为空`;
+          },
+        ],
+        email: [
+          function (v) {
+            return /[\w]+@[A-Za-z0-9]+(\.[A-Za-z0-9]+){1,2}/.test(v) || `非法的邮箱格式`;
+          },
+        ],
+      },
       // 修改密码对话框的显示
       showChangePassword: false,
       // 修改密码相关变量
@@ -127,6 +139,10 @@ export default {
   },
   methods: {
     getIdenticon,
+    editValid() {
+      return /^[\u4E00-\u9FA5A-Za-z0-9]+$/.test(this.userInfo.username)
+          && /[\w]+@[A-Za-z0-9]+(\.[A-Za-z0-9]+){1,2}/.test(this.userInfo.email);
+    },
     valid() {
       return /^.+$/.test(this.oldPassword)
           && /^.{6,}$/.test(this.newPassword)
